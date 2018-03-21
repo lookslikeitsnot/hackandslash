@@ -53,8 +53,9 @@ public abstract class Weapon {
 			this.damage = 0;
 		} else if (damage > this.maxDamage) {
 			this.damage = this.maxDamage;
+		} else {
+			this.damage = damage;
 		}
-		this.damage = damage;
 	}
 
 	public float getRange() {
