@@ -50,7 +50,23 @@ public class SwordTest {
 	}
 	
 	@Test
-	public void increaseCritChance() {
-		
+	public void increaseCritChance_allIsWell_swordCritChanceIncremented() {
+		sword.increaseCritChance(1);
+		assertEquals(51, sword.getCritChance(), 0.1);
+	}
+	@Test
+	public void increaseCritChance_moreThanMaxCritChance_swordMaxCritChance() {
+		sword.increaseCritChance(100);
+		assertEquals(100, sword.getCritChance(), 0.1);
+	}
+	@Test
+	public void decreaseCritChance_allIsWell_swordCritChanceDecremented() {
+		sword.decreaseCritChance(100);
+		assertEquals(0, sword.getCritChance(), 0.1);
+	}
+	@Test
+	public void decreaseCritChance_lessThanZeroCritChance_0() {
+		sword.decreaseCritChance(100);
+		assertEquals(0, sword.getCritChance(), 0.1);
 	}
 }
