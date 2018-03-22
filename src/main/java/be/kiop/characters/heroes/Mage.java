@@ -2,6 +2,7 @@ package be.kiop.characters.heroes;
 
 import java.util.Set;
 
+import be.kiop.exceptions.OutOfManaException;
 import be.kiop.weapons.Weapon;
 import be.kiop.weapons.Weapons;
 
@@ -35,6 +36,9 @@ public class Mage extends Hero{
 			throw new IllegalArgumentException();
 		}
 		mana = decrement>mana ? 0 : mana-decrement;
+		if(mana == 0) {
+			throw new OutOfManaException();
+		}
 	}
 	
 	public void increaseMana(float increment) {
