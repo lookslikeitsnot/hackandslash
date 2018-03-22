@@ -13,6 +13,8 @@ public class SwordBuilder {
 	private float attackSpeed;
 	private float maxAttackSpeed;
 	
+	private float penetration;
+	
 	private float critChance;
 	private float maxCritChance;
 
@@ -44,6 +46,10 @@ public class SwordBuilder {
 		this.maxRange = maxRange;
 		return this;
 	}
+	public SwordBuilder withPenetration(float penetration) {
+		this.penetration = penetration;
+		return this;
+	}
 	public SwordBuilder withCritChance(float critChance) {
 		this.critChance = critChance;
 		return this;
@@ -64,6 +70,6 @@ public class SwordBuilder {
 	
 	
 	public Sword makeSword() {
-		return new Sword(name, damage, maxDamage, range, minRange, maxRange, attackSpeed, maxAttackSpeed, critChance, maxCritChance);
+		return new Sword(name, damage, maxDamage, range, minRange, maxRange, attackSpeed, maxAttackSpeed, penetration, critChance, maxCritChance);
 	}
 }

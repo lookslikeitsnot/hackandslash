@@ -169,5 +169,8 @@ public abstract class GameCharacter {
 		}
 	}
 	
+	public void attack(GameCharacter gameCharacter) {
+		gameCharacter.takeDamage(this.weapon.getDamage(), this.weapon.getPenetration());
+	}
 
 }

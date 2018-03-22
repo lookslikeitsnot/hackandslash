@@ -5,8 +5,8 @@ public class Sword extends Weapon {
 	private final float maxCritChance;
 
 	public Sword(String name, float damage, float maxDamage, float range, float minRange, float maxRange,
-			float attackSpeed, float maxAttackSpeed, float critChance, float maxCritChance) {
-		super(name, damage, maxDamage, range, minRange, maxRange, attackSpeed, maxAttackSpeed);
+			float attackSpeed, float maxAttackSpeed, float penetration, float critChance, float maxCritChance) {
+		super(name, damage, maxDamage, range, minRange, maxRange, attackSpeed, maxAttackSpeed, penetration);
 		this.critChance = critChance;
 		this.maxCritChance = maxCritChance;
 	}

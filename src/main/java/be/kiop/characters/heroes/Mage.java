@@ -30,4 +30,7 @@ public class Mage extends Hero{
 		this.mana = 100;
 	}
 	
+	public float getMana() {
+		return mana;
+	}
 }

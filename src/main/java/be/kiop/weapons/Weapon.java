@@ -14,8 +14,11 @@ public abstract class Weapon {
 	private float attackSpeed;
 	private final float maxAttackSpeed;
 	
+	private float penetration;
+	private static final float MAX_PENETRATION = 100.0F;
+	
 	Weapon(String name, float damage, float maxDamage, float range, 
-			float minRange, float maxRange, float attackSpeed, float maxAttackSpeed) {
+			float minRange, float maxRange, float attackSpeed, float maxAttackSpeed, float penetration) {
 		this.name = name;
 		this.damage = damage;
 		this.maxDamage = maxDamage;
@@ -24,6 +27,7 @@ public abstract class Weapon {
 		this.maxRange = maxRange;
 		this.attackSpeed = attackSpeed;
 		this.maxAttackSpeed = maxAttackSpeed;
+		this.penetration = penetration;
 	}
 
 	public Weapon(String name, float damage, float range, float attackSpeed) {
@@ -35,6 +39,7 @@ public abstract class Weapon {
 		this.maxRange = range;
 		this.attackSpeed = attackSpeed;
 		this.maxAttackSpeed = attackSpeed;
+		this.penetration = 0;
 	}
 
 	public String getName() {
@@ -123,6 +128,21 @@ public abstract class Weapon {
 		}
 	}
 
+	public float getPenetration() {
+		return penetration;
+	}
+
+	public void setPenetration(float penetration) {
+		if(penetration < 0) {
+			this.penetration = 0;
+		} else if(penetration > MAX_PENETRATION) {
+			this.penetration = MAX_PENETRATION;
+		} else {
+			this.penetration = penetration;
+		}
+	}
+	
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -146,7 +166,5 @@ public abstract class Weapon {
 		} else if (!name.equals(other.name))
 			return false;
 		return true;
-	}
-	
-	
+	}	
 }

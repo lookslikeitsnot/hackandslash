@@ -156,7 +156,7 @@ public class WarriorTest {
 	}
 	
 	@Test
-	public void getMana_nA_heroMana() {
+	public void getLives_nA_heroLives() {
 		
 	}
 }

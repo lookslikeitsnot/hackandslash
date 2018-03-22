@@ -30,5 +30,23 @@ public class Warrior extends Hero{
 		this.shield = 0;
 	}
 	
+	public float getShield() {
+		return shield;
+	}
 	
+	@Override
+	public void takeDamage(float damage) {
+		if(shield>0) {
+			float remainingShield = shield;
+			remainingShield -= damage;
+			if(remainingShield < 0) {
+				damage -= shield;
+				shield = 0;
+			} else {
+				shield = remainingShield;
+				damage = 0;
+			}
+		}
+		super.takeDamage(damage);
+	}
 }

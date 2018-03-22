@@ -10,7 +10,7 @@ public class StaffTest {
 
 	@Before
 	public void before() {
-		staff = new Staff("Staff", 8, 14, 5, 3, 7, 2, 8);
+		staff = new Staff("Staff", 8, 14, 5, 3, 7, 2, 8, 10);
 	}
 
 	@Test
