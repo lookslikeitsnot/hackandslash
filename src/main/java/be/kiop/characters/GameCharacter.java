@@ -17,6 +17,7 @@ public abstract class GameCharacter {
 	private Set<Weapons> availableWeapons;
 	protected int level;
 	public final static int MAX_LEVEL = 100;
+	public final static int MAX_ARMOR = 100;
 	private float armor;
 
 //	protected GameCharacter(String name, float health, Weapon weapon) {
@@ -169,10 +170,10 @@ public abstract class GameCharacter {
 	}
 
 	public void setArmor(float armor) {
-		if (armor <= 0) {
+		if (armor < 0) {
 			this.armor = 0;
-		} else if (armor > 100) {
-			this.armor = 100;
+		} else if (armor > MAX_ARMOR) {
+			this.armor = MAX_ARMOR;
 		} else {
 			this.armor = armor;
 		}

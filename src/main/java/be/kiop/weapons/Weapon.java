@@ -1,6 +1,8 @@
 package be.kiop.weapons;
 
-public abstract class Weapon {
+import be.kiop.items.Droppable;
+
+public abstract class Weapon implements Droppable{
 	private String name;
 	
 	private float damage;
