@@ -1,6 +1,7 @@
 package be.kiop.weapons;
 
 public enum Weapons {
+	Fist(Fist.class),
 	Sword(Sword.class),
 	Staff(Staff.class);
 	
