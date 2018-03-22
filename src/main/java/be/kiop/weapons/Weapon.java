@@ -26,6 +26,17 @@ public abstract class Weapon {
 		this.maxAttackSpeed = maxAttackSpeed;
 	}
 
+	public Weapon(String name, float damage, float range, float attackSpeed) {
+		this.name = name;
+		this.damage = damage;
+		this.maxDamage = damage;
+		this.range = range;
+		this.minRange = range;
+		this.maxRange = range;
+		this.attackSpeed = attackSpeed;
+		this.maxAttackSpeed = attackSpeed;
+	}
+
 	public String getName() {
 		return name;
 	}

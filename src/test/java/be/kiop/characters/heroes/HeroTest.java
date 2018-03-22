@@ -1,10 +1,11 @@
-package be.kiop.characters;
+package be.kiop.characters.heroes;
 
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Before;
 import org.junit.Test;
 
+import be.kiop.characters.heroes.Hero;
 import be.kiop.exceptions.CharacterDiedException;
 import be.kiop.weapons.Sword;
 import be.kiop.weapons.SwordBuilder;
@@ -27,7 +28,7 @@ public class HeroTest {
 						.withCritChance(50)
 						.withMaxCritChance(100)
 						.makeSword();
-		hero = new Hero("Jean", 100, sword, 100);
+		hero = new Hero("Jean", 100, sword);
 	}
 	
 //	@Test(expected = Error.class)
@@ -41,19 +42,19 @@ public class HeroTest {
 	}
 	
 	@Test(expected=CharacterDiedException.class)
-	public void loseHealth_moreThanHeroLife_Exception() {
-		hero.loseHealth(101);
+	public void decreaseHealth_moreThanHeroLife_Exception() {
+		hero.decreaseHealth(101);
 	}
 	
 	@Test
-	public void loseHealth_lessThanHeroLife_remainingHealth() {
-		hero.loseHealth(99);
+	public void decreaseHealth_lessThanHeroLife_remainingHealth() {
+		hero.decreaseHealth(99);
 		assertEquals(1, hero.getHealth(), 0.1);
 	}
 	
 	@Test(expected=IllegalArgumentException.class)
 	public void loseHealth_negativeAmount_Exception() {
-		hero.loseHealth(-1);
+		hero.decreaseHealth(-1);
 	}
 	
 	@Test
