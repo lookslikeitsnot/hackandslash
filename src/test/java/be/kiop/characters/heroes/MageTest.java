@@ -124,7 +124,7 @@ public class MageTest {
 	
 	@Test(expected=IllegalWeaponException.class)
 	public void changeWeapon_invalidWeapon_exception() {
-		hero.changeWeapon(new Staff());
+		hero.changeWeapon(new Sword());
 	}
 	
 	@Test(expected=IllegalArgumentException.class)
@@ -213,6 +213,16 @@ public class MageTest {
 	@Test
 	public void getMana_nA_heroMana() {
 		assertEquals(HERO_MANA, hero.getMana(), MARGIN);
+	}
+	
+	@Test(expected=IllegalArgumentException.class)
+	public void increaseMana_negativeAmount_exception() {
+		hero.increaseMana(-1);
+	}
+	
+	@Test
+	public void decreaseMana_negativeAmount_exception() {
+		hero.decreaseMana(-1);
 	}
 	
 }

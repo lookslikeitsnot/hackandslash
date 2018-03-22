@@ -1,137 +1,188 @@
 package be.kiop.weapons;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
 import org.junit.Before;
 import org.junit.Test;
 
 public class StaffTest {
-	private Staff staff;
+	private Staff weapon;
+	private static final float WEAPON_DAMAGE = 8;
+	private static final float WEAPON_MAX_DAMAGE = 14;
+	private static final float WEAPON_RANGE = 5;
+	private static final float WEAPON_MIN_RANGE = 3;
+	private static final float WEAPON_MAX_RANGE = 7;
+	private static final float WEAPON_ATTACK_SPEED = 2;
+	private static final float WEAPON_MAX_ATTACK_SPEED = 8;
+	private static final float WEAPON_PENETRATION = 30;
+	private static final float WEAPON_MANA_COST = 10;
+	private static final float MARGIN = 0.1F;
 
 	@Before
 	public void before() {
-		staff = new Staff("Staff", 8, 14, 5, 3, 7, 2, 8, 10);
+		weapon = new Staff(Staff.DEFAULT_NAME, WEAPON_DAMAGE, WEAPON_MAX_DAMAGE, WEAPON_RANGE, WEAPON_MIN_RANGE, WEAPON_MAX_RANGE, 
+				WEAPON_ATTACK_SPEED, WEAPON_MAX_ATTACK_SPEED, WEAPON_PENETRATION, WEAPON_MANA_COST);
 	}
 
 	@Test
-	public void getName_allIsWell_staffName() {
-		assert (staff.getName().equals("Staff"));
+	public void getName_allIsWell_swordName() {
+		assert (weapon.getName().equals(Staff.DEFAULT_NAME));
+	}
+	
+	@Test
+	public void setName_validName_swordName() {
+		String newName = "Weapon";
+		weapon.setName(newName);
+		assert(newName.equals(weapon.getName()));
+	}
+	
+	@Test(expected = IllegalArgumentException.class)
+	public void setName_blankName_exception() {
+		String newName = " ";
+		weapon.setName(newName);
+	}
+	
+	@Test(expected = IllegalArgumentException.class)
+	public void setName_nullName_exception() {
+		String newName = null;
+		weapon.setName(newName);
 	}
 
 	@Test
-	public void getDamage_allIsWell_staffDamage() {
-		assertEquals(8, staff.getDamage(), 0.1);
+	public void getDamage_allIsWell_swordDamage() {
+		assertEquals(WEAPON_DAMAGE, weapon.getDamage(), MARGIN);
 	}
 
 	@Test
-	public void getRange_allIsWell_staffRange() {
-		assertEquals(5, staff.getRange(), 0.1);
+	public void getRange_allIsWell_swordRange() {
+		assertEquals(WEAPON_RANGE, weapon.getRange(), MARGIN);
 	}
 
 	@Test
-	public void getAttackSpeed_allIsWell_staffAttackSpeed() {
-		assertEquals(2, staff.getAttackSpeed(), 0.1);
+	public void getAttackSpeed_allIsWell_swordAttackSpeed() {
+		assertEquals(WEAPON_ATTACK_SPEED, weapon.getAttackSpeed(), MARGIN);
 	}
 
 	@Test
-	public void increaseDamage_allIsWell_staffDamageIncreased() {
-		staff.increaseDamage(1);
-		assertEquals(9, staff.getDamage(), 0.1);
+	public void increaseDamage_allIsWell_swordDamageIncreased() {
+		weapon.increaseDamage(1);
+		assertEquals(WEAPON_DAMAGE + 1, weapon.getDamage(), MARGIN);
 	}
 
 	@Test
-	public void increaseDamage_greaterThanMaxDamage_staffMaxDamage() {
-		staff.increaseDamage(10);
-		assertEquals(14, staff.getDamage(), 0.1);
+	public void increaseDamage_greaterThanMaxDamage_swordMaxDamage() {
+		weapon.increaseDamage(WEAPON_MAX_DAMAGE + 1);
+		assertEquals(WEAPON_MAX_DAMAGE, weapon.getDamage(), MARGIN);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void increaseDamage_negativeDamage_exception() {
-		staff.increaseDamage(-1);
+		weapon.increaseDamage(-1);
 	}
 
 	@Test
-	public void decreaseDamage_allIsWell_staffDamageDecreased() {
-		staff.decreaseDamage(1);
-		assertEquals(7, staff.getDamage(), 0.1);
+	public void decreaseDamage_allIsWell_swordDamageDecreased() {
+		weapon.decreaseDamage(1);
+		assertEquals(WEAPON_DAMAGE - 1, weapon.getDamage(), MARGIN);
 	}
 
 	@Test
 	public void decreaseDamage_lessThan0_0() {
-		staff.decreaseDamage(20);
-		assertEquals(0, staff.getDamage(), 0.1);
+		weapon.decreaseDamage(WEAPON_MAX_DAMAGE + 1);
+		assertEquals(0, weapon.getDamage(), MARGIN);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void decreaseDamage_negativeDamage_exception() {
-		staff.decreaseDamage(-1);
+		weapon.decreaseDamage(-1);
 	}
 
 	@Test
-	public void increaseRange_allIsWell_staffRangeIncreased() {
-		staff.increaseRange(1);
-		assertEquals(6, staff.getRange(), 0.1);
+	public void increaseRange_allIsWell_swordRangeIncreased() {
+		weapon.increaseRange(1);
+		assertEquals(WEAPON_RANGE + 1, weapon.getRange(), MARGIN);
 	}
 
 	@Test
-	public void increaseRange_greaterThanMaxRange_staffMaxRange() {
-		staff.increaseRange(10);
-		assertEquals(7, staff.getRange(), 0.1);
+	public void increaseRange_greaterThanMaxRange_swordMaxRange() {
+		weapon.increaseRange(WEAPON_MAX_RANGE + 1);
+		assertEquals(WEAPON_MAX_RANGE, weapon.getRange(), MARGIN);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void increaseRange_negativeRange_exception() {
-		staff.increaseRange(-1);
+		weapon.increaseRange(-1);
 	}
 
 	@Test
-	public void decreaseRange_allIsWell_staffRangeDecreased() {
-		staff.decreaseRange(1);
-		assertEquals(4, staff.getRange(), 0.1);
+	public void decreaseRange_allIsWell_swordRangeDecreased() {
+		weapon.decreaseRange(1);
+		assertEquals(WEAPON_RANGE - 1, weapon.getRange(), MARGIN);
 	}
 
 	@Test
-	public void decreaseRange_lessThan0_staffMinRange() {
-		staff.decreaseRange(10);
-		assertEquals(3, staff.getRange(), 0.1);
+	public void decreaseRange_lessThan0_swordMinRange() {
+		weapon.decreaseRange(WEAPON_MAX_RANGE + 1);
+		assertEquals(WEAPON_MIN_RANGE, weapon.getRange(), MARGIN);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void decreaseRange_negativeRange_exception() {
-		staff.decreaseRange(-1);
+		weapon.decreaseRange(-1);
 	}
-	
+
 	@Test
-	public void increaseAttackSpeed_allIsWell_staffAttackSpeedIncreased() {
-		staff.increaseAttackSpeed(1);
-		assertEquals(3, staff.getAttackSpeed(), 0.1);
+	public void increaseAttackSpeed_allIsWell_swordAttackSpeedIncreased() {
+		weapon.increaseAttackSpeed(1);
+		assertEquals(WEAPON_ATTACK_SPEED + 1, weapon.getAttackSpeed(), MARGIN);
 	}
-	
+
 	@Test
-	public void increaseAttackSpeed_greaterThanMaxAttackSpeed_staffMaxAttackSpeed() {
-		staff.increaseAttackSpeed(10);
-		assertEquals(8, staff.getAttackSpeed(), 0.1);
+	public void increaseAttackSpeed_greaterThanMaxAttackSpeed_swordMaxAttackSpeed() {
+		weapon.increaseAttackSpeed(WEAPON_MAX_ATTACK_SPEED + 1);
+		assertEquals(WEAPON_MAX_ATTACK_SPEED, weapon.getAttackSpeed(), MARGIN);
 	}
-	
+
 	@Test(expected = IllegalArgumentException.class)
 	public void increaseAttackSpeed_negativeAttackSpeed_exception() {
-		staff.increaseAttackSpeed(-1);
+		weapon.increaseAttackSpeed(-1);
 	}
-	
+
 	@Test
-	public void decreaseAttackSpeed_allIsWell_staffAttackSpeedDecreased() {
-		staff.decreaseAttackSpeed(1);
-		assertEquals(1, staff.getAttackSpeed(), 0.1);
+	public void decreaseAttackSpeed_allIsWell_swordAttackSpeedDecreased() {
+		weapon.decreaseAttackSpeed(1);
+		assertEquals(WEAPON_ATTACK_SPEED - 1, weapon.getAttackSpeed(), MARGIN);
 	}
-	
+
 	@Test
 	public void decreaseAttackSpeed_lessThan0_0() {
-		staff.decreaseAttackSpeed(10);
-		assertEquals(0, staff.getAttackSpeed(), 0.1);
+		weapon.decreaseAttackSpeed(WEAPON_ATTACK_SPEED + 1);
+		assertEquals(0, weapon.getAttackSpeed(), MARGIN);
 	}
-	
+
 	@Test(expected = IllegalArgumentException.class)
 	public void decreaseAttackSpeed_negativeRange_exception() {
-		staff.decreaseAttackSpeed(-1);
+		weapon.decreaseAttackSpeed(-1);
+	}
+
+	@Test
+	public void getManaCost_nA_weaponManaCost() {
+		assertEquals(WEAPON_MANA_COST, weapon.getManaCost(), MARGIN);
+	}
+	
+	@Test
+	public void hashCode_sameWeaponName_sameHashCode() {
+		assertEquals(new Staff().hashCode(), weapon.hashCode());
+	}
+	
+	@Test
+	public void equals_null_false() {
+		assertFalse(weapon.equals(null));
+	}
+	
+	@Test
+	public void equals_sameWeaponName_true() {
+		assert(weapon.equals(new Staff()));
 	}
 }

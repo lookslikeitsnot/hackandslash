@@ -1,7 +1,7 @@
 package be.kiop.weapons;
 
 public abstract class Weapon {
-	private final String name;
+	private String name;
 	
 	private float damage;
 	private final float maxDamage;
@@ -15,11 +15,11 @@ public abstract class Weapon {
 	private final float maxAttackSpeed;
 	
 	private float penetration;
-	private static final float MAX_PENETRATION = 100.0F;
+	public static final float MAX_PENETRATION = 100.0F;
 	
-	Weapon(String name, float damage, float maxDamage, float range, 
+	protected Weapon(String name, float damage, float maxDamage, float range, 
 			float minRange, float maxRange, float attackSpeed, float maxAttackSpeed, float penetration) {
-		this.name = name;
+		setName(name);
 		this.damage = damage;
 		this.maxDamage = maxDamage;
 		this.range = range;
@@ -30,8 +30,8 @@ public abstract class Weapon {
 		this.penetration = penetration;
 	}
 
-	public Weapon(String name, float damage, float range, float attackSpeed) {
-		this.name = name;
+	protected Weapon(String name, float damage, float range, float attackSpeed) {
+		setName(name);
 		this.damage = damage;
 		this.maxDamage = damage;
 		this.range = range;
@@ -40,6 +40,12 @@ public abstract class Weapon {
 		this.attackSpeed = attackSpeed;
 		this.maxAttackSpeed = attackSpeed;
 		this.penetration = 0;
+	}
+	public void setName(String name) {
+		if(name == null || name.trim().isEmpty()) {
+			throw new IllegalArgumentException();
+		}
+		this.name = name;
 	}
 
 	public String getName() {
@@ -147,7 +153,7 @@ public abstract class Weapon {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((name == null) ? 0 : name.hashCode());
+		result = prime * result + name.hashCode();
 		return result;
 	}
 
@@ -160,10 +166,7 @@ public abstract class Weapon {
 		if (!(obj instanceof Weapon))
 			return false;
 		Weapon other = (Weapon) obj;
-		if (name == null) {
-			if (other.name != null)
-				return false;
-		} else if (!name.equals(other.name))
+		if (!name.equals(other.name))
 			return false;
 		return true;
 	}	

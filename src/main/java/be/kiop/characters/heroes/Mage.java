@@ -7,6 +7,7 @@ import be.kiop.weapons.Weapons;
 
 public class Mage extends Hero{
 	private float mana;
+	public static final float MAX_MANA = 100;
 	private static Set<Weapons> AVAILABLE_WEAPONS = Set.of(Weapons.Staff);
 
 	public Mage(String name, float health, Weapon weapon, int level, float armor, int lives, float experience, float mana) {
@@ -29,6 +30,20 @@ public class Mage extends Hero{
 //		this.mana = 100;
 //	}
 //	
+	public void decreaseMana(float decrement) {
+		if(decrement < 0) {
+			throw new IllegalArgumentException();
+		}
+		mana = decrement>mana ? 0 : mana-decrement;
+	}
+	
+	public void increaseMana(float increment) {
+		if(increment < 0) {
+			throw new IllegalArgumentException();
+		}
+		mana = increment+mana>MAX_MANA ? MAX_MANA : mana+increment;
+	}
+	
 	public float getMana() {
 		return mana;
 	}
