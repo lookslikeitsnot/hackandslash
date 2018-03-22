@@ -13,6 +13,7 @@ import be.kiop.exceptions.IllegalWeaponException;
 import be.kiop.exceptions.MaxLevelReachedException;
 import be.kiop.exceptions.MinLevelReachedException;
 import be.kiop.exceptions.OutOfLivesException;
+import be.kiop.exceptions.OutOfManaException;
 import be.kiop.weapons.Fist;
 import be.kiop.weapons.Staff;
 import be.kiop.weapons.Sword;
@@ -221,8 +222,31 @@ public class MageTest {
 	}
 	
 	@Test
+	public void increaseMana_validAmount_heroManaIncreased() {
+		hero.increaseMana(1);
+		assertEquals(HERO_MANA+1, hero.getMana(), MARGIN);
+	}
+	
+	@Test
+	public void increaseMana_moreThanMax_heroMaxMana() {
+		hero.increaseMana(Mage.MAX_MANA+1);
+		assertEquals(Mage.MAX_MANA, hero.getMana(), MARGIN);
+	}
+	
+	@Test(expected=IllegalArgumentException.class)
 	public void decreaseMana_negativeAmount_exception() {
 		hero.decreaseMana(-1);
+	}
+	
+	@Test
+	public void decreaseMana_validAmount_heroManaIncreased() {
+		hero.decreaseMana(1);
+		assertEquals(HERO_MANA-1, hero.getMana(), MARGIN);
+	}
+	
+	@Test(expected=OutOfManaException.class)
+	public void decreaseMana_moreThanMax_exception() {
+		hero.decreaseMana(HERO_MANA+1);
 	}
 	
 }
