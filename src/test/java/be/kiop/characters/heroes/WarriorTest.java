@@ -7,23 +7,34 @@ import java.util.stream.IntStream;
 import org.junit.Before;
 import org.junit.Test;
 
+import be.kiop.characters.GameCharacter;
 import be.kiop.exceptions.CharacterDiedException;
 import be.kiop.exceptions.IllegalWeaponException;
 import be.kiop.exceptions.MaxLevelReachedException;
 import be.kiop.exceptions.MinLevelReachedException;
+import be.kiop.exceptions.OutOfLivesException;
 import be.kiop.weapons.Fist;
 import be.kiop.weapons.Staff;
 import be.kiop.weapons.Sword;
 
 public class WarriorTest {
-	private Hero hero;
+	private Warrior hero;
 	private Sword sword;
+	
+	private final static float MARGIN = 0.1F;
+	
 	private final static String HERO_NAME = "Warrior";
+	private final static float HERO_HEALTH = 100;
+	private final static int HERO_LEVEL = 10;
+	private final static int HERO_LIVES = 5;
+	private final static float HERO_ARMOR = 50;
+	private final static float HERO_EXPERIENCE = 200;
+	private final static float HERO_SHIELD = 10;
 	
 	@Before
 	public void before() {
 		sword = new Sword();
-		hero = new Warrior(HERO_NAME, 100, sword, 4, 50, 5, 200, 10);
+		hero = new Warrior(HERO_NAME, HERO_HEALTH, sword, HERO_LEVEL, HERO_ARMOR, HERO_LIVES, HERO_EXPERIENCE, HERO_SHIELD);
 	}
 	
 	@Test
@@ -33,18 +44,18 @@ public class WarriorTest {
 	
 	@Test
 	public void getHealth_nA_heroHealth() {
-		assertEquals(100, hero.getHealth(),0.1);
+		assertEquals(HERO_HEALTH, hero.getHealth(),MARGIN);
 	}
 	
 	@Test(expected=CharacterDiedException.class)
-	public void takeFlatDamage_moreThanHeroLife_Exception() {
-		hero.takeFlatDamage(101);
+	public void takeFlatDamage_moreThanHeroHealth_Exception() {
+		hero.takeFlatDamage(HERO_HEALTH+1);
 	}
 	
 	@Test
-	public void takeFlatDamage_lessThanHeroLife_remainingHealth() {
-		hero.takeFlatDamage(50);
-		assertEquals(50, hero.getHealth(), 0.1);
+	public void takeFlatDamage_lessThanHeroHealth_remainingHealth() {
+		hero.takeFlatDamage(HERO_HEALTH-1);
+		assertEquals(1, hero.getHealth(), MARGIN);
 	}
 	
 	@Test(expected=IllegalArgumentException.class)
@@ -53,14 +64,24 @@ public class WarriorTest {
 	}
 		
 	@Test(expected=CharacterDiedException.class)
-	public void takeDamage_moreThanHeroLife_Exception() {
-		hero.takeDamage(1000);
+	public void takeDamage_moreThanHeroHealth_Exception() {
+		hero.takeDamage(HERO_HEALTH*100/HERO_ARMOR+HERO_HEALTH);
 	}
 	
 	@Test
-	public void takeDamage_lessThanHeroLife_remainingHealth() {
-		hero.takeDamage(50);
-		assertEquals(75, hero.getHealth(), 0.1);
+	public void takeDamage_lessThanHeroShield_remainingHealth() {
+		hero.takeDamage(HERO_SHIELD);
+		assertEquals(HERO_HEALTH, hero.getHealth(), MARGIN);
+	}
+	
+	@Test
+	public void takeDamage_lessThanHeroHealth_remainingHealth() {
+		hero.takeDamage(HERO_SHIELD+HERO_HEALTH);
+		assertEquals(HERO_HEALTH*HERO_ARMOR/100, hero.getHealth(), MARGIN);
+		
+		//HERO_HEALTH-(HERO_HEALTH*(1-HERO_ARMOR/100))
+		//HERO_HEALTH(1-(1-HERO_ARMOR/100))
+		//HERO_HEALTH(HERO_ARMOR/100)
 	}
 	
 	@Test(expected=IllegalArgumentException.class)
@@ -70,30 +91,35 @@ public class WarriorTest {
 	
 	@Test(expected=CharacterDiedException.class)
 	public void takeDamage_moreThanHeroLifeAndPenetration_Exception() {
-		hero.takeDamage(101, 50);
+		hero.takeDamage(HERO_HEALTH, HERO_ARMOR+1);
 	}
 	
 	@Test
 	public void takeDamage_lessThanHeroLifeAndPenetration_remainingHealth() {
-		hero.takeDamage(50, 50);
-		assertEquals(50, hero.getHealth(), 0.1);
+		hero.takeDamage(HERO_HEALTH-1, HERO_ARMOR);
+		assertEquals(1, hero.getHealth(), MARGIN);
 	}
 	
 	@Test(expected=IllegalArgumentException.class)
-	public void takeDamage_negativeAmountAndPenetration_Exception() {
-		hero.takeDamage(-1, 50);
+	public void takeDamage_negativeDamageAndPositivePenetration_Exception() {
+		hero.takeDamage(-1, HERO_HEALTH/2);
+	}
+	
+	@Test(expected=IllegalArgumentException.class)
+	public void takeDamage_positiveDamageAndNegativePenetration_Exception() {
+		hero.takeDamage(1, -HERO_HEALTH/2);
 	}
 	
 	@Test
 	public void heal_moreThanHeroLife_maxHealth() {
-		hero.heal(1000);
-		assertEquals(hero.getMaxHealth(), hero.getHealth(), 0.1);
+		hero.heal(hero.getMaxHealth()+1);
+		assertEquals(hero.getMaxHealth(), hero.getHealth(), MARGIN);
 	}
 	
 	@Test
 	public void heal_lessThanHeroLife_heroHealth() {
-		hero.heal(50);
-		assertEquals(150, hero.getHealth(), 0.1);
+		hero.heal(1);
+		assertEquals(HERO_HEALTH+1, hero.getHealth(), MARGIN);
 	}
 	
 	@Test(expected=IllegalArgumentException.class)
@@ -130,33 +156,79 @@ public class WarriorTest {
 	
 	@Test
 	public void getLevel_nA_heroLevel() {
-		assertEquals(4, hero.getLevel());
+		assertEquals(HERO_LEVEL, hero.getLevel());
 	}
 	
 	@Test
 	public void increaseLevel_nA_heroLevelIncreased() {
 		hero.increaseLevel();
-		assertEquals(5, hero.getLevel());
+		assertEquals(HERO_LEVEL+1, hero.getLevel());
 	}
 	
 	@Test(expected=MaxLevelReachedException.class)
 	public void increaseLevel_moreThanMaxLevel_exception() {
-		IntStream.range(0, 100).forEach(val -> hero.increaseLevel());
+		IntStream.range(0, GameCharacter.MAX_LEVEL+1).forEach(val -> hero.increaseLevel());
 	}
 	
 	@Test
 	public void decreaseLevel_nA_heroLevelDecreased() {
 		hero.decreaseLevel();
-		assertEquals(3, hero.getLevel());
+		assertEquals(HERO_LEVEL-1, hero.getLevel());
 	}
 	
 	@Test(expected=MinLevelReachedException.class)
 	public void decreaseLevel_lessThanMinLevel_exception() {
-		IntStream.range(0, 100).forEach(val -> hero.decreaseLevel());
+		IntStream.range(0, GameCharacter.MAX_LEVEL+1).forEach(val -> hero.decreaseLevel());
 	}
 	
 	@Test
 	public void getLives_nA_heroLives() {
-		
+		assertEquals(HERO_LIVES, hero.getLives());
 	}
+	
+	@Test
+	public void increaseLives_nA_heroLivesIncremented() {
+		hero.increaseLives();
+		assertEquals(HERO_LIVES+1, hero.getLives());
+	}
+	
+	@Test
+	public void decreaseLives_nA_heroLivesDecreased() {
+		hero.decreaseLives();
+		assertEquals(HERO_LIVES-1, hero.getLives());
+	}
+	
+	@Test(expected=OutOfLivesException.class)
+	public void decreaseLives_nA_exception() {
+		IntStream.range(0, HERO_LIVES+1).forEach(val -> hero.decreaseLives());
+	}
+	
+	@Test
+	public void getExperience_nA_heroExperience() {
+		assertEquals(HERO_EXPERIENCE, hero.getExperience(), MARGIN);
+	}
+	
+	@Test
+	public void increaseExperience_notEnoughForNewLevel_heroExperienceIncreased() {
+		hero.increaseExperience(HERO_LEVEL*100-HERO_EXPERIENCE-1);
+		assertEquals(HERO_LEVEL*100-1, hero.getExperience(), MARGIN);
+	}
+	
+	@Test
+	public void increaseExperience_enoughForTwoNewLevels_heroExperienceIncreased() {
+		hero.increaseExperience((2*HERO_LEVEL+1)*100);
+		assertEquals(HERO_EXPERIENCE, hero.getExperience(), MARGIN);
+		assertEquals(HERO_LEVEL+2, hero.getLevel());
+	}
+	
+	@Test(expected=IllegalArgumentException.class)
+	public void increaseExperience_negativeAmount_exception() {
+		hero.increaseExperience(-1);
+	}
+	
+	@Test
+	public void getShield_nA_heroShield() {
+		assertEquals(HERO_SHIELD, hero.getShield(), MARGIN);
+	}
+	
 }

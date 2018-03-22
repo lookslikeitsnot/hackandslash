@@ -16,35 +16,35 @@ public abstract class GameCharacter {
 	private Weapon weapon;
 	private Set<Weapons> availableWeapons;
 	protected int level;
-	private final static int MAX_LEVEL = 100;
+	public final static int MAX_LEVEL = 100;
 	private float armor;
 
-	protected GameCharacter(String name, float health, Weapon weapon) {
-		this.name = name;
-		this.health = health;
-		this.availableWeapons = Set.of(Weapons.values());
-		setWeapon(weapon);
-		this.level = 1;
-		this.armor = 0;
-	}
-
-	protected GameCharacter(String name, float health, Weapon weapon, Set<Weapons> availableWeapons) {
-		this.name = name;
-		this.health = health;
-		this.availableWeapons = availableWeapons;
-		setWeapon(weapon);
-		this.level = 1;
-		this.armor = 0;
-	}
-
-	protected GameCharacter(String name, float health, Weapon weapon, int level, float armor) {
-		this.name = name;
-		this.health = health;
-		this.availableWeapons = Set.of(Weapons.values());
-		setWeapon(weapon);
-		this.level = level;
-		this.armor = armor;
-	}
+//	protected GameCharacter(String name, float health, Weapon weapon) {
+//		this.name = name;
+//		this.health = health;
+//		this.availableWeapons = Set.of(Weapons.values());
+//		setWeapon(weapon);
+//		this.level = 1;
+//		this.armor = 0;
+//	}
+//
+//	protected GameCharacter(String name, float health, Weapon weapon, Set<Weapons> availableWeapons) {
+//		this.name = name;
+//		this.health = health;
+//		this.availableWeapons = availableWeapons;
+//		setWeapon(weapon);
+//		this.level = 1;
+//		this.armor = 0;
+//	}
+//
+//	protected GameCharacter(String name, float health, Weapon weapon, int level, float armor) {
+//		this.name = name;
+//		this.health = health;
+//		this.availableWeapons = Set.of(Weapons.values());
+//		setWeapon(weapon);
+//		this.level = level;
+//		this.armor = armor;
+//	}
 
 	protected GameCharacter(String name, float health, Weapon weapon, Set<Weapons> availableWeapons, int level,
 			float armor) {
@@ -61,28 +61,37 @@ public abstract class GameCharacter {
 	}
 
 	private void decreaseHealth(float decrement) {
-		if (decrement <= 0) {
+		if (decrement < 0) {
 			throw new IllegalArgumentException();
 		}
 		setHealth(this.health - decrement);
 	}
 
 	private void increaseHealth(float increment) {
-		if (increment <= 0) {
+		if (increment < 0) {
 			throw new IllegalArgumentException();
 		}
 		setHealth(this.health + increment);
 	}
 	
 	public void takeFlatDamage(float damage) {
+		if (damage < 0) {
+			throw new IllegalArgumentException();
+		}
 		decreaseHealth(damage);
 	}
 	
 	public void takeDamage(float damage) {
+		if (damage < 0) {
+			throw new IllegalArgumentException();
+		}		
 		decreaseHealth(damage-armor*damage/100);
 	}
 	
 	public void takeDamage(float damage, float penetration) {
+		if (damage < 0 || penetration < 0) {
+			throw new IllegalArgumentException();
+		}
 		float damageFactor = armor - penetration;
 		if(damageFactor<0) {
 			damageFactor = 0;

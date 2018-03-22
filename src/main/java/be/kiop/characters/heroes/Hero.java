@@ -11,17 +11,17 @@ public abstract class Hero extends GameCharacter{
 	private int lives;
 	private float experience;
 
-	public Hero(String name, float health, Weapon weapon) {
-		super(name, health, weapon);
-		this.lives = 3;
-		this.experience = 0;
-	}
-	
-	public Hero(String name, float health, Weapon weapon, Set<Weapons> availableWeapons, int level, float armor) {
-		super(name, health, weapon, availableWeapons, level, armor);
-		this.lives = 3;
-		this.experience = 0;
-	}
+//	public Hero(String name, float health, Weapon weapon) {
+//		super(name, health, weapon);
+//		this.lives = 3;
+//		this.experience = 0;
+//	}
+//	
+//	public Hero(String name, float health, Weapon weapon, Set<Weapons> availableWeapons, int level, float armor) {
+//		super(name, health, weapon, availableWeapons, level, armor);
+//		this.lives = 3;
+//		this.experience = 0;
+//	}
 
 	public Hero(String name, float health, Weapon weapon, Set<Weapons> availableWeapons, int level, float armor, int lives, float experience) {
 		super(name, health, weapon, availableWeapons, level, armor);
@@ -29,18 +29,22 @@ public abstract class Hero extends GameCharacter{
 		this.experience = experience;
 	}
 
-	public Hero(String name, float health, Weapon weapon, Set<Weapons> availableWeapons) {
-		super(name, health, weapon, availableWeapons);
-		this.lives = 3;
-		this.experience = 0;
-	}
+//	public Hero(String name, float health, Weapon weapon, Set<Weapons> availableWeapons) {
+//		super(name, health, weapon, availableWeapons);
+//		this.lives = 3;
+//		this.experience = 0;
+//	}
 
-	public void decrementLives() {
+	public void decreaseLives() {
 		lives--;
 		if(lives <= 0) {
 			lives = 0;
 			throw new OutOfLivesException();
 		}
+	}
+	
+	public void increaseLives() {
+		lives++;
 	}
 
 	public int getLives() {
@@ -52,7 +56,7 @@ public abstract class Hero extends GameCharacter{
 	}
 	
 	public void increaseExperience(float increment) {
-		if(increment <= 0) {
+		if(increment < 0) {
 			throw new IllegalArgumentException();
 		}
 		setExperience(this.experience + increment);
