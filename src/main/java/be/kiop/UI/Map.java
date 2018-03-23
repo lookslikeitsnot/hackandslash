@@ -11,5 +11,7 @@ public class Map {
 	private List<Ennemy> ennemies;
 	private Hero hero;
 	
-	
+	public Map(int width, int height) {
+		
+	}
 }

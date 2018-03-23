@@ -11,26 +11,26 @@ public class BoardTest {
 		assertNotNull(new Board());
 	}
 	@Test
-	public void setWidth_validWidth_boardWidthCChanged() {
+	public void setWidth_validWidth_boardWidthChanged() {
 		int newWidth = Board.getWidth() + 1;
 		Board.setWidth(newWidth);
 		assertEquals(newWidth, Board.getWidth());
 	}
 
 	@Test(expected = IllegalArgumentException.class)
-	public void setWidth_invalidWidth_boardWidthCChanged() {
+	public void setWidth_invalidWidth_illegalArgumentException() {
 		Board.setWidth(-1);
 	}
 
 	@Test
-	public void setHeight_validHeight_boardHeightCChanged() {
+	public void setHeight_validHeight_boardHeightChanged() {
 		int newHeight = Board.getHeight() + 1;
 		Board.setHeight(newHeight);
 		assertEquals(newHeight, Board.getHeight());
 	}
 
 	@Test(expected = IllegalArgumentException.class)
-	public void setHeight_invalidHeight_boardHeightCChanged() {
+	public void setHeight_invalidHeight_illegalArgumentException() {
 		Board.setHeight(-1);
 	}
 }
