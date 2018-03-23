@@ -1,4 +1,4 @@
-package be.kiop.characters.ennemies;
+package be.kiop.characters.ennemies.skeletons;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -13,9 +13,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import be.kiop.UI.Board;
-import be.kiop.UI.Drawable;
 import be.kiop.characters.GameCharacter;
-import be.kiop.characters.ennemies.Skeleton;
 import be.kiop.exceptions.CharacterDiedException;
 import be.kiop.exceptions.IllegalWeaponException;
 import be.kiop.exceptions.MaxLevelReachedException;
@@ -37,6 +35,7 @@ public class SkeletonTest {
 	private final static float MARGIN = 0.1F;
 
 	private final static Path ENNEMY_SKIN = Paths.get("src/main/resources/images/ennemies/skeletons/skeleton.png");
+	private final static Path VALID_SKIN = Paths.get("src/main/resources/images/ennemies/skeletons/skeleton-dog.png");
 	private final static String ENNEMY_NAME = "Skeleton";
 	private final static float ENNEMY_HEALTH = 100;
 	private final static int ENNEMY_LEVEL = 10;
@@ -45,6 +44,7 @@ public class SkeletonTest {
 
 	@Before
 	public void before() {
+		System.out.println("ennemy skin: " + ENNEMY_SKIN);
 		weapon = new Bone();
 		position = new Position(Board.getWidth() / 2, Board.getHeight() / 2);
 		ennemy = new Skeleton(ENNEMY_SKIN, position, ENNEMY_NAME, ENNEMY_HEALTH, weapon, ENNEMY_LEVEL, ENNEMY_ARMOR,
@@ -58,8 +58,8 @@ public class SkeletonTest {
 
 	@Test
 	public void setSkinPath_validPath_gameCharacterkinPathChanged() {
-		ennemy.setSkinPath(Drawable.VALID_SKIN);
-		assertEquals(Drawable.VALID_SKIN, ennemy.getSkinPath());
+		ennemy.setSkinPath(VALID_SKIN);
+		assertEquals(VALID_SKIN, ennemy.getSkinPath());
 	}
 
 	@Test(expected = SkinNotFoundException.class)

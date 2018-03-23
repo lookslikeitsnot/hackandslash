@@ -1,6 +1,5 @@
 package be.kiop.characters;
 
-import java.nio.file.Path;
 import java.util.Set;
 
 import be.kiop.UI.Drawable;
@@ -8,17 +7,17 @@ import be.kiop.exceptions.CharacterDiedException;
 import be.kiop.exceptions.IllegalWeaponException;
 import be.kiop.exceptions.MaxLevelReachedException;
 import be.kiop.exceptions.MinLevelReachedException;
-import be.kiop.valueobjects.Position;
+import be.kiop.utils.StringUtils;
 import be.kiop.weapons.Fist;
 import be.kiop.weapons.Weapon;
 import be.kiop.weapons.Weapons;
 
 public abstract class GameCharacter extends Drawable{
-	private final String name;
+	private String name;
 	private float health;
 	private Weapon weapon;
 	private Set<Weapons> availableWeapons;
-	protected int level;
+	private int level;
 	public final static int MAX_LEVEL = 100;
 	public final static int MAX_ARMOR = 100;
 	private float armor;
@@ -50,15 +49,22 @@ public abstract class GameCharacter extends Drawable{
 //		this.armor = armor;
 //	}
 
-	protected GameCharacter(Path skinPath, Position position, String name, float health, Weapon weapon, Set<Weapons> availableWeapons, int level,
-			float armor) {
-		super(skinPath, position);
+//	protected GameCharacter(Path skinPath, Position position, String name, float health, Weapon weapon, Set<Weapons> availableWeapons, int level,
+//			float armor) {
+//		super(skinPath, position);
+//		this.name = name;
+//		this.health = health;
+//		this.availableWeapons = availableWeapons;
+//		setWeapon(weapon);
+//		this.level = level;
+//		this.armor = armor;
+//	}
+	
+	protected void setName(String name) {
+		if(!StringUtils.isValidString(name)) {
+			throw new IllegalArgumentException();
+		}
 		this.name = name;
-		this.health = health;
-		this.availableWeapons = availableWeapons;
-		setWeapon(weapon);
-		this.level = level;
-		this.armor = armor;
 	}
 
 	public float getHealth() {
@@ -102,7 +108,7 @@ public abstract class GameCharacter extends Drawable{
 		increaseHealth(health);
 	}
 
-	private void setHealth(float health) {
+	public void setHealth(float health) {
 		this.health = health;
 		if (this.health <= 0) {
 			this.health = 0;
@@ -131,7 +137,7 @@ public abstract class GameCharacter extends Drawable{
 		setWeapon(new Fist());
 	}
 
-	private void setWeapon(Weapon weapon) {
+	public void setWeapon(Weapon weapon) {
 		if (!availableWeapons.stream().anyMatch(value -> value.getWeaponClass().equals(weapon.getClass()))
 				&& !(weapon instanceof Fist)) {
 			throw new IllegalWeaponException();
@@ -162,6 +168,13 @@ public abstract class GameCharacter extends Drawable{
 			throw new MinLevelReachedException();
 		}
 	}
+	
+	public void setLevel(int level) {
+		if(level < 0  || level > MAX_LEVEL) {
+			throw new IllegalArgumentException();
+		}
+		this.level = level;
+	}
 
 	public float getArmor() {
 		return armor;
@@ -179,6 +192,17 @@ public abstract class GameCharacter extends Drawable{
 	
 	public void attack(GameCharacter gameCharacter) {
 		gameCharacter.takeDamage(this.weapon.getDamage(), this.weapon.getPenetration());
+	}
+
+	public Set<Weapons> getAvailableWeapons() {
+		return availableWeapons;
+	}
+
+	public void setAvailableWeapons(Set<Weapons> availableWeapons) {
+		if(availableWeapons == null || availableWeapons.isEmpty()) {
+			throw new IllegalArgumentException();
+		}
+		this.availableWeapons = availableWeapons;
 	}
 
 }

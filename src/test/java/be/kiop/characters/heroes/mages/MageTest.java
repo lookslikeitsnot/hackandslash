@@ -1,24 +1,27 @@
-package be.kiop.characters.heroes;
+package be.kiop.characters.heroes.mages;
 
 import static org.junit.Assert.assertEquals;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Set;
 import java.util.stream.IntStream;
 
 import org.junit.Before;
 import org.junit.Test;
 
 import be.kiop.UI.Board;
-import be.kiop.UI.Drawable;
 import be.kiop.characters.GameCharacter;
-import be.kiop.characters.ennemies.Skeleton;
-import be.kiop.exceptions.CharacterDiedException;
+import be.kiop.characters.ennemies.skeletons.Skeleton;
+import be.kiop.characters.ennemies.skeletons.Skeletons;
+import be.kiop.characters.heroes.mages.Mage;
 import be.kiop.exceptions.IllegalWeaponException;
+import be.kiop.exceptions.LostALifeException;
 import be.kiop.exceptions.MaxLevelReachedException;
 import be.kiop.exceptions.MinLevelReachedException;
 import be.kiop.exceptions.OutOfBoardException;
 import be.kiop.exceptions.OutOfLivesException;
+import be.kiop.exceptions.OutOfManaException;
 import be.kiop.exceptions.SkinNotFoundException;
 import be.kiop.valueobjects.Position;
 import be.kiop.weapons.Bone;
@@ -26,28 +29,28 @@ import be.kiop.weapons.Fist;
 import be.kiop.weapons.Staff;
 import be.kiop.weapons.Sword;
 
-public class WarriorTest {
-	private Warrior hero;
-	private Sword weapon;
+public class MageTest {
+	private Mage hero;
+	private Staff weapon;
 	private Position position;
 
 	private final static float MARGIN = 0.1F;
 
-	private final static Path HERO_SKIN = Paths.get("src/main/resources/images/heroes/warriors/warrior.png");
-	private final static String HERO_NAME = "Warrior";
+	private final static Path HERO_SKIN = Mages.BlueMage.getPath();
+	private final static Path VALID_SKIN = Mages.RedMage.getPath();
+	private final static String HERO_NAME = "Mage";
 	private final static float HERO_HEALTH = 100;
 	private final static int HERO_LEVEL = 10;
 	private final static int HERO_LIVES = 5;
 	private final static float HERO_ARMOR = 50;
 	private final static float HERO_EXPERIENCE = 200;
-	private final static float HERO_SHIELD = 10;
+	private final static float HERO_MANA = 10;
 
 	@Before
 	public void before() {
-		weapon = new Sword();
+		weapon = new Staff();
 		position = new Position(Board.getWidth()/2, Board.getHeight()/2);;
-		hero = new Warrior(HERO_SKIN, position, HERO_NAME, HERO_HEALTH, weapon, HERO_LEVEL, HERO_ARMOR, HERO_LIVES, HERO_EXPERIENCE,
-				HERO_SHIELD);
+		hero = new Mage(HERO_SKIN, position, HERO_NAME, HERO_HEALTH, weapon, HERO_LEVEL, HERO_ARMOR, HERO_LIVES, HERO_EXPERIENCE, HERO_MANA);
 	}
 	
 	@Test
@@ -57,8 +60,8 @@ public class WarriorTest {
 	
 	@Test
 	public void setSkinPath_validPath_gameCharacterkinPathChanged() {
-		hero.setSkinPath(Drawable.VALID_SKIN);
-		assertEquals(Drawable.VALID_SKIN, hero.getSkinPath());
+		hero.setSkinPath(VALID_SKIN);
+		assertEquals(VALID_SKIN, hero.getSkinPath());
 	}
 	
 	@Test(expected=SkinNotFoundException.class)
@@ -138,7 +141,7 @@ public class WarriorTest {
 		assertEquals(HERO_HEALTH, hero.getHealth(), MARGIN);
 	}
 
-	@Test(expected = CharacterDiedException.class)
+	@Test(expected = LostALifeException.class)
 	public void takeFlatDamage_moreThanHeroHealth_Exception() {
 		hero.takeFlatDamage(HERO_HEALTH + 1);
 	}
@@ -154,25 +157,9 @@ public class WarriorTest {
 		hero.takeFlatDamage(-1);
 	}
 
-	@Test(expected = CharacterDiedException.class)
+	@Test(expected = LostALifeException.class)
 	public void takeDamage_moreThanHeroHealth_Exception() {
 		hero.takeDamage(HERO_HEALTH * 100 / HERO_ARMOR + HERO_HEALTH);
-	}
-
-	@Test
-	public void takeDamage_lessThanHeroShield_remainingHealth() {
-		hero.takeDamage(HERO_SHIELD);
-		assertEquals(HERO_HEALTH, hero.getHealth(), MARGIN);
-	}
-
-	@Test
-	public void takeDamage_lessThanHeroHealth_remainingHealth() {
-		hero.takeDamage(HERO_SHIELD + HERO_HEALTH);
-		assertEquals(HERO_HEALTH * HERO_ARMOR / 100, hero.getHealth(), MARGIN);
-
-		// HERO_HEALTH-(HERO_HEALTH*(1-HERO_ARMOR/100))
-		// HERO_HEALTH(1-(1-HERO_ARMOR/100))
-		// HERO_HEALTH(HERO_ARMOR/100)
 	}
 
 	@Test(expected = IllegalArgumentException.class)
@@ -180,7 +167,7 @@ public class WarriorTest {
 		hero.takeDamage(-1);
 	}
 
-	@Test(expected = CharacterDiedException.class)
+	@Test(expected = LostALifeException.class)
 	public void takeDamage_moreThanHeroLifeAndPenetration_Exception() {
 		hero.takeDamage(HERO_HEALTH, HERO_ARMOR + 1);
 	}
@@ -231,7 +218,7 @@ public class WarriorTest {
 
 	@Test(expected = IllegalWeaponException.class)
 	public void changeWeapon_invalidWeapon_exception() {
-		hero.changeWeapon(new Staff());
+		hero.changeWeapon(new Sword());
 	}
 
 	@Test(expected = IllegalArgumentException.class)
@@ -318,8 +305,41 @@ public class WarriorTest {
 	}
 
 	@Test
-	public void getShield_nA_heroShield() {
-		assertEquals(HERO_SHIELD, hero.getShield(), MARGIN);
+	public void getMana_nA_heroMana() {
+		assertEquals(HERO_MANA, hero.getMana(), MARGIN);
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void increaseMana_negativeAmount_exception() {
+		hero.increaseMana(-1);
+	}
+
+	@Test
+	public void increaseMana_validAmount_heroManaIncreased() {
+		hero.increaseMana(1);
+		assertEquals(HERO_MANA + 1, hero.getMana(), MARGIN);
+	}
+
+	@Test
+	public void increaseMana_moreThanMax_heroMaxMana() {
+		hero.increaseMana(Mage.MAX_MANA + 1);
+		assertEquals(Mage.MAX_MANA, hero.getMana(), MARGIN);
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void decreaseMana_negativeAmount_exception() {
+		hero.decreaseMana(-1);
+	}
+
+	@Test
+	public void decreaseMana_validAmount_heroManaIncreased() {
+		hero.decreaseMana(1);
+		assertEquals(HERO_MANA - 1, hero.getMana(), MARGIN);
+	}
+
+	@Test(expected = OutOfManaException.class)
+	public void decreaseMana_moreThanMax_exception() {
+		hero.decreaseMana(HERO_MANA + 1);
 	}
 
 	@Test
@@ -347,7 +367,7 @@ public class WarriorTest {
 
 	@Test
 	public void attack_ennemy_enemyTakesDamage() {
-		GameCharacter gc = new Skeleton(GameCharacter.VALID_SKIN, position, "Skeleton", HERO_HEALTH, new Bone(), 1, 0, null);
+		GameCharacter gc = new Skeleton(Skeletons.Skeleton.getPath(), position, "Skeleton", HERO_HEALTH, new Bone(), 1, 0, Set.of(new Sword()));
 		hero.attack(gc);
 		assertEquals(HERO_HEALTH - weapon.getDamage(), gc.getHealth(), MARGIN);
 	}

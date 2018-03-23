@@ -1,8 +1,11 @@
-package be.kiop.characters.heroes;
+package be.kiop.characters.heroes.warriors;
 
 import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.Set;
+import java.util.stream.Collectors;
 
+import be.kiop.characters.heroes.Hero;
 import be.kiop.valueobjects.Position;
 import be.kiop.weapons.Weapon;
 import be.kiop.weapons.Weapons;
@@ -10,11 +13,23 @@ import be.kiop.weapons.Weapons;
 public class Warrior extends Hero {
 	private float shield;
 	public static final float MAX_SHIELD = 100;
-	private static Set<Weapons> AVAILABLE_WEAPONS = Set.of(Weapons.Sword);
+	private final static Set<Path> AVAILABLE_SKIN_PATHS = Arrays.stream(Warriors.values())
+			.map(skeleton -> skeleton.getPath()).collect(Collectors.toSet());
+	private static Set<Weapons> availableWeapons = Set.of(Weapons.Sword);
 
 	public Warrior(Path skinPath, Position position, String name, float health, Weapon weapon, int level, float armor, int lives, float experience,
 			float shield) {
-		super(skinPath, position, name, health, weapon, AVAILABLE_WEAPONS, level, armor, lives, experience);
+		super.setAvailableSkinPaths(AVAILABLE_SKIN_PATHS);
+		super.setSkinPath(skinPath);
+		super.setPosition(position);
+		super.setName(name);
+		super.setLevel(level);
+		super.setHealth(health);
+		super.setAvailableWeapons(availableWeapons);
+		super.setWeapon(weapon);
+		super.setArmor(armor);
+		super.setLives(lives);
+		super.setExperience(experience);
 		this.shield = shield;
 	}
 

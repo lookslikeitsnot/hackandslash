@@ -1,25 +1,27 @@
 package be.kiop.characters.ennemies;
 
-import java.nio.file.Path;
 import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
 
 import be.kiop.characters.GameCharacter;
 import be.kiop.items.Droppable;
-import be.kiop.valueobjects.Position;
-import be.kiop.weapons.Weapon;
-import be.kiop.weapons.Weapons;
+import be.kiop.items.Dropper;
 
-public abstract class Ennemy extends GameCharacter{
-	Set<Droppable> droppables;
+public abstract class Ennemy extends GameCharacter implements Dropper{
+	private Set<Droppable> droppables;
 	
-	public Ennemy(Path skinPath, Position position, String name, float health, Weapon weapon, Set<Weapons> availableWeapons, int level, float armor, Set<Droppable> droppables) {
-		super(skinPath, position, name, health, weapon, availableWeapons, level, armor);
-		this.droppables = droppables;
-	}
-	
+	@Override
 	public Optional<Droppable> getDrop() {
 		return droppables.stream().skip(new Random().nextInt(droppables.size())).findFirst();
+	}
+
+	@Override
+	public void setDroppables(Set<Droppable> droppables) {
+		if(droppables == null) {
+			throw new IllegalArgumentException();
+		}
+		this.droppables = droppables;
+		
 	}
 }
