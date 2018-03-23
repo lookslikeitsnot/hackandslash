@@ -14,7 +14,7 @@ public class Warrior extends Hero {
 	private float shield;
 	public static final float MAX_SHIELD = 100;
 	private final static Set<Path> AVAILABLE_SKIN_PATHS = Arrays.stream(Warriors.values())
-			.map(skeleton -> skeleton.getPath()).collect(Collectors.toSet());
+			.map(warrior -> warrior.getPath()).collect(Collectors.toSet());
 	private static Set<Weapons> availableWeapons = Set.of(Weapons.Sword);
 
 	public Warrior(Path skinPath, Position position, String name, float health, Weapon weapon, int level, float armor, int lives, float experience,

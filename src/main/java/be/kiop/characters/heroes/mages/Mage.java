@@ -15,7 +15,7 @@ public class Mage extends Hero {
 	private float mana;
 	public static final float MAX_MANA = 100;
 	private final static Set<Path> AVAILABLE_SKIN_PATHS = Arrays.stream(Mages.values())
-			.map(skeleton -> skeleton.getPath()).collect(Collectors.toSet());
+			.map(mages -> mages.getPath()).collect(Collectors.toSet());
 	private static Set<Weapons> availableWeapons = Set.of(Weapons.Staff);
 
 	public Mage(Path skinPath, Position position, String name, float health, Weapon weapon, int level, float armor,
