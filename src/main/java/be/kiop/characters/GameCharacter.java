@@ -8,6 +8,7 @@ import be.kiop.exceptions.CharacterDiedException;
 import be.kiop.exceptions.IllegalWeaponException;
 import be.kiop.exceptions.MaxLevelReachedException;
 import be.kiop.exceptions.MinLevelReachedException;
+import be.kiop.valueobjects.Position;
 import be.kiop.weapons.Fist;
 import be.kiop.weapons.Weapon;
 import be.kiop.weapons.Weapons;
@@ -49,9 +50,9 @@ public abstract class GameCharacter extends Drawable{
 //		this.armor = armor;
 //	}
 
-	protected GameCharacter(Path skinPath, String name, float health, Weapon weapon, Set<Weapons> availableWeapons, int level,
+	protected GameCharacter(Path skinPath, Position position, String name, float health, Weapon weapon, Set<Weapons> availableWeapons, int level,
 			float armor) {
-		super(skinPath);
+		super(skinPath, position);
 		this.name = name;
 		this.health = health;
 		this.availableWeapons = availableWeapons;

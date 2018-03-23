@@ -1,6 +1,7 @@
 package be.kiop.characters.ennemies;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -11,6 +12,7 @@ import java.util.stream.IntStream;
 import org.junit.Before;
 import org.junit.Test;
 
+import be.kiop.UI.Board;
 import be.kiop.UI.Drawable;
 import be.kiop.character.ennemies.Skeleton;
 import be.kiop.characters.GameCharacter;
@@ -18,8 +20,10 @@ import be.kiop.exceptions.CharacterDiedException;
 import be.kiop.exceptions.IllegalWeaponException;
 import be.kiop.exceptions.MaxLevelReachedException;
 import be.kiop.exceptions.MinLevelReachedException;
+import be.kiop.exceptions.OutOfBoardException;
 import be.kiop.exceptions.SkinNotFoundException;
 import be.kiop.items.Droppable;
+import be.kiop.valueobjects.Position;
 import be.kiop.weapons.Bone;
 import be.kiop.weapons.Fist;
 import be.kiop.weapons.Sword;
@@ -28,6 +32,7 @@ import be.kiop.weapons.Weapon;
 public class SkeletonTest {
 	private Skeleton ennemy;
 	private Weapon weapon;
+	private Position position;
 	
 	private final static float MARGIN = 0.1F;
 	
@@ -41,7 +46,8 @@ public class SkeletonTest {
 	@Before
 	public void before() {
 		weapon = new Bone();
-		ennemy = new Skeleton(ENNEMY_SKIN, ENNEMY_NAME, ENNEMY_HEALTH, weapon,  ENNEMY_LEVEL, ENNEMY_ARMOR, ENNEMY_DROPPABLES);
+		position = new Position(Board.getWidth()/2, Board.getHeight()/2);
+		ennemy = new Skeleton(ENNEMY_SKIN, position, ENNEMY_NAME, ENNEMY_HEALTH, weapon,  ENNEMY_LEVEL, ENNEMY_ARMOR, ENNEMY_DROPPABLES);
 	}
 	
 	@Test
@@ -68,8 +74,52 @@ public class SkeletonTest {
 	}
 	
 	@Test
+	public void moveLeft_nA_gameCharacterPositionXMinus1() {
+		ennemy.moveLeft();
+		assertEquals(Board.getWidth()/2-1, ennemy.getPosition().getX());
+	}
+	
+	@Test(expected=OutOfBoardException.class)
+	public void moveLeft_untilOOB_OutOfBoardException() {
+		IntStream.range(0, Board.getWidth()+1).forEach(iteration -> ennemy.moveLeft());
+	}
+	
+	@Test
+	public void moveRight_nA_gameCharacterPositionXPlus1() {
+		ennemy.moveRight();
+		assertEquals(Board.getWidth()/2+1, ennemy.getPosition().getX());
+	}
+	
+	@Test(expected=OutOfBoardException.class)
+	public void moveRight_untilOOB_OutOfBoardException() {
+		IntStream.range(0, Board.getWidth()+1).forEach(iteration -> ennemy.moveRight());
+	}
+	
+	@Test
+	public void moveUp_nA_gameCharacterPositionYMinus1() {
+		ennemy.moveUp();
+		assertEquals(Board.getHeight()/2-1, ennemy.getPosition().getY());
+	}
+	
+	@Test(expected=OutOfBoardException.class)
+	public void moveUp_untilOOB_OutOfBoardException() {
+		IntStream.range(0, Board.getHeight()+1).forEach(iteration -> ennemy.moveUp());
+	}
+	
+	@Test
+	public void moveDown_nA_gameCharacterPositionYPlus1() {
+		ennemy.moveDown();
+		assertEquals(Board.getHeight()/2+1, ennemy.getPosition().getY());
+	}
+	
+	@Test(expected=OutOfBoardException.class)
+	public void moveDown_untilOOB_OutOfBoardException() {
+		IntStream.range(0, Board.getWidth()+1).forEach(iteration -> ennemy.moveDown());
+	}
+	
+	@Test
 	public void getName_nA_heroName() {
-		assert(ennemy.getName().equals(ENNEMY_NAME));
+		assertTrue(ennemy.getName().equals(ENNEMY_NAME));
 	}
 	
 	@Test

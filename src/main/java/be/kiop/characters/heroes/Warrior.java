@@ -3,6 +3,7 @@ package be.kiop.characters.heroes;
 import java.nio.file.Path;
 import java.util.Set;
 
+import be.kiop.valueobjects.Position;
 import be.kiop.weapons.Weapon;
 import be.kiop.weapons.Weapons;
 
@@ -11,9 +12,9 @@ public class Warrior extends Hero {
 	public static final float MAX_SHIELD = 100;
 	private static Set<Weapons> AVAILABLE_WEAPONS = Set.of(Weapons.Sword);
 
-	public Warrior(Path skinPath, String name, float health, Weapon weapon, int level, float armor, int lives, float experience,
+	public Warrior(Path skinPath, Position position, String name, float health, Weapon weapon, int level, float armor, int lives, float experience,
 			float shield) {
-		super(skinPath, name, health, weapon, AVAILABLE_WEAPONS, level, armor, lives, experience);
+		super(skinPath, position, name, health, weapon, AVAILABLE_WEAPONS, level, armor, lives, experience);
 		this.shield = shield;
 	}
 

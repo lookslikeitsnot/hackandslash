@@ -5,6 +5,7 @@ import java.util.Set;
 
 import be.kiop.characters.GameCharacter;
 import be.kiop.exceptions.OutOfLivesException;
+import be.kiop.valueobjects.Position;
 import be.kiop.weapons.Weapon;
 import be.kiop.weapons.Weapons;
 
@@ -24,8 +25,8 @@ public abstract class Hero extends GameCharacter{
 //		this.experience = 0;
 //	}
 
-	public Hero(Path skinPath, String name, float health, Weapon weapon, Set<Weapons> availableWeapons, int level, float armor, int lives, float experience) {
-		super(skinPath, name, health, weapon, availableWeapons, level, armor);
+	public Hero(Path skinPath, Position position, String name, float health, Weapon weapon, Set<Weapons> availableWeapons, int level, float armor, int lives, float experience) {
+		super(skinPath, position, name, health, weapon, availableWeapons, level, armor);
 		this.lives = lives;
 		this.experience = experience;
 	}

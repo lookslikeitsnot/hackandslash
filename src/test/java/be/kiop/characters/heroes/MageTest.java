@@ -9,6 +9,7 @@ import java.util.stream.IntStream;
 import org.junit.Before;
 import org.junit.Test;
 
+import be.kiop.UI.Board;
 import be.kiop.UI.Drawable;
 import be.kiop.character.ennemies.Skeleton;
 import be.kiop.characters.GameCharacter;
@@ -16,9 +17,11 @@ import be.kiop.exceptions.CharacterDiedException;
 import be.kiop.exceptions.IllegalWeaponException;
 import be.kiop.exceptions.MaxLevelReachedException;
 import be.kiop.exceptions.MinLevelReachedException;
+import be.kiop.exceptions.OutOfBoardException;
 import be.kiop.exceptions.OutOfLivesException;
 import be.kiop.exceptions.OutOfManaException;
 import be.kiop.exceptions.SkinNotFoundException;
+import be.kiop.valueobjects.Position;
 import be.kiop.weapons.Bone;
 import be.kiop.weapons.Fist;
 import be.kiop.weapons.Staff;
@@ -27,6 +30,7 @@ import be.kiop.weapons.Sword;
 public class MageTest {
 	private Mage hero;
 	private Staff weapon;
+	private Position position;
 
 	private final static float MARGIN = 0.1F;
 
@@ -42,7 +46,8 @@ public class MageTest {
 	@Before
 	public void before() {
 		weapon = new Staff();
-		hero = new Mage(HERO_SKIN, HERO_NAME, HERO_HEALTH, weapon, HERO_LEVEL, HERO_ARMOR, HERO_LIVES, HERO_EXPERIENCE, HERO_MANA);
+		position = new Position(Board.getWidth()/2, Board.getHeight()/2);;
+		hero = new Mage(HERO_SKIN, position, HERO_NAME, HERO_HEALTH, weapon, HERO_LEVEL, HERO_ARMOR, HERO_LIVES, HERO_EXPERIENCE, HERO_MANA);
 	}
 	
 	@Test
@@ -68,6 +73,50 @@ public class MageTest {
 		hero.setSkinPath(newSkinPath);
 	}
 
+	@Test
+	public void moveLeft_nA_gameCharacterPositionXMinus1() {
+		hero.moveLeft();
+		assertEquals(Board.getWidth()/2-1, hero.getPosition().getX());
+	}
+	
+	@Test(expected=OutOfBoardException.class)
+	public void moveLeft_untilOOB_OutOfBoardException() {
+		IntStream.range(0, Board.getWidth()+1).forEach(iteration -> hero.moveLeft());
+	}
+	
+	@Test
+	public void moveRight_nA_gameCharacterPositionXPlus1() {
+		hero.moveRight();
+		assertEquals(Board.getWidth()/2+1, hero.getPosition().getX());
+	}
+	
+	@Test(expected=OutOfBoardException.class)
+	public void moveRight_untilOOB_OutOfBoardException() {
+		IntStream.range(0, Board.getWidth()+1).forEach(iteration -> hero.moveRight());
+	}
+	
+	@Test
+	public void moveUp_nA_gameCharacterPositionYMinus1() {
+		hero.moveUp();
+		assertEquals(Board.getHeight()/2-1, hero.getPosition().getY());
+	}
+	
+	@Test(expected=OutOfBoardException.class)
+	public void moveUp_untilOOB_OutOfBoardException() {
+		IntStream.range(0, Board.getHeight()+1).forEach(iteration -> hero.moveUp());
+	}
+	
+	@Test
+	public void moveDown_nA_gameCharacterPositionYPlus1() {
+		hero.moveDown();
+		assertEquals(Board.getHeight()/2+1, hero.getPosition().getY());
+	}
+	
+	@Test(expected=OutOfBoardException.class)
+	public void moveDown_untilOOB_OutOfBoardException() {
+		IntStream.range(0, Board.getWidth()+1).forEach(iteration -> hero.moveDown());
+	}
+	
 	@Test
 	public void getName_nA_heroName() {
 		assert (hero.getName().equals(HERO_NAME));
@@ -304,7 +353,7 @@ public class MageTest {
 
 	@Test
 	public void attack_ennemy_enemyTakesDamage() {
-		GameCharacter gc = new Skeleton(GameCharacter.VALID_SKIN, "Skeleton", HERO_HEALTH, new Bone(), 1, 0, null);
+		GameCharacter gc = new Skeleton(GameCharacter.VALID_SKIN, position, "Skeleton", HERO_HEALTH, new Bone(), 1, 0, null);
 		hero.attack(gc);
 		assertEquals(HERO_HEALTH - weapon.getDamage(), gc.getHealth(), MARGIN);
 	}
