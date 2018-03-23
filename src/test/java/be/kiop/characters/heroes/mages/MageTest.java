@@ -66,7 +66,7 @@ public class MageTest {
 	
 	@Test(expected=SkinNotFoundException.class)
 	public void setSkinPath_unvalidPath_skinNotFoundException() {
-		Path newSkinPath = Paths.get("unvalid");
+		Path newSkinPath = Paths.get("invalid");
 		hero.setSkinPath(newSkinPath);
 	}
 	

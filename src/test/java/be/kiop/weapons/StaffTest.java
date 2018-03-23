@@ -30,24 +30,24 @@ public class StaffTest {
 		assert (weapon.getName().equals(Staff.DEFAULT_NAME));
 	}
 	
-	@Test
-	public void setName_validName_swordName() {
-		String newName = "Weapon";
-		weapon.setName(newName);
-		assert(newName.equals(weapon.getName()));
-	}
-	
-	@Test(expected = IllegalArgumentException.class)
-	public void setName_blankName_exception() {
-		String newName = " ";
-		weapon.setName(newName);
-	}
-	
-	@Test(expected = IllegalArgumentException.class)
-	public void setName_nullName_exception() {
-		String newName = null;
-		weapon.setName(newName);
-	}
+//	@Test
+//	public void setName_validName_swordName() {
+//		String newName = "Weapon";
+//		weapon.setName(newName);
+//		assert(newName.equals(weapon.getName()));
+//	}
+//	
+//	@Test(expected = IllegalArgumentException.class)
+//	public void setName_blankName_exception() {
+//		String newName = " ";
+//		weapon.setName(newName);
+//	}
+//	
+//	@Test(expected = IllegalArgumentException.class)
+//	public void setName_nullName_exception() {
+//		String newName = null;
+//		weapon.setName(newName);
+//	}
 
 	@Test
 	public void getDamage_allIsWell_swordDamage() {

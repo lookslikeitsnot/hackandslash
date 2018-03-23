@@ -6,7 +6,11 @@ public class Staff extends Weapon{
 
 	public Staff(String name, float damage, float maxDamage, float range, float minRange, float maxRange,
 			float attackSpeed, float maxAttackSpeed, float penetration, float manaCost) {
-		super(name, damage, maxDamage, range, minRange, maxRange, attackSpeed, maxAttackSpeed, penetration);
+		super(name, maxDamage, minRange, maxRange, maxAttackSpeed);
+		super.setDamage(damage);
+		super.setRange(range);
+		super.setAttackSpeed(attackSpeed);
+		super.setPenetration(penetration);
 		this.manaCost = manaCost;
 	}
 
@@ -15,7 +19,7 @@ public class Staff extends Weapon{
 //	}
 
 	public Staff() {
-		super(DEFAULT_NAME, 5, 10, 1);
+		super(DEFAULT_NAME, 5, 10, 10, 1);
 		this.manaCost = 0;
 	}
 	

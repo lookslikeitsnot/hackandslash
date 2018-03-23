@@ -14,7 +14,6 @@ import be.kiop.UI.Board;
 import be.kiop.characters.GameCharacter;
 import be.kiop.characters.ennemies.skeletons.Skeleton;
 import be.kiop.characters.ennemies.skeletons.Skeletons;
-import be.kiop.exceptions.CharacterDiedException;
 import be.kiop.exceptions.IllegalWeaponException;
 import be.kiop.exceptions.LostALifeException;
 import be.kiop.exceptions.MaxLevelReachedException;
@@ -66,7 +65,7 @@ public class WarriorTest {
 	
 	@Test(expected=SkinNotFoundException.class)
 	public void setSkinPath_unvalidPath_skinNotFoundException() {
-		Path newSkinPath = Paths.get("unvalid");
+		Path newSkinPath = Paths.get("invalid");
 		hero.setSkinPath(newSkinPath);
 	}
 	

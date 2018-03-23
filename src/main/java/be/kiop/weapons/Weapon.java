@@ -2,53 +2,62 @@ package be.kiop.weapons;
 
 import be.kiop.items.Droppable;
 
-public abstract class Weapon implements Droppable{
-	private String name;
-	
+public abstract class Weapon implements Droppable {
+	private final String name;
+
 	private float damage;
 	private final float maxDamage;
-	
+
 	private float range;
 	private final float minRange;
 	private final float maxRange;
-	
-	
+
 	private float attackSpeed;
 	private final float maxAttackSpeed;
-	
+
 	private float penetration;
 	public static final float MAX_PENETRATION = 100.0F;
-	
-	protected Weapon(String name, float damage, float maxDamage, float range, 
-			float minRange, float maxRange, float attackSpeed, float maxAttackSpeed, float penetration) {
-		setName(name);
-		this.damage = damage;
+
+	// protected Weapon(String name, float damage, float maxDamage, float range,
+	// float minRange, float maxRange, float attackSpeed, float maxAttackSpeed,
+	// float penetration) {
+	// setName(name);
+	// this.damage = damage;
+	// this.maxDamage = maxDamage;
+	// this.range = range;
+	// this.minRange = minRange;
+	// this.maxRange = maxRange;
+	// this.attackSpeed = attackSpeed;
+	// this.maxAttackSpeed = maxAttackSpeed;
+	// this.penetration = penetration;
+	// }
+	//
+	// protected Weapon(String name, float damage, float range, float attackSpeed) {
+	// setName(name);
+	// this.damage = damage;
+	// this.maxDamage = damage;
+	// this.range = range;
+	// this.minRange = range;
+	// this.maxRange = range;
+	// this.attackSpeed = attackSpeed;
+	// this.maxAttackSpeed = attackSpeed;
+	// this.penetration = 0;
+	// }
+
+	public Weapon(String name, float maxDamage, float minRange, float maxRange, float maxAttackSpeed) {
+		this.name = name;
 		this.maxDamage = maxDamage;
-		this.range = range;
 		this.minRange = minRange;
 		this.maxRange = maxRange;
-		this.attackSpeed = attackSpeed;
 		this.maxAttackSpeed = maxAttackSpeed;
-		this.penetration = penetration;
 	}
 
-	protected Weapon(String name, float damage, float range, float attackSpeed) {
-		setName(name);
-		this.damage = damage;
-		this.maxDamage = damage;
-		this.range = range;
-		this.minRange = range;
-		this.maxRange = range;
-		this.attackSpeed = attackSpeed;
-		this.maxAttackSpeed = attackSpeed;
-		this.penetration = 0;
-	}
-	public void setName(String name) {
-		if(name == null || name.trim().isEmpty()) {
-			throw new IllegalArgumentException();
-		}
-		this.name = name;
-	}
+//	public void setName(String name) {
+//		if (name == null || name.trim().isEmpty()) {
+//			throw new IllegalArgumentException();
+//		}
+//		this.name = name;
+//	}
 
 	public String getName() {
 		return name;
@@ -57,23 +66,23 @@ public abstract class Weapon implements Droppable{
 	public float getDamage() {
 		return damage;
 	}
-	
+
 	public void increaseDamage(float increment) {
-		if(increment < 0) {
+		if (increment < 0) {
 			throw new IllegalArgumentException();
 		}
-		setDamage(this.damage+increment);
-	}
-	
-	public void decreaseDamage(float decrement) {
-		if(decrement < 0) {
-			throw new IllegalArgumentException();
-		}
-		setDamage(this.damage-decrement);
+		setDamage(this.damage + increment);
 	}
 
-	private void setDamage(float damage) {
-		if(damage < 0) {
+	public void decreaseDamage(float decrement) {
+		if (decrement < 0) {
+			throw new IllegalArgumentException();
+		}
+		setDamage(this.damage - decrement);
+	}
+
+	public void setDamage(float damage) {
+		if (damage < 0) {
 			this.damage = 0;
 		} else if (damage > this.maxDamage) {
 			this.damage = this.maxDamage;
@@ -85,23 +94,23 @@ public abstract class Weapon implements Droppable{
 	public float getRange() {
 		return range;
 	}
-	
+
 	public void increaseRange(float increment) {
-		if(increment < 0) {
+		if (increment < 0) {
 			throw new IllegalArgumentException();
 		}
-		setRange(this.range+increment);
-	}
-	
-	public void decreaseRange(float decrement) {
-		if(decrement < 0) {
-			throw new IllegalArgumentException();
-		}
-		setRange(this.range-decrement);
+		setRange(this.range + increment);
 	}
 
-	private void setRange(float range) {
-		if(range<this.minRange){
+	public void decreaseRange(float decrement) {
+		if (decrement < 0) {
+			throw new IllegalArgumentException();
+		}
+		setRange(this.range - decrement);
+	}
+
+	public void setRange(float range) {
+		if (range < this.minRange) {
 			this.range = this.minRange;
 		} else if (range > this.maxRange) {
 			this.range = this.maxRange;
@@ -113,21 +122,23 @@ public abstract class Weapon implements Droppable{
 	public float getAttackSpeed() {
 		return attackSpeed;
 	}
-	
+
 	public void increaseAttackSpeed(float increment) {
-		if(increment < 0) {
+		if (increment < 0) {
 			throw new IllegalArgumentException();
 		}
-		setAttackSpeed(this.attackSpeed+increment);
+		setAttackSpeed(this.attackSpeed + increment);
 	}
+
 	public void decreaseAttackSpeed(float decrement) {
-		if(decrement < 0) {
+		if (decrement < 0) {
 			throw new IllegalArgumentException();
 		}
-		setAttackSpeed(this.attackSpeed-decrement);
+		setAttackSpeed(this.attackSpeed - decrement);
 	}
-	private void setAttackSpeed(float attackSpeed) {
-		if(attackSpeed < 0) {
+
+	public void setAttackSpeed(float attackSpeed) {
+		if (attackSpeed < 0) {
 			this.attackSpeed = 0;
 		} else if (attackSpeed > this.maxAttackSpeed) {
 			this.attackSpeed = this.maxAttackSpeed;
@@ -141,15 +152,14 @@ public abstract class Weapon implements Droppable{
 	}
 
 	public void setPenetration(float penetration) {
-		if(penetration < 0) {
+		if (penetration < 0) {
 			this.penetration = 0;
-		} else if(penetration > MAX_PENETRATION) {
+		} else if (penetration > MAX_PENETRATION) {
 			this.penetration = MAX_PENETRATION;
 		} else {
 			this.penetration = penetration;
 		}
 	}
-	
 
 	@Override
 	public int hashCode() {
@@ -171,5 +181,5 @@ public abstract class Weapon implements Droppable{
 		if (!name.equals(other.name))
 			return false;
 		return true;
-	}	
+	}
 }

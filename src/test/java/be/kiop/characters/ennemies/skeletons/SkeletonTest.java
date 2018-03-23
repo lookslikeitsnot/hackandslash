@@ -34,8 +34,8 @@ public class SkeletonTest {
 
 	private final static float MARGIN = 0.1F;
 
-	private final static Path ENNEMY_SKIN = Paths.get("src/main/resources/images/ennemies/skeletons/skeleton.png");
-	private final static Path VALID_SKIN = Paths.get("src/main/resources/images/ennemies/skeletons/skeleton-dog.png");
+	private final static Path ENNEMY_SKIN = Skeletons.Skeleton.getPath();
+	private final static Path VALID_SKIN = Skeletons.SkeletonDog.getPath();
 	private final static String ENNEMY_NAME = "Skeleton";
 	private final static float ENNEMY_HEALTH = 100;
 	private final static int ENNEMY_LEVEL = 10;
@@ -44,7 +44,6 @@ public class SkeletonTest {
 
 	@Before
 	public void before() {
-		System.out.println("ennemy skin: " + ENNEMY_SKIN);
 		weapon = new Bone();
 		position = new Position(Board.getWidth() / 2, Board.getHeight() / 2);
 		ennemy = new Skeleton(ENNEMY_SKIN, position, ENNEMY_NAME, ENNEMY_HEALTH, weapon, ENNEMY_LEVEL, ENNEMY_ARMOR,
@@ -64,7 +63,7 @@ public class SkeletonTest {
 
 	@Test(expected = SkinNotFoundException.class)
 	public void setSkinPath_unvalidPath_skinNotFoundException() {
-		Path newSkinPath = Paths.get("unvalid");
+		Path newSkinPath = Paths.get("invalid");
 		ennemy.setSkinPath(newSkinPath);
 	}
 
@@ -255,6 +254,36 @@ public class SkeletonTest {
 	@Test(expected = MinLevelReachedException.class)
 	public void decreaseLevel_lessThanMinLevel_exception() {
 		IntStream.range(0, GameCharacter.MAX_LEVEL + 1).forEach(val -> ennemy.decreaseLevel());
+	}
+	
+	@Test
+	public void setArmor_moreThanMaxArmor_maxArmor() {
+		ennemy.setArmor(GameCharacter.MAX_ARMOR + 1);
+		assertEquals(GameCharacter.MAX_ARMOR, ennemy.getArmor(), MARGIN);
+	}
+
+	@Test
+	public void getArmor_nA_heroArmor() {
+		assertEquals(ENNEMY_ARMOR, ennemy.getArmor(), MARGIN);
+	}
+
+	@Test
+	public void setArmor_lessThanZero_0() {
+		ennemy.setArmor(-1);
+		assertEquals(0, ennemy.getArmor(), MARGIN);
+	}
+	
+	@Test
+	public void setArmor_allIsWell_heroArmorIncreased() {
+		ennemy.setArmor(ENNEMY_ARMOR + 1);
+		assertEquals(ENNEMY_ARMOR + 1, ennemy.getArmor(), MARGIN);
+	}
+
+	@Test
+	public void attack_ennemy_enemyTakesDamage() {
+		GameCharacter gc = new Skeleton(Skeletons.Skeleton.getPath(), position, "Skeleton", ENNEMY_HEALTH, new Bone(), 1, 0, Set.of(new Sword()));
+		ennemy.attack(gc);
+		assertEquals(ENNEMY_HEALTH - weapon.getDamage(), gc.getHealth(), MARGIN);
 	}
 
 	@Test
