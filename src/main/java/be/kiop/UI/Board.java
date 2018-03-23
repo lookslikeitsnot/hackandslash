@@ -3,6 +3,11 @@ package be.kiop.UI;
 public class Board {
 	private static int width = 100;
 	private static int height = 100;
+	
+//	public Board(int width, int height) {
+//		Board.width = width;
+//		Board.height = height;
+//	}
 
 	public static int getWidth() {
 		return width;

@@ -11,8 +11,8 @@ import org.junit.Test;
 
 import be.kiop.UI.Board;
 import be.kiop.UI.Drawable;
-import be.kiop.character.ennemies.Skeleton;
 import be.kiop.characters.GameCharacter;
+import be.kiop.characters.ennemies.Skeleton;
 import be.kiop.exceptions.CharacterDiedException;
 import be.kiop.exceptions.IllegalWeaponException;
 import be.kiop.exceptions.MaxLevelReachedException;
@@ -117,6 +117,17 @@ public class MageTest {
 		IntStream.range(0, Board.getWidth()+1).forEach(iteration -> hero.moveDown());
 	}
 	
+	@Test
+	public void teleport_validPosition_gameCharacterPositionChanged() {
+		hero.teleport(1, 1);
+		assertEquals(new Position(1, 1), hero.getPosition());
+	}
+
+	@Test(expected = OutOfBoardException.class)
+	public void teleport_invalidPosition_OutOfBoardException() {
+		hero.teleport(-1, -1);
+	}
+
 	@Test
 	public void getName_nA_heroName() {
 		assert (hero.getName().equals(HERO_NAME));

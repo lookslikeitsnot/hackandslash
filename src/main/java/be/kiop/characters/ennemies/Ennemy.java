@@ -1,4 +1,4 @@
-package be.kiop.character.ennemies;
+package be.kiop.characters.ennemies;
 
 import java.nio.file.Path;
 import java.util.Optional;

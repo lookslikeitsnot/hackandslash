@@ -80,21 +80,15 @@ public abstract class GameCharacter extends Drawable{
 	}
 	
 	public void takeFlatDamage(float damage) {
-		if (damage < 0) {
-			throw new IllegalArgumentException();
-		}
 		decreaseHealth(damage);
 	}
 	
 	public void takeDamage(float damage) {
-		if (damage < 0) {
-			throw new IllegalArgumentException();
-		}		
 		decreaseHealth(damage-armor*damage/100);
 	}
 	
 	public void takeDamage(float damage, float penetration) {
-		if (damage < 0 || penetration < 0) {
+		if (penetration < 0) {
 			throw new IllegalArgumentException();
 		}
 		float damageFactor = armor - penetration;

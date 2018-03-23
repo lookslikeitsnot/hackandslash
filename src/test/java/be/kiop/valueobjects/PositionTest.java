@@ -1,6 +1,8 @@
 package be.kiop.valueobjects;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -48,5 +50,41 @@ public class PositionTest {
 	@Test(expected=OutOfBoardException.class)
 	public void setY_moreThanBoardWidth_OutOfBoardException() {
 		position.setY(Board.getHeight()+1);
+	}
+	
+	@Test
+	public void equals_sameObject_true() {
+		assertEquals(position, position);
+	}
+	
+	@Test
+	public void equals_samePosition_true() {
+		assertEquals(new Position(Board.getWidth()/2,Board.getHeight()/2), position);
+	}
+	
+	@Test
+	public void equals_different7Position_false() {
+		assertNotEquals(new Position(Board.getWidth()/2,0), position);
+	}
+	
+	@Test
+	public void equals_differentXPosition_false() {
+		assertNotEquals(new Position(0,Board.getWidth()/2), position);
+	}
+	
+	@Test
+	public void equals_null_false() {
+		assertFalse(position.equals(null));
+	}
+	
+	@SuppressWarnings("unlikely-arg-type")
+	@Test
+	public void equals_otherObjectType_false() {
+		assertFalse(position.equals(new String()));
+	}
+	
+	@Test
+	public void hashCode_samePosition_equal() {
+		assertEquals(new Position(Board.getWidth()/2,Board.getHeight()/2).hashCode(), position.hashCode());
 	}
 }

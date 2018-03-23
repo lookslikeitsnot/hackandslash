@@ -53,4 +53,6 @@ public abstract class Drawable {
 		position.setX(x);
 		position.setY(y);
 	}
+	
+	
 }
