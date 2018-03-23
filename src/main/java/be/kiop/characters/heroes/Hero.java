@@ -1,5 +1,6 @@
 package be.kiop.characters.heroes;
 
+import java.nio.file.Path;
 import java.util.Set;
 
 import be.kiop.characters.GameCharacter;
@@ -23,8 +24,8 @@ public abstract class Hero extends GameCharacter{
 //		this.experience = 0;
 //	}
 
-	public Hero(String name, float health, Weapon weapon, Set<Weapons> availableWeapons, int level, float armor, int lives, float experience) {
-		super(name, health, weapon, availableWeapons, level, armor);
+	public Hero(Path skinPath, String name, float health, Weapon weapon, Set<Weapons> availableWeapons, int level, float armor, int lives, float experience) {
+		super(skinPath, name, health, weapon, availableWeapons, level, armor);
 		this.lives = lives;
 		this.experience = experience;
 	}

@@ -1,7 +1,9 @@
 package be.kiop.characters;
 
+import java.nio.file.Path;
 import java.util.Set;
 
+import be.kiop.UI.Drawable;
 import be.kiop.exceptions.CharacterDiedException;
 import be.kiop.exceptions.IllegalWeaponException;
 import be.kiop.exceptions.MaxLevelReachedException;
@@ -10,7 +12,7 @@ import be.kiop.weapons.Fist;
 import be.kiop.weapons.Weapon;
 import be.kiop.weapons.Weapons;
 
-public abstract class GameCharacter {
+public abstract class GameCharacter extends Drawable{
 	private final String name;
 	private float health;
 	private Weapon weapon;
@@ -47,8 +49,9 @@ public abstract class GameCharacter {
 //		this.armor = armor;
 //	}
 
-	protected GameCharacter(String name, float health, Weapon weapon, Set<Weapons> availableWeapons, int level,
+	protected GameCharacter(Path skinPath, String name, float health, Weapon weapon, Set<Weapons> availableWeapons, int level,
 			float armor) {
+		super(skinPath);
 		this.name = name;
 		this.health = health;
 		this.availableWeapons = availableWeapons;

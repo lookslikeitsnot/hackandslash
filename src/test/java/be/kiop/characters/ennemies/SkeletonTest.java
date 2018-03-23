@@ -2,6 +2,8 @@ package be.kiop.characters.ennemies;
 
 import static org.junit.Assert.assertEquals;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.IntStream;
@@ -9,12 +11,14 @@ import java.util.stream.IntStream;
 import org.junit.Before;
 import org.junit.Test;
 
+import be.kiop.UI.Drawable;
+import be.kiop.character.ennemies.Skeleton;
 import be.kiop.characters.GameCharacter;
-import be.kiop.ennemies.Skeleton;
 import be.kiop.exceptions.CharacterDiedException;
 import be.kiop.exceptions.IllegalWeaponException;
 import be.kiop.exceptions.MaxLevelReachedException;
 import be.kiop.exceptions.MinLevelReachedException;
+import be.kiop.exceptions.SkinNotFoundException;
 import be.kiop.items.Droppable;
 import be.kiop.weapons.Bone;
 import be.kiop.weapons.Fist;
@@ -27,6 +31,7 @@ public class SkeletonTest {
 	
 	private final static float MARGIN = 0.1F;
 	
+	private final static Path ENNEMY_SKIN = Paths.get("src/main/resources/images/ennemies/skeletons/skeleton.png");
 	private final static String ENNEMY_NAME = "Skeleton";
 	private final static float ENNEMY_HEALTH = 100;
 	private final static int ENNEMY_LEVEL = 10;
@@ -36,7 +41,30 @@ public class SkeletonTest {
 	@Before
 	public void before() {
 		weapon = new Bone();
-		ennemy = new Skeleton(ENNEMY_NAME, ENNEMY_HEALTH, weapon,  ENNEMY_LEVEL, ENNEMY_ARMOR, ENNEMY_DROPPABLES);
+		ennemy = new Skeleton(ENNEMY_SKIN, ENNEMY_NAME, ENNEMY_HEALTH, weapon,  ENNEMY_LEVEL, ENNEMY_ARMOR, ENNEMY_DROPPABLES);
+	}
+	
+	@Test
+	public void getSkinPath_nA_gameCharacterSkinPath() {
+		assertEquals(ENNEMY_SKIN, ennemy.getSkinPath());
+	}
+	
+	@Test
+	public void setSkinPath_validPath_gameCharacterkinPathChanged() {
+		ennemy.setSkinPath(Drawable.VALID_SKIN);
+		assertEquals(Drawable.VALID_SKIN, ennemy.getSkinPath());
+	}
+	
+	@Test(expected=SkinNotFoundException.class)
+	public void setSkinPath_unvalidPath_skinNotFoundException() {
+		Path newSkinPath = Paths.get("unvalid");
+		ennemy.setSkinPath(newSkinPath);
+	}
+	
+	@Test(expected=SkinNotFoundException.class)
+	public void setSkinPath_nullAsPath_skinNotFoundException() {
+		Path newSkinPath = null;
+		ennemy.setSkinPath(newSkinPath);
 	}
 	
 	@Test

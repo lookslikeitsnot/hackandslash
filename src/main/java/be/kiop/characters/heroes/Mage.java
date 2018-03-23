@@ -1,5 +1,6 @@
 package be.kiop.characters.heroes;
 
+import java.nio.file.Path;
 import java.util.Set;
 
 import be.kiop.exceptions.OutOfManaException;
@@ -11,8 +12,8 @@ public class Mage extends Hero{
 	public static final float MAX_MANA = 100;
 	private static Set<Weapons> AVAILABLE_WEAPONS = Set.of(Weapons.Staff);
 
-	public Mage(String name, float health, Weapon weapon, int level, float armor, int lives, float experience, float mana) {
-		super(name, health, weapon, AVAILABLE_WEAPONS, level, armor, lives, experience);
+	public Mage(Path skinPath, String name, float health, Weapon weapon, int level, float armor, int lives, float experience, float mana) {
+		super(skinPath, name, health, weapon, AVAILABLE_WEAPONS, level, armor, lives, experience);
 		this.mana = mana;
 	}
 

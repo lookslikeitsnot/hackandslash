@@ -2,19 +2,23 @@ package be.kiop.characters.heroes;
 
 import static org.junit.Assert.assertEquals;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.stream.IntStream;
 
 import org.junit.Before;
 import org.junit.Test;
 
+import be.kiop.UI.Drawable;
+import be.kiop.character.ennemies.Skeleton;
 import be.kiop.characters.GameCharacter;
-import be.kiop.ennemies.Skeleton;
 import be.kiop.exceptions.CharacterDiedException;
 import be.kiop.exceptions.IllegalWeaponException;
 import be.kiop.exceptions.MaxLevelReachedException;
 import be.kiop.exceptions.MinLevelReachedException;
 import be.kiop.exceptions.OutOfLivesException;
 import be.kiop.exceptions.OutOfManaException;
+import be.kiop.exceptions.SkinNotFoundException;
 import be.kiop.weapons.Bone;
 import be.kiop.weapons.Fist;
 import be.kiop.weapons.Staff;
@@ -26,6 +30,7 @@ public class MageTest {
 
 	private final static float MARGIN = 0.1F;
 
+	private final static Path HERO_SKIN = Paths.get("src/main/resources/images/heroes/mages/blue-mage.png");
 	private final static String HERO_NAME = "Mage";
 	private final static float HERO_HEALTH = 100;
 	private final static int HERO_LEVEL = 10;
@@ -37,7 +42,30 @@ public class MageTest {
 	@Before
 	public void before() {
 		weapon = new Staff();
-		hero = new Mage(HERO_NAME, HERO_HEALTH, weapon, HERO_LEVEL, HERO_ARMOR, HERO_LIVES, HERO_EXPERIENCE, HERO_MANA);
+		hero = new Mage(HERO_SKIN, HERO_NAME, HERO_HEALTH, weapon, HERO_LEVEL, HERO_ARMOR, HERO_LIVES, HERO_EXPERIENCE, HERO_MANA);
+	}
+	
+	@Test
+	public void getSkinPath_nA_gameCharacterSkinPath() {
+		assertEquals(HERO_SKIN, hero.getSkinPath());
+	}
+	
+	@Test
+	public void setSkinPath_validPath_gameCharacterkinPathChanged() {
+		hero.setSkinPath(Drawable.VALID_SKIN);
+		assertEquals(Drawable.VALID_SKIN, hero.getSkinPath());
+	}
+	
+	@Test(expected=SkinNotFoundException.class)
+	public void setSkinPath_unvalidPath_skinNotFoundException() {
+		Path newSkinPath = Paths.get("unvalid");
+		hero.setSkinPath(newSkinPath);
+	}
+	
+	@Test(expected=SkinNotFoundException.class)
+	public void setSkinPath_nullAsPath_skinNotFoundException() {
+		Path newSkinPath = null;
+		hero.setSkinPath(newSkinPath);
 	}
 
 	@Test
@@ -276,7 +304,7 @@ public class MageTest {
 
 	@Test
 	public void attack_ennemy_enemyTakesDamage() {
-		GameCharacter gc = new Skeleton("Skeleton", HERO_HEALTH, new Bone(), 1, 0, null);
+		GameCharacter gc = new Skeleton(GameCharacter.VALID_SKIN, "Skeleton", HERO_HEALTH, new Bone(), 1, 0, null);
 		hero.attack(gc);
 		assertEquals(HERO_HEALTH - weapon.getDamage(), gc.getHealth(), MARGIN);
 	}
