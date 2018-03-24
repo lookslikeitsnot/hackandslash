@@ -15,7 +15,7 @@ public class PositionTest {
 	
 	@Before
 	public void before() {
-		position = new Position(Board.getWidth()/2,Board.getHeight()/2);
+		position = new Position(Board.getSize(true).getWidth()/2,Board.getSize(true).getHeight()/2);
 	}
 	
 	@Test
@@ -32,7 +32,7 @@ public class PositionTest {
 	
 	@Test(expected=OutOfBoardException.class)
 	public void setX_moreThanBoardWidth_OutOfBoardException() {
-		position.setX(Board.getWidth()+1);
+		position.setX(Board.getSize(true).getWidth()+1);
 	}
 	
 	@Test
@@ -49,7 +49,7 @@ public class PositionTest {
 	
 	@Test(expected=OutOfBoardException.class)
 	public void setY_moreThanBoardWidth_OutOfBoardException() {
-		position.setY(Board.getHeight()+1);
+		position.setY(Board.getSize(true).getHeight()+1);
 	}
 	
 	@Test
@@ -59,17 +59,17 @@ public class PositionTest {
 	
 	@Test
 	public void equals_samePosition_true() {
-		assertEquals(new Position(Board.getWidth()/2,Board.getHeight()/2), position);
+		assertEquals(new Position(Board.getSize(true).getWidth()/2,Board.getSize(true).getHeight()/2), position);
 	}
 	
 	@Test
 	public void equals_different7Position_false() {
-		assertNotEquals(new Position(Board.getWidth()/2,0), position);
+		assertNotEquals(new Position(Board.getSize(true).getWidth()/2,0), position);
 	}
 	
 	@Test
 	public void equals_differentXPosition_false() {
-		assertNotEquals(new Position(0,Board.getWidth()/2), position);
+		assertNotEquals(new Position(0,Board.getSize(true).getWidth()/2), position);
 	}
 	
 	@Test
@@ -85,6 +85,6 @@ public class PositionTest {
 	
 	@Test
 	public void hashCode_samePosition_equal() {
-		assertEquals(new Position(Board.getWidth()/2,Board.getHeight()/2).hashCode(), position.hashCode());
+		assertEquals(new Position(Board.getSize(true).getWidth()/2,Board.getSize(true).getHeight()/2).hashCode(), position.hashCode());
 	}
 }

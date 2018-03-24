@@ -2,7 +2,7 @@ package be.kiop.obstacles;
 
 import be.kiop.UI.Drawable;
 
-public class Obstacle extends Drawable{
+public abstract class Obstacle extends Drawable{
 	private boolean destructible;
 
 

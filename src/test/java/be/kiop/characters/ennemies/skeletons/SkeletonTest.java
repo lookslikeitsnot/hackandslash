@@ -3,8 +3,6 @@ package be.kiop.characters.ennemies.skeletons;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.IntStream;
@@ -21,6 +19,9 @@ import be.kiop.exceptions.MinLevelReachedException;
 import be.kiop.exceptions.OutOfBoardException;
 import be.kiop.exceptions.SkinNotFoundException;
 import be.kiop.items.Droppable;
+import be.kiop.textures.Floors;
+import be.kiop.textures.Skeletons;
+import be.kiop.textures.Texture;
 import be.kiop.valueobjects.Position;
 import be.kiop.weapons.Bone;
 import be.kiop.weapons.Fist;
@@ -34,8 +35,9 @@ public class SkeletonTest {
 
 	private final static float MARGIN = 0.1F;
 
-	private final static Path ENNEMY_SKIN = Skeletons.Skeleton.getPath();
-	private final static Path VALID_SKIN = Skeletons.SkeletonDog.getPath();
+	private final static Skeletons ENNEMY_TEXTURE = Skeletons.Skeleton_Large;
+	private final static Skeletons VALID_TEXTURE = Skeletons.Skeleton_Dog_Large;
+	private final static Floors INVALID_TEXTURE = Floors.Floor_Metallic_Large;
 	private final static String ENNEMY_NAME = "Skeleton";
 	private final static float ENNEMY_HEALTH = 100;
 	private final static int ENNEMY_LEVEL = 10;
@@ -45,76 +47,75 @@ public class SkeletonTest {
 	@Before
 	public void before() {
 		weapon = new Bone();
-		position = new Position(Board.getWidth() / 2, Board.getHeight() / 2);
-		ennemy = new Skeleton(ENNEMY_SKIN, position, ENNEMY_NAME, ENNEMY_HEALTH, weapon, ENNEMY_LEVEL, ENNEMY_ARMOR,
+		position = new Position(Board.getSize(true).getWidth()/2, Board.getSize(true).getHeight()/2);
+		ennemy = new Skeleton(ENNEMY_TEXTURE, position, ENNEMY_NAME, ENNEMY_HEALTH, weapon, ENNEMY_LEVEL, ENNEMY_ARMOR,
 				ENNEMY_DROPPABLES);
 	}
 
 	@Test
-	public void getSkinPath_nA_gameCharacterSkinPath() {
-		assertEquals(ENNEMY_SKIN, ennemy.getSkinPath());
+	public void getTexture_nA_gameCharacterSkin() {
+		assertEquals(ENNEMY_TEXTURE, ennemy.getTexture());
 	}
 
 	@Test
-	public void setSkinPath_validPath_gameCharacterkinPathChanged() {
-		ennemy.setSkinPath(VALID_SKIN);
-		assertEquals(VALID_SKIN, ennemy.getSkinPath());
+	public void setTexture_valid_gameCharacterSkinChanged() {
+		ennemy.setTexture(VALID_TEXTURE);
+		assertEquals(VALID_TEXTURE, ennemy.getTexture());
 	}
 
 	@Test(expected = SkinNotFoundException.class)
-	public void setSkinPath_unvalidPath_skinNotFoundException() {
-		Path newSkinPath = Paths.get("invalid");
-		ennemy.setSkinPath(newSkinPath);
+	public void setTexture_unvalid_skinNotFoundException() {
+		ennemy.setTexture(INVALID_TEXTURE);
 	}
 
 	@Test(expected = SkinNotFoundException.class)
-	public void setSkinPath_nullAsPath_skinNotFoundException() {
-		Path newSkinPath = null;
-		ennemy.setSkinPath(newSkinPath);
+	public void setTexture_null_skinNotFoundException() {
+		Texture newTexture = null;
+		ennemy.setTexture(newTexture);
 	}
 
 	@Test
 	public void moveLeft_nA_gameCharacterPositionXMinus1() {
 		ennemy.moveLeft();
-		assertEquals(Board.getWidth() / 2 - 1, ennemy.getPosition().getX());
+		assertEquals(Board.getSize(true).getWidth() / 2 - 1, ennemy.getPosition().getX());
 	}
 
 	@Test(expected = OutOfBoardException.class)
 	public void moveLeft_untilOOB_OutOfBoardException() {
-		IntStream.range(0, Board.getWidth() + 1).forEach(iteration -> ennemy.moveLeft());
+		IntStream.range(0, Board.getSize(true).getWidth() + 1).forEach(iteration -> ennemy.moveLeft());
 	}
 
 	@Test
 	public void moveRight_nA_gameCharacterPositionXPlus1() {
 		ennemy.moveRight();
-		assertEquals(Board.getWidth() / 2 + 1, ennemy.getPosition().getX());
+		assertEquals(Board.getSize(true).getWidth()/2 + 1, ennemy.getPosition().getX());
 	}
 
 	@Test(expected = OutOfBoardException.class)
 	public void moveRight_untilOOB_OutOfBoardException() {
-		IntStream.range(0, Board.getWidth() + 1).forEach(iteration -> ennemy.moveRight());
+		IntStream.range(0, Board.getSize(true).getWidth() + 1).forEach(iteration -> ennemy.moveRight());
 	}
 
 	@Test
 	public void moveUp_nA_gameCharacterPositionYMinus1() {
 		ennemy.moveUp();
-		assertEquals(Board.getHeight() / 2 - 1, ennemy.getPosition().getY());
+		assertEquals(Board.getSize(true).getHeight()/2 - 1, ennemy.getPosition().getY());
 	}
 
 	@Test(expected = OutOfBoardException.class)
 	public void moveUp_untilOOB_OutOfBoardException() {
-		IntStream.range(0, Board.getHeight() + 1).forEach(iteration -> ennemy.moveUp());
+		IntStream.range(0, Board.getSize(true).getHeight()/2 + 1).forEach(iteration -> ennemy.moveUp());
 	}
 
 	@Test
 	public void moveDown_nA_gameCharacterPositionYPlus1() {
 		ennemy.moveDown();
-		assertEquals(Board.getHeight() / 2 + 1, ennemy.getPosition().getY());
+		assertEquals(Board.getSize(true).getHeight() / 2 + 1, ennemy.getPosition().getY());
 	}
 
 	@Test(expected = OutOfBoardException.class)
 	public void moveDown_untilOOB_OutOfBoardException() {
-		IntStream.range(0, Board.getWidth() + 1).forEach(iteration -> ennemy.moveDown());
+		IntStream.range(0, Board.getSize(true).getWidth() + 1).forEach(iteration -> ennemy.moveDown());
 	}
 
 	@Test
@@ -281,7 +282,7 @@ public class SkeletonTest {
 
 	@Test
 	public void attack_ennemy_enemyTakesDamage() {
-		GameCharacter gc = new Skeleton(Skeletons.Skeleton.getPath(), position, "Skeleton", ENNEMY_HEALTH, new Bone(), 1, 0, Set.of(new Sword()));
+		GameCharacter gc = new Skeleton(Skeletons.Skeleton_Large, position, "Skeleton", ENNEMY_HEALTH, new Bone(), 1, 0, Set.of(new Sword()));
 		ennemy.attack(gc);
 		assertEquals(ENNEMY_HEALTH - weapon.getDamage(), gc.getHealth(), MARGIN);
 	}

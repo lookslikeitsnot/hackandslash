@@ -2,8 +2,6 @@ package be.kiop.characters.heroes.mages;
 
 import static org.junit.Assert.assertEquals;
 
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Set;
 import java.util.stream.IntStream;
 
@@ -13,8 +11,6 @@ import org.junit.Test;
 import be.kiop.UI.Board;
 import be.kiop.characters.GameCharacter;
 import be.kiop.characters.ennemies.skeletons.Skeleton;
-import be.kiop.characters.ennemies.skeletons.Skeletons;
-import be.kiop.characters.heroes.mages.Mage;
 import be.kiop.exceptions.IllegalWeaponException;
 import be.kiop.exceptions.LostALifeException;
 import be.kiop.exceptions.MaxLevelReachedException;
@@ -23,6 +19,10 @@ import be.kiop.exceptions.OutOfBoardException;
 import be.kiop.exceptions.OutOfLivesException;
 import be.kiop.exceptions.OutOfManaException;
 import be.kiop.exceptions.SkinNotFoundException;
+import be.kiop.textures.Floors;
+import be.kiop.textures.Mages;
+import be.kiop.textures.Skeletons;
+import be.kiop.textures.Texture;
 import be.kiop.valueobjects.Position;
 import be.kiop.weapons.Bone;
 import be.kiop.weapons.Fist;
@@ -36,8 +36,9 @@ public class MageTest {
 
 	private final static float MARGIN = 0.1F;
 
-	private final static Path HERO_SKIN = Mages.BlueMage.getPath();
-	private final static Path VALID_SKIN = Mages.RedMage.getPath();
+	private final static Mages HERO_TEXTURE = Mages.Mage_Blue_Large;
+	private final static Mages VALID_TEXTURE = Mages.Mage_Red_Large;
+	private final static Floors INVALID_TEXTURE = Floors.Floor_Metallic_Large;
 	private final static String HERO_NAME = "Mage";
 	private final static float HERO_HEALTH = 100;
 	private final static int HERO_LEVEL = 10;
@@ -49,77 +50,76 @@ public class MageTest {
 	@Before
 	public void before() {
 		weapon = new Staff();
-		position = new Position(Board.getWidth()/2, Board.getHeight()/2);;
-		hero = new Mage(HERO_SKIN, position, HERO_NAME, HERO_HEALTH, weapon, HERO_LEVEL, HERO_ARMOR, HERO_LIVES, HERO_EXPERIENCE, HERO_MANA);
+		position = new Position(Board.getSize(true).getWidth()/2, Board.getSize(true).getHeight()/2);
+		hero = new Mage(HERO_TEXTURE, position, HERO_NAME, HERO_HEALTH, weapon, HERO_LEVEL, HERO_ARMOR, HERO_LIVES, HERO_EXPERIENCE, HERO_MANA);
 	}
 	
 	@Test
-	public void getSkinPath_nA_gameCharacterSkinPath() {
-		assertEquals(HERO_SKIN, hero.getSkinPath());
+	public void getTexture_nA_gameCharacterTexture() {
+		assertEquals(HERO_TEXTURE, hero.getTexture());
 	}
-	
+
 	@Test
-	public void setSkinPath_validPath_gameCharacterkinPathChanged() {
-		hero.setSkinPath(VALID_SKIN);
-		assertEquals(VALID_SKIN, hero.getSkinPath());
+	public void setTexture_valid_gameCharacterTextureChanged() {
+		hero.setTexture(VALID_TEXTURE);
+		assertEquals(VALID_TEXTURE, hero.getTexture());
 	}
-	
-	@Test(expected=SkinNotFoundException.class)
-	public void setSkinPath_unvalidPath_skinNotFoundException() {
-		Path newSkinPath = Paths.get("invalid");
-		hero.setSkinPath(newSkinPath);
+
+	@Test(expected = SkinNotFoundException.class)
+	public void setTexture_unvalid_skinNotFoundException() {
+		hero.setTexture(INVALID_TEXTURE);
 	}
-	
-	@Test(expected=SkinNotFoundException.class)
-	public void setSkinPath_nullAsPath_skinNotFoundException() {
-		Path newSkinPath = null;
-		hero.setSkinPath(newSkinPath);
+
+	@Test(expected = SkinNotFoundException.class)
+	public void setTexture_null_skinNotFoundException() {
+		Texture newTexture = null;
+		hero.setTexture(newTexture);
 	}
 
 	@Test
 	public void moveLeft_nA_gameCharacterPositionXMinus1() {
 		hero.moveLeft();
-		assertEquals(Board.getWidth()/2-1, hero.getPosition().getX());
+		assertEquals(Board.getSize(true).getWidth() / 2 - 1, hero.getPosition().getX());
 	}
-	
-	@Test(expected=OutOfBoardException.class)
+
+	@Test(expected = OutOfBoardException.class)
 	public void moveLeft_untilOOB_OutOfBoardException() {
-		IntStream.range(0, Board.getWidth()+1).forEach(iteration -> hero.moveLeft());
+		IntStream.range(0, Board.getSize(true).getWidth() + 1).forEach(iteration -> hero.moveLeft());
 	}
-	
+
 	@Test
 	public void moveRight_nA_gameCharacterPositionXPlus1() {
 		hero.moveRight();
-		assertEquals(Board.getWidth()/2+1, hero.getPosition().getX());
+		assertEquals(Board.getSize(true).getWidth()/2 + 1, hero.getPosition().getX());
 	}
-	
-	@Test(expected=OutOfBoardException.class)
+
+	@Test(expected = OutOfBoardException.class)
 	public void moveRight_untilOOB_OutOfBoardException() {
-		IntStream.range(0, Board.getWidth()+1).forEach(iteration -> hero.moveRight());
+		IntStream.range(0, Board.getSize(true).getWidth() + 1).forEach(iteration -> hero.moveRight());
 	}
-	
+
 	@Test
 	public void moveUp_nA_gameCharacterPositionYMinus1() {
 		hero.moveUp();
-		assertEquals(Board.getHeight()/2-1, hero.getPosition().getY());
+		assertEquals(Board.getSize(true).getHeight()/2 - 1, hero.getPosition().getY());
 	}
-	
-	@Test(expected=OutOfBoardException.class)
+
+	@Test(expected = OutOfBoardException.class)
 	public void moveUp_untilOOB_OutOfBoardException() {
-		IntStream.range(0, Board.getHeight()+1).forEach(iteration -> hero.moveUp());
+		IntStream.range(0, Board.getSize(true).getHeight()/2 + 1).forEach(iteration -> hero.moveUp());
 	}
-	
+
 	@Test
 	public void moveDown_nA_gameCharacterPositionYPlus1() {
 		hero.moveDown();
-		assertEquals(Board.getHeight()/2+1, hero.getPosition().getY());
+		assertEquals(Board.getSize(true).getHeight() / 2 + 1, hero.getPosition().getY());
 	}
-	
-	@Test(expected=OutOfBoardException.class)
+
+	@Test(expected = OutOfBoardException.class)
 	public void moveDown_untilOOB_OutOfBoardException() {
-		IntStream.range(0, Board.getWidth()+1).forEach(iteration -> hero.moveDown());
+		IntStream.range(0, Board.getSize(true).getWidth() + 1).forEach(iteration -> hero.moveDown());
 	}
-	
+
 	@Test
 	public void teleport_validPosition_gameCharacterPositionChanged() {
 		hero.teleport(1, 1);
@@ -367,7 +367,7 @@ public class MageTest {
 
 	@Test
 	public void attack_ennemy_enemyTakesDamage() {
-		GameCharacter gc = new Skeleton(Skeletons.Skeleton.getPath(), position, "Skeleton", HERO_HEALTH, new Bone(), 1, 0, Set.of(new Sword()));
+		GameCharacter gc = new Skeleton(Skeletons.Skeleton_Large, position, "Skeleton", HERO_HEALTH, new Bone(), 1, 0, Set.of(new Sword()));
 		hero.attack(gc);
 		assertEquals(HERO_HEALTH - weapon.getDamage(), gc.getHealth(), MARGIN);
 	}

@@ -7,10 +7,10 @@ import be.kiop.exceptions.CharacterDiedException;
 import be.kiop.exceptions.IllegalWeaponException;
 import be.kiop.exceptions.MaxLevelReachedException;
 import be.kiop.exceptions.MinLevelReachedException;
+import be.kiop.textures.Weapons;
 import be.kiop.utils.StringUtils;
 import be.kiop.weapons.Fist;
 import be.kiop.weapons.Weapon;
-import be.kiop.weapons.Weapons;
 
 public abstract class GameCharacter extends Drawable{
 	private String name;
@@ -21,44 +21,6 @@ public abstract class GameCharacter extends Drawable{
 	public final static int MAX_LEVEL = 100;
 	public final static int MAX_ARMOR = 100;
 	private float armor;
-
-//	protected GameCharacter(String name, float health, Weapon weapon) {
-//		this.name = name;
-//		this.health = health;
-//		this.availableWeapons = Set.of(Weapons.values());
-//		setWeapon(weapon);
-//		this.level = 1;
-//		this.armor = 0;
-//	}
-//
-//	protected GameCharacter(String name, float health, Weapon weapon, Set<Weapons> availableWeapons) {
-//		this.name = name;
-//		this.health = health;
-//		this.availableWeapons = availableWeapons;
-//		setWeapon(weapon);
-//		this.level = 1;
-//		this.armor = 0;
-//	}
-//
-//	protected GameCharacter(String name, float health, Weapon weapon, int level, float armor) {
-//		this.name = name;
-//		this.health = health;
-//		this.availableWeapons = Set.of(Weapons.values());
-//		setWeapon(weapon);
-//		this.level = level;
-//		this.armor = armor;
-//	}
-
-//	protected GameCharacter(Path skinPath, Position position, String name, float health, Weapon weapon, Set<Weapons> availableWeapons, int level,
-//			float armor) {
-//		super(skinPath, position);
-//		this.name = name;
-//		this.health = health;
-//		this.availableWeapons = availableWeapons;
-//		setWeapon(weapon);
-//		this.level = level;
-//		this.armor = armor;
-//	}
 	
 	protected void setName(String name) {
 		if(!StringUtils.isValidString(name)) {
@@ -205,4 +167,24 @@ public abstract class GameCharacter extends Drawable{
 		this.availableWeapons = availableWeapons;
 	}
 
+	public void moveLeft() {
+		getPosition().setX(getPosition().getX()-1);
+	}
+	
+	public void moveRight() {
+		getPosition().setX(getPosition().getX()+1);
+	}
+	
+	public void moveUp() {
+		getPosition().setY(getPosition().getY()-1);
+	}
+	
+	public void moveDown() {
+		getPosition().setY(getPosition().getY()+1);
+	}
+	
+	public void teleport(int x, int y) {
+		getPosition().setX(x);
+		getPosition().setY(y);
+	}
 }

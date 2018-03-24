@@ -18,7 +18,7 @@ public class Position {
 	}
 
 	public void setX(int x) {
-		if(x < 0 || x > Board.getWidth()) {
+		if(x < 0 || x > Board.getSize(true).getWidth()) {
 			throw new OutOfBoardException();
 		}
 		this.x = x;
@@ -29,7 +29,7 @@ public class Position {
 	}
 
 	public void setY(int y) {
-		if(y < 0 || y > Board.getHeight()) {
+		if(y < 0 || y > Board.getSize(true).getHeight()) {
 			throw new OutOfBoardException();
 		}
 		this.y = y;
@@ -59,6 +59,9 @@ public class Position {
 			return false;
 		return true;
 	}
-	
-	
+
+	@Override
+	public String toString() {
+		return "Position [x=" + x + ", y=" + y + "]";
+	}
 }

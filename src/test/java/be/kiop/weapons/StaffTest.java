@@ -3,19 +3,19 @@ package be.kiop.weapons;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
-import java.nio.file.Path;
-
 import org.junit.Before;
 import org.junit.Test;
 
 import be.kiop.UI.Board;
+import be.kiop.textures.Weapons;
 import be.kiop.valueobjects.Position;
 
 public class StaffTest {
 	private Staff weapon;
 	private Position position;
+	private Board board;
 	
-	private static final Path WEAPON_SKIN = Weapons.Staff.getPath();
+	private static final Weapons WEAPON_SKIN = Weapons.Staff;
 	private static final float WEAPON_DAMAGE = 8;
 	private static final float WEAPON_MAX_DAMAGE = 14;
 	private static final float WEAPON_RANGE = 5;
@@ -29,7 +29,8 @@ public class StaffTest {
 
 	@Before
 	public void before() {
-		position = new Position(Board.getWidth()/2, Board.getHeight()/2);;
+		board = new Board();
+		position = new Position(board.getWidth()/2, board.getHeight()/2);;
 		weapon = new Staff(WEAPON_SKIN, position, Staff.DEFAULT_NAME, WEAPON_DAMAGE, WEAPON_MAX_DAMAGE, WEAPON_RANGE, WEAPON_MIN_RANGE, WEAPON_MAX_RANGE, 
 				WEAPON_ATTACK_SPEED, WEAPON_MAX_ATTACK_SPEED, WEAPON_PENETRATION, WEAPON_MANA_COST);
 	}

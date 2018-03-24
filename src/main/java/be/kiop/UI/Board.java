@@ -1,33 +1,35 @@
 package be.kiop.UI;
 
-public class Board {
-	private static int width = 100;
-	private static int height = 100;
+import javax.swing.JFrame;
+
+import be.kiop.valueobjects.Size;
+
+public class Board extends JFrame{
+	private static final long serialVersionUID = 1L;
 	
-//	public Board(int width, int height) {
-//		Board.width = width;
-//		Board.height = height;
-//	}
+	private static Size size = new Size(640,640);
+	
+	private Map map;
+	
+	public Board() {
+		map = new Map(20,20);
+//		map.setBorder(BorderFactory.createLineBorder(Color.red));
+		setContentPane(map);
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setResizable(false);
+		pack();
+		setVisible(true);
 
-	public static int getWidth() {
-		return width;
 	}
 
-	public static void setWidth(int width) {
-		if (width < 0) {
+	public static Size getSize(boolean i) {
+		return Board.size;
+	}
+
+	public static void setSize(Size size) {
+		if(size == null) {
 			throw new IllegalArgumentException();
 		}
-		Board.width = width;
-	}
-
-	public static int getHeight() {
-		return height;
-	}
-
-	public static void setHeight(int height) {
-		if (height < 0) {
-			throw new IllegalArgumentException();
-		}
-		Board.height = height;
+		Board.size = size;
 	}
 }

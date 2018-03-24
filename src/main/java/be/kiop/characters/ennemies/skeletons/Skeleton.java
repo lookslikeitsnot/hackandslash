@@ -1,25 +1,25 @@
 package be.kiop.characters.ennemies.skeletons;
 
-import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import be.kiop.characters.ennemies.Ennemy;
 import be.kiop.items.Droppable;
+import be.kiop.textures.Skeletons;
+import be.kiop.textures.Texture;
+import be.kiop.textures.Weapons;
 import be.kiop.valueobjects.Position;
 import be.kiop.weapons.Weapon;
-import be.kiop.weapons.Weapons;
 
 public class Skeleton extends Ennemy {
-	private final static Set<Path> AVAILABLE_SKIN_PATHS = Arrays.stream(Skeletons.values())
-			.map(skeleton -> skeleton.getPath()).collect(Collectors.toSet());
+	private final static Set<Texture> AVAILABLE_TEXTURES = Arrays.stream(Skeletons.values()).collect(Collectors.toSet());
 	private final static Set<Weapons> availableWeapons = Set.of(Weapons.Bone);
 
-	public Skeleton(Path skinPath, Position position, String name, float health, Weapon weapon, int level, float armor,
+	public Skeleton(Skeletons skeleton, Position position, String name, float health, Weapon weapon, int level, float armor,
 			Set<Droppable> droppables) {
-		super.setAvailableSkinPaths(AVAILABLE_SKIN_PATHS);
-		super.setSkinPath(skinPath);
+		super.setAvailableTextures(AVAILABLE_TEXTURES);
+		super.setTexture(skeleton);
 		super.setPosition(position);
 		super.setName(name);
 		super.setLevel(level);

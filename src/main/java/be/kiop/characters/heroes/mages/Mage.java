@@ -1,27 +1,27 @@
 package be.kiop.characters.heroes.mages;
 
-import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import be.kiop.characters.heroes.Hero;
 import be.kiop.exceptions.OutOfManaException;
+import be.kiop.textures.Mages;
+import be.kiop.textures.Texture;
+import be.kiop.textures.Weapons;
 import be.kiop.valueobjects.Position;
 import be.kiop.weapons.Weapon;
-import be.kiop.weapons.Weapons;
 
 public class Mage extends Hero {
 	private float mana;
 	public static final float MAX_MANA = 100;
-	private final static Set<Path> AVAILABLE_SKIN_PATHS = Arrays.stream(Mages.values())
-			.map(mages -> mages.getPath()).collect(Collectors.toSet());
+	private final static Set<Texture> AVAILABLE_TEXTURES = Arrays.stream(Mages.values()).collect(Collectors.toSet());
 	private static Set<Weapons> availableWeapons = Set.of(Weapons.Staff);
 
-	public Mage(Path skinPath, Position position, String name, float health, Weapon weapon, int level, float armor,
+	public Mage(Mages mage, Position position, String name, float health, Weapon weapon, int level, float armor,
 			int lives, float experience, float mana) {
-		super.setAvailableSkinPaths(AVAILABLE_SKIN_PATHS);
-		super.setSkinPath(skinPath);
+		super.setAvailableTextures(AVAILABLE_TEXTURES);
+		super.setTexture(mage);
 		super.setPosition(position);
 		super.setName(name);
 		super.setLevel(level);
@@ -34,22 +34,6 @@ public class Mage extends Hero {
 		this.mana = mana;
 	}
 
-	// public Mage(String name, float health, Weapon weapon, int level, float armor)
-	// {
-	// super(name, health, weapon, AVAILABLE_WEAPONS, level, armor);
-	// this.mana = 100;
-	// }
-	//
-	// public Mage(String name, float health, Weapon weapon) {
-	// super(name, health, weapon);
-	// this.mana = 100;
-	// }
-	//
-	// public Mage() {
-	// super("Mage", 100, new Staff());
-	// this.mana = 100;
-	// }
-	//
 	public void decreaseMana(float decrement) {
 		if (decrement < 0) {
 			throw new IllegalArgumentException();
