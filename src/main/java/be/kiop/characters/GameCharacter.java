@@ -22,6 +22,7 @@ public abstract class GameCharacter extends Drawable{
 	public final static int MAX_LEVEL = 100;
 	public final static int MAX_ARMOR = 100;
 	private float armor;
+	public final static int SPEED = 10;
 	
 	protected void setName(String name) {
 		if(!StringUtils.isValidString(name)) {
@@ -169,19 +170,19 @@ public abstract class GameCharacter extends Drawable{
 	}
 
 	public void moveLeft() {
-		getPosition().setX(getPosition().getX()-1);
+		getPosition().setX(getPosition().getX()-SPEED);
 	}
 	
 	public void moveRight() {
-		getPosition().setX(getPosition().getX()+1);
+		getPosition().setX(getPosition().getX()+SPEED);
 	}
 	
 	public void moveUp() {
-		getPosition().setY(getPosition().getY()-1);
+		getPosition().setY(getPosition().getY()-SPEED);
 	}
 	
 	public void moveDown() {
-		getPosition().setY(getPosition().getY()+1);
+		getPosition().setY(getPosition().getY()+SPEED);
 	}
 	
 	public void teleport(int x, int y) {

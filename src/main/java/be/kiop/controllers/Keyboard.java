@@ -7,6 +7,7 @@ import javax.swing.ActionMap;
 import javax.swing.InputMap;
 import javax.swing.KeyStroke;
 
+import be.kiop.UI.Board;
 import be.kiop.UI.Map;
 import be.kiop.characters.GameCharacter;
 import be.kiop.characters.heroes.Hero;
@@ -94,8 +95,37 @@ public class Keyboard {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-        	hero.move(direction);
-        	map.repaint();
+        	if(canMove(hero)) {
+        		hero.move(direction);
+            	map.repaint();
+        	}
+        }
+        
+        private boolean canMove(GameCharacter gc) {
+        	int WALL_SIZE = 32;
+        	switch(direction) {
+			case DOWN:
+				if((gc.getPosition().getY()+gc.getTexture().getSize().getHeight()+WALL_SIZE+GameCharacter.SPEED)< Board.getSize(true).getHeight()) {
+					return true;
+				}
+				break;
+			case LEFT:
+				if((gc.getPosition().getX()+GameCharacter.SPEED)> WALL_SIZE) {
+					return true;
+				}
+				break;
+			case RIGHT:
+				if((gc.getPosition().getX()+gc.getTexture().getSize().getWidth()+WALL_SIZE+GameCharacter.SPEED)< Board.getSize(true).getWidth()) {
+					return true;
+				}
+				break;
+			case UP:
+				if((gc.getPosition().getY()+GameCharacter.SPEED) > WALL_SIZE) {
+					return true;
+				}
+				break;
+        	}
+        	return false;
         }
     }
 }
