@@ -9,6 +9,7 @@ import be.kiop.exceptions.MaxLevelReachedException;
 import be.kiop.exceptions.MinLevelReachedException;
 import be.kiop.textures.Weapons;
 import be.kiop.utils.StringUtils;
+import be.kiop.valueobjects.Directions;
 import be.kiop.weapons.Fist;
 import be.kiop.weapons.Weapon;
 
@@ -186,5 +187,25 @@ public abstract class GameCharacter extends Drawable{
 	public void teleport(int x, int y) {
 		getPosition().setX(x);
 		getPosition().setY(y);
+	}
+	
+	public void move(Directions direction) {
+		switch(direction) {
+		case DOWN:
+			moveDown();
+			break;
+		case LEFT:
+			moveLeft();
+			break;
+		case RIGHT:
+			moveRight();
+			break;
+		case UP:
+			moveUp();
+			break;
+		default:
+			break;
+		
+		}
 	}
 }

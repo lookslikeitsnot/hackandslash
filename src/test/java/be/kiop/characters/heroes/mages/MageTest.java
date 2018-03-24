@@ -38,7 +38,7 @@ public class MageTest {
 
 	private final static Mages HERO_TEXTURE = Mages.Mage_Blue_Large;
 	private final static Mages VALID_TEXTURE = Mages.Mage_Red_Large;
-	private final static Floors INVALID_TEXTURE = Floors.Floor_Metallic_Large;
+	private final static Floors INVALID_TEXTURE = Floors.Floor_Parquet_Hor;
 	private final static String HERO_NAME = "Mage";
 	private final static float HERO_HEALTH = 100;
 	private final static int HERO_LEVEL = 10;

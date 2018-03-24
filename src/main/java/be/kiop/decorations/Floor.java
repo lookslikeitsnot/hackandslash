@@ -12,7 +12,7 @@ import be.kiop.valueobjects.Position;
 public class Floor extends Drawable{
 	private final static Set<Texture> AVAILABLE_TEXTURES = Arrays.stream(Floors.values()).collect(Collectors.toSet());
 	
-	public Floor(Floors floor, Position position) {
+	public Floor(Texture floor, Position position) {
 		super.setAvailableTextures(AVAILABLE_TEXTURES);
 		setTexture(floor);
 		setPosition(position);

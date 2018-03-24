@@ -19,20 +19,22 @@ public enum Mages implements Texture{
 	private Path path;
 	private Position position;
 	private Size size;
+	private BufferedImage skin;
 
 	Mages(String path, Position position, Size size) {
 		this.path = Paths.get("src/main/resources/images/heroes/mages/" + path);
 		this.position = position;
 		this.size = size;
-	}
-
-	public BufferedImage getSkin() {
 		try {
-			BufferedImage skin = ImageIO.read(path.toFile());
-			return skin.getSubimage(position.getX(), position.getY(), size.getWidth(), size.getHeight());
+			BufferedImage sprites = ImageIO.read(this.path.toFile());
+			skin = sprites.getSubimage(position.getX(), position.getY(), size.getWidth(), size.getHeight());
 		} catch (IOException e) {
 			throw new SkinNotFoundException();
 		}
+	}
+
+	public BufferedImage getSkin() {
+		return skin;
 	}
 
 	@Override

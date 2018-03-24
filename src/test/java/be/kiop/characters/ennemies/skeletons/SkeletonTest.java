@@ -37,7 +37,7 @@ public class SkeletonTest {
 
 	private final static Skeletons ENNEMY_TEXTURE = Skeletons.Skeleton_Large;
 	private final static Skeletons VALID_TEXTURE = Skeletons.Skeleton_Dog_Large;
-	private final static Floors INVALID_TEXTURE = Floors.Floor_Metallic_Large;
+	private final static Floors INVALID_TEXTURE = Floors.Floor_Parquet_Hor;
 	private final static String ENNEMY_NAME = "Skeleton";
 	private final static float ENNEMY_HEALTH = 100;
 	private final static int ENNEMY_LEVEL = 10;

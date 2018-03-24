@@ -37,7 +37,7 @@ public class WarriorTest {
 
 	private final static Warriors HERO_TEXTURE = Warriors.Warrior_Large;
 	private final static Warriors VALID_TEXTURE =  Warriors.Warrior_ShinyHelmet_Large;
-	private final static Floors INVALID_TEXTURE = Floors.Floor_Metallic_Large;
+	private final static Floors INVALID_TEXTURE = Floors.Floor_Parquet_Hor;
 	private final static String HERO_NAME = "Warrior";
 	private final static float HERO_HEALTH = 100;
 	private final static int HERO_LEVEL = 10;

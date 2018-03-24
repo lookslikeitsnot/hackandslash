@@ -1,5 +1,7 @@
 package be.kiop.valueobjects;
 
+import java.awt.Dimension;
+
 public class Size {
 	private int width;
 	private int height;
@@ -15,5 +17,9 @@ public class Size {
 
 	public int getHeight() {
 		return height;
+	}
+	
+	public Dimension toDimension() {
+		return new Dimension(width, height);
 	}
 }

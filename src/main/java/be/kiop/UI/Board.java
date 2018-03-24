@@ -12,7 +12,7 @@ public class Board extends JFrame{
 	private Map map;
 	
 	public Board() {
-		map = new Map(20,20);
+		map = new Map(size);
 //		map.setBorder(BorderFactory.createLineBorder(Color.red));
 		setContentPane(map);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

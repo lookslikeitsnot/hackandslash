@@ -25,12 +25,19 @@ public enum Weapons implements Texture {
 	private Path path;
 	private Position position;
 	private Size size;
+	private BufferedImage skin;
 
 	Weapons(Class<?> weapon, String path, Position position, Size size) {
 		this.weapon = weapon;
 		this.path = Paths.get("src/main/resources/images/weapons/" + path + ".png");
 		this.position = position;
 		this.size = size;
+		try {
+			BufferedImage sprites = ImageIO.read(this.path.toFile());
+			skin = sprites.getSubimage(position.getX(), position.getY(), size.getWidth(), size.getHeight());
+		} catch (IOException e) {
+			throw new SkinNotFoundException();
+		}
 	}
 
 	public Class<?> getWeaponClass() {
@@ -39,12 +46,13 @@ public enum Weapons implements Texture {
 	
 	@Override
 	public BufferedImage getSkin() {
-		try {
-			BufferedImage skin = ImageIO.read(path.toFile());
-			return skin.getSubimage(position.getX(), position.getY(), size.getWidth(), size.getHeight());
-		} catch (IOException e) {
-			throw new SkinNotFoundException();
-		}
+//		try {
+//		BufferedImage skin = ImageIO.read(path.toFile());
+//		return skin.getSubimage(position.getX(), position.getY(), size.getWidth(), size.getHeight());
+//	} catch (IOException e) {
+//		throw new SkinNotFoundException();
+//	}
+	return skin;
 	}
 
 	@Override

@@ -18,20 +18,28 @@ public enum Skeletons implements Texture{
 	private Path path;
 	private Position position;
 	private Size size;
+	private BufferedImage skin;
 	
 	Skeletons(String path, Position position, Size size){
 		this.path = Paths.get("src/main/resources/images/ennemies/skeletons/" + path + ".png");
 		this.position = position;
 		this.size = size;
-	}
-	
-	public BufferedImage getSkin() {
 		try {
-			BufferedImage skin = ImageIO.read(path.toFile());
-			return skin.getSubimage(position.getX(), position.getY(), size.getWidth(), size.getHeight());
+			BufferedImage sprites = ImageIO.read(this.path.toFile());
+			skin = sprites.getSubimage(position.getX(), position.getY(), size.getWidth(), size.getHeight());
 		} catch (IOException e) {
 			throw new SkinNotFoundException();
 		}
+	}
+	
+	public BufferedImage getSkin() {
+//		try {
+//		BufferedImage skin = ImageIO.read(path.toFile());
+//		return skin.getSubimage(position.getX(), position.getY(), size.getWidth(), size.getHeight());
+//	} catch (IOException e) {
+//		throw new SkinNotFoundException();
+//	}
+	return skin;
 	}
 	
 	@Override
