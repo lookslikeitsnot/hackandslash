@@ -77,7 +77,7 @@ public class SkeletonTest {
 	@Test
 	public void moveLeft_nA_gameCharacterPositionXMinus1() {
 		ennemy.moveLeft();
-		assertEquals(Board.getSize(true).getWidth() / 2 - 1, ennemy.getPosition().getX());
+		assertEquals(Board.getSize(true).getWidth() / 2 - GameCharacter.SPEED, ennemy.getPosition().getX());
 	}
 
 	@Test(expected = OutOfBoardException.class)
@@ -88,7 +88,7 @@ public class SkeletonTest {
 	@Test
 	public void moveRight_nA_gameCharacterPositionXPlus1() {
 		ennemy.moveRight();
-		assertEquals(Board.getSize(true).getWidth()/2 + 1, ennemy.getPosition().getX());
+		assertEquals(Board.getSize(true).getWidth()/2 + GameCharacter.SPEED, ennemy.getPosition().getX());
 	}
 
 	@Test(expected = OutOfBoardException.class)
@@ -99,7 +99,7 @@ public class SkeletonTest {
 	@Test
 	public void moveUp_nA_gameCharacterPositionYMinus1() {
 		ennemy.moveUp();
-		assertEquals(Board.getSize(true).getHeight()/2 - 1, ennemy.getPosition().getY());
+		assertEquals(Board.getSize(true).getHeight()/2 - GameCharacter.SPEED, ennemy.getPosition().getY());
 	}
 
 	@Test(expected = OutOfBoardException.class)
@@ -110,7 +110,7 @@ public class SkeletonTest {
 	@Test
 	public void moveDown_nA_gameCharacterPositionYPlus1() {
 		ennemy.moveDown();
-		assertEquals(Board.getSize(true).getHeight() / 2 + 1, ennemy.getPosition().getY());
+		assertEquals(Board.getSize(true).getHeight() / 2 + GameCharacter.SPEED, ennemy.getPosition().getY());
 	}
 
 	@Test(expected = OutOfBoardException.class)

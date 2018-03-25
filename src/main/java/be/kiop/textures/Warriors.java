@@ -13,6 +13,10 @@ import be.kiop.valueobjects.Size;
 
 public enum Warriors implements Texture {
 	Warrior_Large("warrior", new Position(0, 0), new Size(64, 64)),
+	Warrior_Rectangular_2("warrior-rectangular", new Position(0, 0), new Size(32, 64)),
+	Warrior_Rectangular_4("warrior-rectangular", new Position(0, 64), new Size(32, 64)),
+	Warrior_Rectangular_1("warrior-rectangular", new Position(0, 128), new Size(32, 64)),
+	Warrior_Rectangular_3("warrior-rectangular", new Position(0, 192), new Size(32, 64)),
 	Warrior_ShinyHelmet_Large("warrior-shiny-helmet", new Position(0, 0), new Size(64, 64));
 
 	private Path path;

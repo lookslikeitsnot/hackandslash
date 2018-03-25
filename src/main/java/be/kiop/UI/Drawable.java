@@ -49,5 +49,8 @@ public abstract class Drawable {
 		this.availableTextures = availableTextures;
 	}
 	
-	
+	public String getTextureAbsoluteName() {
+		String name = texture.name();
+		return name.substring(0, name.lastIndexOf("_"));
+	}
 }

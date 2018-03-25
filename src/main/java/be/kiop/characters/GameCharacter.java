@@ -7,9 +7,12 @@ import be.kiop.exceptions.CharacterDiedException;
 import be.kiop.exceptions.IllegalWeaponException;
 import be.kiop.exceptions.MaxLevelReachedException;
 import be.kiop.exceptions.MinLevelReachedException;
+import be.kiop.textures.Texture;
+import be.kiop.textures.Warriors;
 import be.kiop.textures.Weapons;
 import be.kiop.utils.StringUtils;
 import be.kiop.valueobjects.Directions;
+import be.kiop.valueobjects.Position;
 import be.kiop.weapons.Fist;
 import be.kiop.weapons.Weapon;
 
@@ -22,7 +25,7 @@ public abstract class GameCharacter extends Drawable{
 	public final static int MAX_LEVEL = 100;
 	public final static int MAX_ARMOR = 100;
 	private float armor;
-	public final static int SPEED = 10;
+	public final static int SPEED = 4;
 	
 	protected void setName(String name) {
 		if(!StringUtils.isValidString(name)) {
@@ -190,23 +193,84 @@ public abstract class GameCharacter extends Drawable{
 		getPosition().setY(y);
 	}
 	
-	public void move(Directions direction) {
+	
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public void move(Directions direction, Set<Position> unavailablePositions){
+		String textureName = getTextureAbsoluteName();
+		Class<Enum>  textureClass = null;
+		try {
+			textureClass = (Class<Enum>) Class.forName(getTexture().getClass().getName());
+			
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		}
 		switch(direction) {
 		case DOWN:
-			moveDown();
+			setTexture((Texture) Enum.valueOf(textureClass, textureName+"_2"));
+			for(int i = 0; i < SPEED; i++) {
+				if(canMove(Directions.DOWN, unavailablePositions)) {
+					moveDown();
+				} else {
+					break;
+				}
+			}
 			break;
 		case LEFT:
-			moveLeft();
+			setTexture((Texture) Enum.valueOf(textureClass, textureName+"_1"));
+			for(int i = 0; i < SPEED; i++) {
+				if(canMove(Directions.LEFT, unavailablePositions)) {
+					moveLeft();
+				} else {
+					break;
+				}
+			}
 			break;
 		case RIGHT:
-			moveRight();
+			setTexture((Texture) Enum.valueOf(textureClass, textureName+"_3"));
+			for(int i = 0; i < SPEED; i++) {
+				if(canMove(Directions.RIGHT, unavailablePositions)) {
+					moveRight();
+				} else {
+					break;
+				}
+			}
 			break;
 		case UP:
-			moveUp();
+			setTexture((Texture) Enum.valueOf(textureClass, textureName+"_4"));
+			for(int i = 0; i < SPEED; i++) {
+				if(canMove(Directions.UP, unavailablePositions)) {
+					moveUp();
+				} else {
+					break;
+				}
+			}
 			break;
-		default:
-			break;
-		
 		}
 	}
+	
+	private boolean canMove(Directions direction, Set<Position> unavailablePositions) {
+		switch(direction) {
+		case DOWN:
+			if(!unavailablePositions.contains(new Position(getPosition().getX(), getPosition().getY()+getTexture().getSize().getHeight()+1))) {
+				return true;
+			}
+			break;
+		case LEFT:
+			if(!unavailablePositions.contains(new Position(getPosition().getX()-1, getPosition().getY()))) {
+				return true;
+			}
+			break;
+		case RIGHT:
+			if(!unavailablePositions.contains(new Position(getPosition().getX()+getTexture().getSize().getWidth()+1, getPosition().getY()))) {
+				return true;
+			}
+			break;
+		case UP:
+			if(!unavailablePositions.contains(new Position(getPosition().getX(), getPosition().getY()-1))) {
+				return true;
+			}
+			break;
+    	}
+    	return false;
+    }
 }

@@ -5,11 +5,12 @@ import java.awt.image.BufferedImage;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.swing.JPanel;
 
-import be.kiop.characters.GameCharacter;
 import be.kiop.characters.heroes.Hero;
 import be.kiop.characters.heroes.warriors.Warrior;
 import be.kiop.controllers.Keyboard;
@@ -19,7 +20,6 @@ import be.kiop.textures.Floors;
 import be.kiop.textures.Texture;
 import be.kiop.textures.Walls;
 import be.kiop.textures.Warriors;
-import be.kiop.valueobjects.Directions;
 import be.kiop.valueobjects.Position;
 import be.kiop.valueobjects.Size;
 import be.kiop.weapons.Sword;
@@ -31,6 +31,7 @@ public class Map extends JPanel {
 	private List<Drawable> textures;
 	private List<Drawable> obstacles;
 	private List<Drawable> ennemies;
+	private Set<Position> hitBoxes;
 	private Hero hero;
 	private Size size;
 	// public static final Dimension SKIN_DIMENSION = new Dimension(32, 32);
@@ -41,6 +42,7 @@ public class Map extends JPanel {
 		textures = new ArrayList<>();
 		obstacles = new ArrayList<>();
 		ennemies = new ArrayList<>();
+		hitBoxes = new LinkedHashSet<>();
 		placeHero();
 		placeWalls();
 		placeFloor();
@@ -50,7 +52,7 @@ public class Map extends JPanel {
 
 	private void placeFloor() {
 		try {
-			placeTexture(Floors.Floor_Parquet_Hor, textures, Floor.class, false);
+			placeTexture(Floors.Floor_Parquet_Hor, textures, Floor.class, false, false);
 		} catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException
 				| IllegalArgumentException | InvocationTargetException e) {
 			e.printStackTrace();
@@ -59,7 +61,7 @@ public class Map extends JPanel {
 
 	private void placeWalls() {
 		try {
-			placeTexture(Walls.Wall_Small, obstacles, Wall.class, true);
+			placeTexture(Walls.Wall_Small, obstacles, Wall.class, true, true);
 		} catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException
 				| IllegalArgumentException | InvocationTargetException e) {
 			e.printStackTrace();
@@ -67,7 +69,7 @@ public class Map extends JPanel {
 
 	}
 	
-	private void placeTexture (Texture texture, List<Drawable> list, Class<?> classe, boolean shouldBeDrawn) 
+	private void placeTexture (Texture texture, List<Drawable> list, Class<?> classe, boolean shouldBeDrawn, boolean solid) 
 			throws NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 		Class<?> clazz = classe;
 		Constructor<?> ctor = clazz.getConstructor(Texture.class, Position.class);
@@ -75,6 +77,13 @@ public class Map extends JPanel {
 			for (int y = 0; y < size.getHeight(); y += texture.getSize().getHeight()) {
 				if ((x == 0 || y == 0 || x == size.getWidth() - texture.getSize().getWidth() || y == size.getHeight() - texture.getSize().getHeight()) == shouldBeDrawn) {
 					list.add(((Drawable) ctor.newInstance(texture, new Position(x, y))));
+					if(solid) {
+						for(int textureX = 0; textureX < texture.getSize().getWidth(); textureX++) {
+							for(int textureY = 0; textureY < texture.getSize().getHeight(); textureY++) {
+								hitBoxes.add(new Position(textureX+x, textureY+y));
+							}
+						}
+					}
 				}
 			}
 		}
@@ -109,7 +118,7 @@ public class Map extends JPanel {
 	}
 
 	private void placeHero() {
-		Warriors HERO_SKIN = Warriors.Warrior_Large;
+		Warriors HERO_SKIN = Warriors.Warrior_Rectangular_2;
 		String HERO_NAME = "Warrior";
 		float HERO_HEALTH = 100;
 		int HERO_LEVEL = 10;
@@ -124,21 +133,25 @@ public class Map extends JPanel {
 		
 	}
 	
-	public void moveCharacter(Directions direction, GameCharacter gc) {
-		switch (direction) {
-		case LEFT:
-			gc.moveLeft();
-			break;
-		case DOWN:
-			gc.moveDown();
-		case RIGHT:
-			gc.moveRight();
-			break;
-		case UP:
-			gc.moveUp();
-			break;
-		default:
-			break;
-		}
+	public Set<Position> getHitBoxes(){
+		return hitBoxes;
 	}
+	
+//	public void moveCharacter(Directions direction, GameCharacter gc) {
+//		switch (direction) {
+//		case LEFT:
+//			gc.moveLeft();
+//			break;
+//		case DOWN:
+//			gc.moveDown();
+//		case RIGHT:
+//			gc.moveRight();
+//			break;
+//		case UP:
+//			gc.moveUp();
+//			break;
+//		default:
+//			break;
+//		}
+//	}
 }

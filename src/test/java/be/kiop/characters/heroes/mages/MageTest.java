@@ -79,7 +79,7 @@ public class MageTest {
 	@Test
 	public void moveLeft_nA_gameCharacterPositionXMinus1() {
 		hero.moveLeft();
-		assertEquals(Board.getSize(true).getWidth() / 2 - 1, hero.getPosition().getX());
+		assertEquals(Board.getSize(true).getWidth() / 2 - GameCharacter.SPEED, hero.getPosition().getX());
 	}
 
 	@Test(expected = OutOfBoardException.class)
@@ -90,7 +90,7 @@ public class MageTest {
 	@Test
 	public void moveRight_nA_gameCharacterPositionXPlus1() {
 		hero.moveRight();
-		assertEquals(Board.getSize(true).getWidth()/2 + 1, hero.getPosition().getX());
+		assertEquals(Board.getSize(true).getWidth()/2 + GameCharacter.SPEED, hero.getPosition().getX());
 	}
 
 	@Test(expected = OutOfBoardException.class)
@@ -101,7 +101,7 @@ public class MageTest {
 	@Test
 	public void moveUp_nA_gameCharacterPositionYMinus1() {
 		hero.moveUp();
-		assertEquals(Board.getSize(true).getHeight()/2 - 1, hero.getPosition().getY());
+		assertEquals(Board.getSize(true).getHeight()/2 - GameCharacter.SPEED, hero.getPosition().getY());
 	}
 
 	@Test(expected = OutOfBoardException.class)
@@ -112,7 +112,7 @@ public class MageTest {
 	@Test
 	public void moveDown_nA_gameCharacterPositionYPlus1() {
 		hero.moveDown();
-		assertEquals(Board.getSize(true).getHeight() / 2 + 1, hero.getPosition().getY());
+		assertEquals(Board.getSize(true).getHeight() / 2 + GameCharacter.SPEED, hero.getPosition().getY());
 	}
 
 	@Test(expected = OutOfBoardException.class)

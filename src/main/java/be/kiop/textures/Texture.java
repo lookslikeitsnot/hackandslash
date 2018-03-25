@@ -11,4 +11,5 @@ public interface Texture {
 	public Position getPosition();
 	public Size getSize();
 	public Path getPath();
+	public String name();
 }

@@ -7,7 +7,6 @@ import javax.swing.ActionMap;
 import javax.swing.InputMap;
 import javax.swing.KeyStroke;
 
-import be.kiop.UI.Board;
 import be.kiop.UI.Map;
 import be.kiop.characters.GameCharacter;
 import be.kiop.characters.heroes.Hero;
@@ -60,72 +59,42 @@ import be.kiop.valueobjects.Directions;
 //
 //}
 public class Keyboard {
-	
+
 	private static final String MOVE_UP = "move up";
 	private static final String MOVE_DOWN = "move down";
 	private static final String MOVE_LEFT = "move left";
 	private static final String MOVE_RIGHT = "move right";
-	
+
 	public Keyboard(Map map, Hero hero) {
 		InputMap iMap = map.getInputMap(Map.WHEN_IN_FOCUSED_WINDOW);
 		ActionMap aMap = map.getActionMap();
 
-		
-		iMap.put(KeyStroke.getKeyStroke("UP"),MOVE_UP);
-		iMap.put(KeyStroke.getKeyStroke("DOWN"),MOVE_DOWN);
-		iMap.put(KeyStroke.getKeyStroke("LEFT"),MOVE_LEFT);
-		iMap.put(KeyStroke.getKeyStroke("RIGHT"),MOVE_RIGHT);
-		aMap.put(MOVE_UP,new MoveAction(Directions.UP, hero, map));
-		aMap.put(MOVE_DOWN,new MoveAction(Directions.DOWN, hero, map));
-		aMap.put(MOVE_LEFT,new MoveAction(Directions.LEFT, hero, map));
-		aMap.put(MOVE_RIGHT,new MoveAction(Directions.RIGHT, hero, map));
+		iMap.put(KeyStroke.getKeyStroke("UP"), MOVE_UP);
+		iMap.put(KeyStroke.getKeyStroke("DOWN"), MOVE_DOWN);
+		iMap.put(KeyStroke.getKeyStroke("LEFT"), MOVE_LEFT);
+		iMap.put(KeyStroke.getKeyStroke("RIGHT"), MOVE_RIGHT);
+		aMap.put(MOVE_UP, new MoveAction(Directions.UP, hero, map));
+		aMap.put(MOVE_DOWN, new MoveAction(Directions.DOWN, hero, map));
+		aMap.put(MOVE_LEFT, new MoveAction(Directions.LEFT, hero, map));
+		aMap.put(MOVE_RIGHT, new MoveAction(Directions.RIGHT, hero, map));
 	}
-	
+
 	private class MoveAction extends AbstractAction {
 		private static final long serialVersionUID = 1L;
 		Directions direction;
-        GameCharacter hero;
-        Map map;
+		GameCharacter hero;
+		Map map;
 
-        MoveAction(Directions direction, GameCharacter hero, Map map) {
-            this.direction = direction;
-            this.hero = hero;
-            this.map = map;
-        }
+		MoveAction(Directions direction, GameCharacter hero, Map map) {
+			this.direction = direction;
+			this.hero = hero;
+			this.map = map;
+		}
 
-        @Override
-        public void actionPerformed(ActionEvent e) {
-        	if(canMove(hero)) {
-        		hero.move(direction);
-            	map.repaint();
-        	}
-        }
-        
-        private boolean canMove(GameCharacter gc) {
-        	int WALL_SIZE = 32;
-        	switch(direction) {
-			case DOWN:
-				if((gc.getPosition().getY()+gc.getTexture().getSize().getHeight()+WALL_SIZE+GameCharacter.SPEED)< Board.getSize(true).getHeight()) {
-					return true;
-				}
-				break;
-			case LEFT:
-				if((gc.getPosition().getX()+GameCharacter.SPEED)> WALL_SIZE) {
-					return true;
-				}
-				break;
-			case RIGHT:
-				if((gc.getPosition().getX()+gc.getTexture().getSize().getWidth()+WALL_SIZE+GameCharacter.SPEED)< Board.getSize(true).getWidth()) {
-					return true;
-				}
-				break;
-			case UP:
-				if((gc.getPosition().getY()+GameCharacter.SPEED) > WALL_SIZE) {
-					return true;
-				}
-				break;
-        	}
-        	return false;
-        }
-    }
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			hero.move(direction, map.getHitBoxes());
+			map.repaint();
+		}
+	}
 }
