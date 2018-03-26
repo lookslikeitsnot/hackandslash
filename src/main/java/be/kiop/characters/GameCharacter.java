@@ -8,7 +8,6 @@ import be.kiop.exceptions.IllegalWeaponException;
 import be.kiop.exceptions.MaxLevelReachedException;
 import be.kiop.exceptions.MinLevelReachedException;
 import be.kiop.textures.Texture;
-import be.kiop.textures.Warriors;
 import be.kiop.textures.Weapons;
 import be.kiop.utils.StringUtils;
 import be.kiop.valueobjects.Directions;

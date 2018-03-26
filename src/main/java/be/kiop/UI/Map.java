@@ -15,6 +15,7 @@ import be.kiop.characters.heroes.Hero;
 import be.kiop.characters.heroes.warriors.Warrior;
 import be.kiop.controllers.Keyboard;
 import be.kiop.decorations.Floor;
+import be.kiop.listeners.RepaintTimer;
 import be.kiop.obstacles.walls.Wall;
 import be.kiop.textures.Floors;
 import be.kiop.textures.Texture;
@@ -47,7 +48,7 @@ public class Map extends JPanel {
 		placeWalls();
 		placeFloor();
 		new Keyboard(this, hero);
-		
+		new RepaintTimer(this);
 	}
 
 	private void placeFloor() {
@@ -136,22 +137,4 @@ public class Map extends JPanel {
 	public Set<Position> getHitBoxes(){
 		return hitBoxes;
 	}
-	
-//	public void moveCharacter(Directions direction, GameCharacter gc) {
-//		switch (direction) {
-//		case LEFT:
-//			gc.moveLeft();
-//			break;
-//		case DOWN:
-//			gc.moveDown();
-//		case RIGHT:
-//			gc.moveRight();
-//			break;
-//		case UP:
-//			gc.moveUp();
-//			break;
-//		default:
-//			break;
-//		}
-//	}
 }

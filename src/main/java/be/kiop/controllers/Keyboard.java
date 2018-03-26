@@ -6,10 +6,12 @@ import javax.swing.AbstractAction;
 import javax.swing.ActionMap;
 import javax.swing.InputMap;
 import javax.swing.KeyStroke;
+import javax.swing.RepaintManager;
 
 import be.kiop.UI.Map;
 import be.kiop.characters.GameCharacter;
 import be.kiop.characters.heroes.Hero;
+import be.kiop.listeners.RepaintTimer;
 import be.kiop.valueobjects.Directions;
 
 //public class Keyboard implements KeyListener {
@@ -89,12 +91,13 @@ public class Keyboard {
 			this.direction = direction;
 			this.hero = hero;
 			this.map = map;
+			new RepaintTimer(map);
 		}
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			hero.move(direction, map.getHitBoxes());
-			map.repaint();
+//			map.repaint();
 		}
 	}
 }
