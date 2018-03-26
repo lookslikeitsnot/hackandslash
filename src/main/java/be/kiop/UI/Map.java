@@ -47,7 +47,6 @@ public class Map extends JPanel {
 		placeWalls();
 		placeFloor();
 		new Keyboard(this, hero);
-		
 	}
 
 	private void placeFloor() {
@@ -118,7 +117,7 @@ public class Map extends JPanel {
 	}
 
 	private void placeHero() {
-		Warriors HERO_SKIN = Warriors.Warrior_Rectangular_2;
+		Warriors HERO_SKIN = Warriors.Warrior_Young_2_1;
 		String HERO_NAME = "Warrior";
 		float HERO_HEALTH = 100;
 		int HERO_LEVEL = 10;

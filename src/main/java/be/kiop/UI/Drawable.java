@@ -50,7 +50,17 @@ public abstract class Drawable {
 	}
 	
 	public String getTextureAbsoluteName() {
-		String name = texture.name();
+		String name = texture.name().substring(0, texture.name().lastIndexOf(String.valueOf(getAnimationFrame()))-1);
 		return name.substring(0, name.lastIndexOf("_"));
+	}
+	
+	public int getAnimationDirection() {
+		String name = texture.name().substring(0, texture.name().lastIndexOf(String.valueOf(getAnimationFrame()))-1);
+		return Integer.parseInt(name.substring(name.lastIndexOf("_")+1));
+	}
+	
+	public int getAnimationFrame() {
+		String name = texture.name();
+		return Integer.parseInt(name.substring(name.lastIndexOf("_")+1));
 	}
 }
