@@ -247,8 +247,10 @@ public abstract class GameCharacter extends Drawable implements Animated {
 	}
 
 	private boolean canMove(Directions direction, Set<Position> unavailablePositions) {
+		Set<Position> toCheck;
 		switch (direction) {
 		case SOUTH:
+//			toCheck = 
 			if (!unavailablePositions.contains(new Position(getPosition().getX(),
 					getPosition().getY() + getTexture().getSize().getHeight() + 1))) {
 				return true;
