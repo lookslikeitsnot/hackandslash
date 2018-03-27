@@ -1,6 +1,10 @@
 package be.kiop.characters;
 
+import java.util.Collections;
 import java.util.Set;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import be.kiop.UI.Animated;
 import be.kiop.UI.Drawable;
@@ -250,25 +254,30 @@ public abstract class GameCharacter extends Drawable implements Animated {
 		Set<Position> toCheck;
 		switch (direction) {
 		case SOUTH:
-//			toCheck = 
-			if (!unavailablePositions.contains(new Position(getPosition().getX(),
-					getPosition().getY() + getTexture().getSize().getHeight() + 1))) {
+			toCheck = IntStream.range(getPosition().getX(), getPosition().getX()+getTexture().getSize().getWidth())
+			.mapToObj(posX -> new Position(posX, getPosition().getY()+getTexture().getSize().getHeight())).collect(Collectors.toSet());
+			if (Collections.disjoint(unavailablePositions, toCheck)) {
 				return true;
 			}
 			break;
 		case WEST:
-			if (!unavailablePositions.contains(new Position(getPosition().getX() - 1, getPosition().getY()))) {
+			toCheck = IntStream.range(getPosition().getY(), getPosition().getY()+getTexture().getSize().getHeight())
+			.mapToObj(posY -> new Position(getPosition().getX(), posY)).collect(Collectors.toSet());
+			if (Collections.disjoint(unavailablePositions, toCheck)) {
 				return true;
 			}
 			break;
 		case EAST:
-			if (!unavailablePositions.contains(
-					new Position(getPosition().getX() + getTexture().getSize().getWidth() + 1, getPosition().getY()))) {
+			toCheck = IntStream.range(getPosition().getY(), getPosition().getY()+getTexture().getSize().getHeight())
+			.mapToObj(posY -> new Position(getPosition().getX()+getTexture().getSize().getWidth(), posY)).collect(Collectors.toSet());
+			if (Collections.disjoint(unavailablePositions, toCheck)) {
 				return true;
 			}
 			break;
 		case NORTH:
-			if (!unavailablePositions.contains(new Position(getPosition().getX(), getPosition().getY() - 1))) {
+			toCheck = IntStream.range(getPosition().getX(), getPosition().getX()+getTexture().getSize().getWidth())
+			.mapToObj(posX -> new Position(posX, getPosition().getY())).collect(Collectors.toSet());
+			if (Collections.disjoint(unavailablePositions, toCheck)) {
 				return true;
 			}
 			break;
