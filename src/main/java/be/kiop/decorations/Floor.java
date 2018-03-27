@@ -17,8 +17,4 @@ public class Floor extends Drawable{
 		setTexture(floor);
 		setPosition(position);
 	}
-
-	@Override
-	public void setNextTexture() {		
-	}
 }

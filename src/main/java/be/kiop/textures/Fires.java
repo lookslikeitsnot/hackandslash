@@ -16,9 +16,9 @@ public enum Fires implements Texture, IdleAnimation{
 	Fire_2("fires", "Fire", new Position(32,0), new Size(32, 55), 2),
 	Fire_3("fires", "Fire", new Position(64,0), new Size(32, 55), 3),
 	
-	Fire_Off_1("fire", "Fire_Off", new Position(0,0), new Size(32, 55), 1),
-	Fire_Off_2("fire", "Fire_Off", new Position(32,0), new Size(32, 55), 2),
-	Fire_Off_3("fire", "Fire_Off", new Position(64,0), new Size(32, 55), 3);
+	Fire_Off_1("fires", "Fire_Off", new Position(0,0), new Size(32, 55), 1),
+	Fire_Off_2("fires", "Fire_Off", new Position(32,0), new Size(32, 55), 2),
+	Fire_Off_3("fires", "Fire_Off", new Position(64,0), new Size(32, 55), 3);
 
 	private Path path;
 	private String name;

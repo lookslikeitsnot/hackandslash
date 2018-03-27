@@ -2,6 +2,7 @@ package be.kiop.characters;
 
 import java.util.Set;
 
+import be.kiop.UI.Animated;
 import be.kiop.UI.Drawable;
 import be.kiop.exceptions.CharacterDiedException;
 import be.kiop.exceptions.IllegalWeaponException;
@@ -19,7 +20,7 @@ import be.kiop.valueobjects.Position;
 import be.kiop.weapons.Fist;
 import be.kiop.weapons.Weapon;
 
-public abstract class GameCharacter extends Drawable {
+public abstract class GameCharacter extends Drawable implements Animated {
 	private String name;
 	private float health;
 	private Weapon weapon;
@@ -28,7 +29,7 @@ public abstract class GameCharacter extends Drawable {
 	public final static int MAX_LEVEL = 100;
 	public final static int MAX_ARMOR = 100;
 	private float armor;
-	public final static int SPEED = 2;
+	public final static int SPEED = 1;
 	private boolean moving;
 	private int movementFrame;
 	private Directions direction = Directions.NORTH;
@@ -200,10 +201,10 @@ public abstract class GameCharacter extends Drawable {
 	}
 
 	public void move(Directions direction, Set<Position> unavailablePositions) {
+		this.moving = true;
 		if(this.direction != direction) {
 			movementFrame = 1;
 		}
-		this.moving = true;
 		this.direction = direction;
 		switch (direction) {
 		case SOUTH:
@@ -305,54 +306,8 @@ public abstract class GameCharacter extends Drawable {
 			movementFrame = movementFrame>Drawable.ANIMATION_LENGTH ? 1 : movementFrame; 
 			int associatedFrame = getAssociatedFrameNumber(movementFrame);
 			
-			System.out.println("coucou");
 			setTexture(TextureBuilder.getTexture(textureClass, textureString, genderString, directionString, Integer.toString(associatedFrame)));
 		}
-	}
-
-//	@SuppressWarnings({ "rawtypes", "unchecked" })
-//	public void setNextMovementTexture(Directions direction) {
-//		String textureName = getTextureAbsoluteName();
-//		Class<Enum> textureClass = null;
-//		try {
-//			textureClass = (Class<Enum>) Class.forName(getTexture().getClass().getName());
-//
-//		} catch (ClassNotFoundException e) {
-//			e.printStackTrace();
-//		}
-//		if (direction == this.direction) {
-//			int animationDirection = getAnimationDirection();
-//			int animationFrame = getAnimationFrame();
-//
-//			animationFrame++;
-//			if (animationFrame > 6) {
-//				animationFrame = 2;
-//			}
-//			setTexture((Texture) Enum.valueOf(textureClass,
-//					textureName + "_" + animationDirection + "_" + animationFrame));
-//		} else {
-//			this.direction = direction;
-//			switch (direction) {
-//			case SOUTH:
-//				setTexture((Texture) Enum.valueOf(textureClass, textureName + "_2_2"));
-//				break;
-//			case WEST:
-//				setTexture((Texture) Enum.valueOf(textureClass, textureName + "_1_2"));
-//				break;
-//			case EAST:
-//				setTexture((Texture) Enum.valueOf(textureClass, textureName + "_3_2"));
-//				break;
-//			case NORTH:
-//				setTexture((Texture) Enum.valueOf(textureClass, textureName + "_4_2"));
-//				break;
-//
-//			}
-//		}
-//	}
-	
-	public void stop() {
-		moving = false;
-		movementFrame = 1;
-		direction = Directions.SOUTH;
+		this.moving = false;
 	}
 }

@@ -35,9 +35,9 @@ public class SkeletonTest {
 
 	private final static float MARGIN = 0.1F;
 
-	private final static Skeletons ENNEMY_TEXTURE = Skeletons.Skeleton_Large;
-	private final static Skeletons VALID_TEXTURE = Skeletons.Skeleton_Dog_Large;
-	private final static Floors INVALID_TEXTURE = Floors.Floor_Parquet_Hor;
+	private final static Skeletons ENNEMY_TEXTURE = Skeletons.Skeleton_NORTH_2;
+	private final static Skeletons VALID_TEXTURE = Skeletons.Skeleton_Dog_EAST_2;
+	private final static Floors INVALID_TEXTURE = Floors.Floor_Parquet_HORIZONTAL;
 	private final static String ENNEMY_NAME = "Skeleton";
 	private final static float ENNEMY_HEALTH = 100;
 	private final static int ENNEMY_LEVEL = 10;
@@ -282,7 +282,7 @@ public class SkeletonTest {
 
 	@Test
 	public void attack_ennemy_enemyTakesDamage() {
-		GameCharacter gc = new Skeleton(Skeletons.Skeleton_Large, position, "Skeleton", ENNEMY_HEALTH, new Bone(), 1, 0, Set.of(new Sword()));
+		GameCharacter gc = new Skeleton(Skeletons.Skeleton_NORTH_2, position, "Skeleton", ENNEMY_HEALTH, new Bone(), 1, 0, Set.of(new Sword()));
 		ennemy.attack(gc);
 		assertEquals(ENNEMY_HEALTH - weapon.getDamage(), gc.getHealth(), MARGIN);
 	}

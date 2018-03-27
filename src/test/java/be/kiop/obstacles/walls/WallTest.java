@@ -15,7 +15,7 @@ public class WallTest {
 	private Position position;
 	private Board board;
 	
-	private final static Walls OBSTACLE_PATH = Walls.Wall_Small;
+	private final static Walls OBSTACLE_PATH = Walls.Wall_Metallic;
 	
 	@Before
 	public void before() {

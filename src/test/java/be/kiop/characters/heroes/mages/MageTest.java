@@ -36,9 +36,9 @@ public class MageTest {
 
 	private final static float MARGIN = 0.1F;
 
-	private final static Mages HERO_TEXTURE = Mages.Mage_Blue_Large;
-	private final static Mages VALID_TEXTURE = Mages.Mage_Red_Large;
-	private final static Floors INVALID_TEXTURE = Floors.Floor_Parquet_Hor;
+	private final static Mages HERO_TEXTURE = Mages.Mage_FEMALE_SOUTH_2;
+	private final static Mages VALID_TEXTURE = Mages.Mage_MALE_SOUTH_2;
+	private final static Floors INVALID_TEXTURE = Floors.Floor_Parquet_HORIZONTAL;
 	private final static String HERO_NAME = "Mage";
 	private final static float HERO_HEALTH = 100;
 	private final static int HERO_LEVEL = 10;
@@ -367,7 +367,7 @@ public class MageTest {
 
 	@Test
 	public void attack_ennemy_enemyTakesDamage() {
-		GameCharacter gc = new Skeleton(Skeletons.Skeleton_Large, position, "Skeleton", HERO_HEALTH, new Bone(), 1, 0, Set.of(new Sword()));
+		GameCharacter gc = new Skeleton(Skeletons.Skeleton_SOUTH_2, position, "Skeleton", HERO_HEALTH, new Bone(), 1, 0, Set.of(new Sword()));
 		hero.attack(gc);
 		assertEquals(HERO_HEALTH - weapon.getDamage(), gc.getHealth(), MARGIN);
 	}

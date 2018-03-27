@@ -70,7 +70,7 @@ public abstract class Drawable {
 		}
 	}
 	
-	public abstract void setNextTexture();
+//	public abstract void setNextTexture();
 	
 //	public String getTextureAbsoluteName() {
 //		String name = texture.name().substring(0, texture.name().lastIndexOf(String.valueOf(getAnimationFrame()))-1);

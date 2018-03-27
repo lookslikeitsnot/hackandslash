@@ -17,7 +17,9 @@ import be.kiop.characters.heroes.warriors.Warrior;
 import be.kiop.controllers.Keyboard;
 import be.kiop.decorations.Floor;
 import be.kiop.listeners.RepaintTimer;
+import be.kiop.obstacles.fires.Fire;
 import be.kiop.obstacles.walls.Wall;
+import be.kiop.textures.Fires;
 import be.kiop.textures.Floors;
 import be.kiop.textures.Texture;
 import be.kiop.textures.Walls;
@@ -48,6 +50,7 @@ public class Map extends JPanel {
 		placeHero();
 		placeWalls();
 		placeFloor();
+		placeFirePits();
 		new Keyboard(this, hero);
 
 		new RepaintTimer(this);
@@ -91,11 +94,16 @@ public class Map extends JPanel {
 			}
 		}
 	}
+	
+	private void placeFirePits() {
+		obstacles.add(new Fire(Fires.Fire_1, new Position(32, 32)));
+	}
 
 	private List<Drawable> getAllDrawables() {
-		List<Drawable> allDrawables = new ArrayList<>(obstacles);
+		List<Drawable> allDrawables = new ArrayList<>();
 		allDrawables.addAll(textures);
 		allDrawables.addAll(ennemies);
+		allDrawables.addAll(obstacles);
 		allDrawables.add(hero);
 		return allDrawables;
 	}
@@ -110,8 +118,8 @@ public class Map extends JPanel {
 			x = drawable.getPosition().getX();
 			y = drawable.getPosition().getY();
 //			long startTime = System.nanoTime();
-			if(drawable instanceof GameCharacter) {
-				drawable.setNextTexture();
+			if(drawable instanceof Animated) {
+				((Animated) drawable).setNextTexture();
 			}
 			skin = drawable.getTexture().getSkin();
 			

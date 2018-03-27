@@ -27,7 +27,23 @@ public enum Skeletons implements Texture, MoveAnimation {
 
 	Skeleton_NORTH_1("skeletons", "Skeleton", new Position(0, 144), new Size(48, 48), Directions.NORTH, 1),
 	Skeleton_NORTH_2("skeletons", "Skeleton", new Position(48, 144), new Size(48, 48), Directions.NORTH, 2),
-	Skeleton_NORTH_3("skeletons", "Skeleton", new Position(96, 144), new Size(48, 48), Directions.NORTH, 3);
+	Skeleton_NORTH_3("skeletons", "Skeleton", new Position(96, 144), new Size(48, 48), Directions.NORTH, 3),
+	
+	Skeleton_Dog_SOUTH_1("skeleton-dogs", "Skeleton_Dog", new Position(0, 0), new Size(48, 48), Directions.SOUTH, 1),
+	Skeleton_Dog_SOUTH_2("skeleton-dogs", "Skeleton_Dog", new Position(48, 0), new Size(48, 48), Directions.SOUTH, 2),
+	Skeleton_Dog_SOUTH_3("skeleton-dogs", "Skeleton_Dog", new Position(96, 0), new Size(48, 48), Directions.SOUTH, 3),
+	
+	Skeleton_Dog_WEST_1("skeleton-dogs", "Skeleton_Dog", new Position(0, 48), new Size(48, 48), Directions.WEST, 1),
+	Skeleton_Dog_WEST_2("skeleton-dogs", "Skeleton_Dog", new Position(48, 48), new Size(48, 48), Directions.WEST, 2),
+	Skeleton_Dog_WEST_3("skeleton-dogs", "Skeleton_Dog", new Position(96, 48), new Size(48, 48), Directions.WEST, 3),
+	
+	Skeleton_Dog_EAST_1("skeleton-dogs", "Skeleton_Dog", new Position(0, 96), new Size(48, 48), Directions.EAST, 1),
+	Skeleton_Dog_EAST_2("skeleton-dogs", "Skeleton_Dog", new Position(48, 96), new Size(48, 48), Directions.EAST, 2),
+	Skeleton_Dog_EAST_3("skeleton-dogs", "Skeleton_Dog", new Position(96, 96), new Size(48, 48), Directions.EAST, 3),
+	
+	Skeleton_Dog_NORTH_1("skeleton-dogs", "Skeleton_Dog", new Position(0, 144), new Size(48, 48), Directions.NORTH, 1),
+	Skeleton_Dog_NORTH_2("skeleton-dogs", "Skeleton_Dog", new Position(48, 144), new Size(48, 48), Directions.NORTH, 2),
+	Skeleton_Dog_NORTH_3("skeleton-dogs", "Skeleton_Dog", new Position(96, 144), new Size(48, 48), Directions.NORTH, 3);
 	
 	private Path path;
 	private String name;
@@ -38,7 +54,7 @@ public enum Skeletons implements Texture, MoveAnimation {
 	private BufferedImage skin;
 
 	Skeletons(String path, String name, Position position, Size size, Directions direction, int frame) {
-		this.path = Paths.get("src/main/resources/images/heroes/mages/" + path + ".png");
+		this.path = Paths.get("src/main/resources/images/ennemies/skeletons/" + path + ".png");
 		this.name= name;
 		this.position = position;
 		this.size = size;

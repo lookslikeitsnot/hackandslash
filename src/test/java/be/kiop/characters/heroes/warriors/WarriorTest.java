@@ -35,9 +35,9 @@ public class WarriorTest {
 
 	private final static float MARGIN = 0.1F;
 
-	private final static Warriors HERO_TEXTURE = Warriors.Warrior_Large;
-	private final static Warriors VALID_TEXTURE =  Warriors.Warrior_ShinyHelmet_Large;
-	private final static Floors INVALID_TEXTURE = Floors.Floor_Parquet_Hor;
+	private final static Warriors HERO_TEXTURE = Warriors.Warrior_FEMALE_SOUTH_2;
+	private final static Warriors VALID_TEXTURE =  Warriors.Warrior_MALE_SOUTH_2;
+	private final static Floors INVALID_TEXTURE = Floors.Floor_Parquet_HORIZONTAL;
 	private final static String HERO_NAME = "Warrior";
 	private final static float HERO_HEALTH = 100;
 	private final static int HERO_LEVEL = 10;
@@ -350,7 +350,7 @@ public class WarriorTest {
 
 	@Test
 	public void attack_ennemy_enemyTakesDamage() {
-		GameCharacter gc = new Skeleton(Skeletons.Skeleton_Large, position, "Skeleton", HERO_HEALTH, new Bone(), 1, 0, Set.of(new Sword()));
+		GameCharacter gc = new Skeleton(Skeletons.Skeleton_SOUTH_2, position, "Skeleton", HERO_HEALTH, new Bone(), 1, 0, Set.of(new Sword()));
 		hero.attack(gc);
 		assertEquals(HERO_HEALTH - weapon.getDamage(), gc.getHealth(), MARGIN);
 	}
