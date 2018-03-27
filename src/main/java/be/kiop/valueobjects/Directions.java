@@ -1,5 +1,17 @@
 package be.kiop.valueobjects;
 
 public enum Directions {
-	LEFT,DOWN,UP,RIGHT;
+	EAST(1),
+	SOUTH(2),
+	WEST(3),
+	NORTH(4);
+	
+	private int dirToInt;
+	Directions(int dirToInt){
+		this.dirToInt = dirToInt;
+	}
+	
+	public int getDirToInt() {
+		return dirToInt;
+	}
 }

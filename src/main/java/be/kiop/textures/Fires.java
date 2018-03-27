@@ -11,23 +11,28 @@ import be.kiop.exceptions.SkinNotFoundException;
 import be.kiop.valueobjects.Position;
 import be.kiop.valueobjects.Size;
 
-public enum Fires implements Texture{
-	Fire_1("fire", new Position(0,0), new Size(32, 55)),
-	Fire_2("fire", new Position(32,0), new Size(32, 55)),
-	Fire_3("fire", new Position(64,0), new Size(32, 55)),
-	Fire_4("fire", new Position(0,0), new Size(32, 55)),
-	Fire_5("fire", new Position(32,0), new Size(32, 55)),
-	Fire_6("fire", new Position(64,0), new Size(32, 55));
+public enum Fires implements Texture, IdleAnimation{
+	Fire_1("fires", "Fire", new Position(0,0), new Size(32, 55), 1),
+	Fire_2("fires", "Fire", new Position(32,0), new Size(32, 55), 2),
+	Fire_3("fires", "Fire", new Position(64,0), new Size(32, 55), 3),
+	
+	Fire_Off_1("fire", "Fire_Off", new Position(0,0), new Size(32, 55), 1),
+	Fire_Off_2("fire", "Fire_Off", new Position(32,0), new Size(32, 55), 2),
+	Fire_Off_3("fire", "Fire_Off", new Position(64,0), new Size(32, 55), 3);
 
 	private Path path;
+	private String name;
 	private Position position;
 	private Size size;
+	private int animationFrame;
 	private BufferedImage skin;
 
-	Fires(String path, Position position, Size size) {
+	Fires(String path, String name, Position position, Size size, int animationFrame) {
 		this.path = Paths.get("src/main/resources/images/textures/fires/" + path + ".png");
+		this.name = name;
 		this.position = position;
 		this.size = size;
+		this.animationFrame = animationFrame;
 		try {
 			BufferedImage sprites = ImageIO.read(this.path.toFile());
 			skin = sprites.getSubimage(position.getX(), position.getY(), size.getWidth(), size.getHeight());
@@ -53,6 +58,15 @@ public enum Fires implements Texture{
 	@Override
 	public Size getSize() {
 		return size;
+	}
+	@Override
+	public int getAnimationFrame() {
+		return animationFrame;
+		
+	}
+	@Override
+	public String getName() {
+		return name;
 	}
 
 

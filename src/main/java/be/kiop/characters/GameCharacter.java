@@ -7,10 +7,14 @@ import be.kiop.exceptions.CharacterDiedException;
 import be.kiop.exceptions.IllegalWeaponException;
 import be.kiop.exceptions.MaxLevelReachedException;
 import be.kiop.exceptions.MinLevelReachedException;
+import be.kiop.exceptions.NoMoveAnimationException;
+import be.kiop.textures.MoveAnimation;
 import be.kiop.textures.Texture;
+import be.kiop.textures.TextureBuilder;
 import be.kiop.textures.Weapons;
 import be.kiop.utils.StringUtils;
 import be.kiop.valueobjects.Directions;
+import be.kiop.valueobjects.Genders;
 import be.kiop.valueobjects.Position;
 import be.kiop.weapons.Fist;
 import be.kiop.weapons.Weapon;
@@ -25,7 +29,9 @@ public abstract class GameCharacter extends Drawable {
 	public final static int MAX_ARMOR = 100;
 	private float armor;
 	public final static int SPEED = 2;
-	private Directions direction = Directions.UP;
+	private boolean moving;
+	private int movementFrame;
+	private Directions direction = Directions.NORTH;
 
 	protected void setName(String name) {
 		if (!StringUtils.isValidString(name)) {
@@ -193,52 +199,38 @@ public abstract class GameCharacter extends Drawable {
 		getPosition().setY(y);
 	}
 
-//	 @SuppressWarnings({ "unchecked", "rawtypes" })
 	public void move(Directions direction, Set<Position> unavailablePositions) {
-//		String textureName = getTextureAbsoluteName();
-//		Class<Enum> textureClass = null;
-//		try {
-//			textureClass = (Class<Enum>) Class.forName(getTexture().getClass().getName());
-//
-//		} catch (ClassNotFoundException e) {
-//			e.printStackTrace();
-//		}
-		setNextTexture(direction);
 		switch (direction) {
-		case DOWN:
-//			setTexture((Texture) Enum.valueOf(textureClass, textureName + "_2-2"));
+		case SOUTH:
 			for (int i = 0; i < SPEED; i++) {
-				if (canMove(Directions.DOWN, unavailablePositions)) {
+				if (canMove(Directions.SOUTH, unavailablePositions)) {
 					moveDown();
 				} else {
 					break;
 				}
 			}
 			break;
-		case LEFT:
-//			setTexture((Texture) Enum.valueOf(textureClass, textureName + "_1-2"));
+		case WEST:
 			for (int i = 0; i < SPEED; i++) {
-				if (canMove(Directions.LEFT, unavailablePositions)) {
+				if (canMove(Directions.WEST, unavailablePositions)) {
 					moveLeft();
 				} else {
 					break;
 				}
 			}
 			break;
-		case RIGHT:
-//			setTexture((Texture) Enum.valueOf(textureClass, textureName + "_3-2"));
+		case EAST:
 			for (int i = 0; i < SPEED; i++) {
-				if (canMove(Directions.RIGHT, unavailablePositions)) {
+				if (canMove(Directions.EAST, unavailablePositions)) {
 					moveRight();
 				} else {
 					break;
 				}
 			}
 			break;
-		case UP:
-//			setTexture((Texture) Enum.valueOf(textureClass, textureName + "_4-2"));
+		case NORTH:
 			for (int i = 0; i < SPEED; i++) {
-				if (canMove(Directions.UP, unavailablePositions)) {
+				if (canMove(Directions.NORTH, unavailablePositions)) {
 					moveUp();
 				} else {
 					break;
@@ -250,24 +242,24 @@ public abstract class GameCharacter extends Drawable {
 
 	private boolean canMove(Directions direction, Set<Position> unavailablePositions) {
 		switch (direction) {
-		case DOWN:
+		case SOUTH:
 			if (!unavailablePositions.contains(new Position(getPosition().getX(),
 					getPosition().getY() + getTexture().getSize().getHeight() + 1))) {
 				return true;
 			}
 			break;
-		case LEFT:
+		case WEST:
 			if (!unavailablePositions.contains(new Position(getPosition().getX() - 1, getPosition().getY()))) {
 				return true;
 			}
 			break;
-		case RIGHT:
+		case EAST:
 			if (!unavailablePositions.contains(
 					new Position(getPosition().getX() + getTexture().getSize().getWidth() + 1, getPosition().getY()))) {
 				return true;
 			}
 			break;
-		case UP:
+		case NORTH:
 			if (!unavailablePositions.contains(new Position(getPosition().getX(), getPosition().getY() - 1))) {
 				return true;
 			}
@@ -275,44 +267,85 @@ public abstract class GameCharacter extends Drawable {
 		}
 		return false;
 	}
+	
+	public void setMoving(boolean moving) {
+		this.moving = moving;
+	}
+	
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@Override
+	public void setNextTexture() {
+		if(moving) {
+			Genders gender = null;
+			Texture oldTexture = getTexture();
+			String textureString = oldTexture.getName();
+			Class<Enum> textureClass = null;
+			try {
+				textureClass = (Class<Enum>) Class.forName(getTexture().getClass().getName());
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	private void setNextTexture(Directions direction) {
-		String textureName = getTextureAbsoluteName();
-		Class<Enum> textureClass = null;
-		try {
-			textureClass = (Class<Enum>) Class.forName(getTexture().getClass().getName());
-
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-		}
-		if (direction == this.direction) {
-			int animationDirection = getAnimationDirection();
-			int animationFrame = getAnimationFrame();
-
-			animationFrame++;
-			if (animationFrame > 6) {
-				animationFrame = 2;
+			} catch (ClassNotFoundException e) {
+				e.printStackTrace();
 			}
-			setTexture((Texture) Enum.valueOf(textureClass,
-					textureName + "_" + animationDirection + "_" + animationFrame));
-		} else {
-			this.direction = direction;
-			switch(direction) {
-			case DOWN:
-				setTexture((Texture) Enum.valueOf(textureClass, textureName + "_2_2"));
-				break;
-			case LEFT:
-				setTexture((Texture) Enum.valueOf(textureClass, textureName + "_1_2"));
-				break;
-			case RIGHT:
-				setTexture((Texture) Enum.valueOf(textureClass, textureName + "_3_2"));
-				break;
-			case UP:
-				setTexture((Texture) Enum.valueOf(textureClass, textureName + "_4_2"));
-				break;
 			
+			if(!(oldTexture instanceof MoveAnimation)) {
+				throw new NoMoveAnimationException();
 			}
+			if(oldTexture instanceof CharacterGender) {
+				gender = ((CharacterGender) oldTexture).getGender();
+			}
+			String genderString = gender==null ? "" : gender.name();
+			String directionString = ((MoveAnimation) oldTexture).getDirection().name();
+			
+			movementFrame ++;
+			int associatedFrame = getAssociatedFrameNumber(movementFrame);
+			
+			setTexture(TextureBuilder.getTexture(textureClass, textureString, genderString, directionString, Integer.toString(associatedFrame)));
 		}
+	}
+
+//	@SuppressWarnings({ "rawtypes", "unchecked" })
+//	public void setNextMovementTexture(Directions direction) {
+//		String textureName = getTextureAbsoluteName();
+//		Class<Enum> textureClass = null;
+//		try {
+//			textureClass = (Class<Enum>) Class.forName(getTexture().getClass().getName());
+//
+//		} catch (ClassNotFoundException e) {
+//			e.printStackTrace();
+//		}
+//		if (direction == this.direction) {
+//			int animationDirection = getAnimationDirection();
+//			int animationFrame = getAnimationFrame();
+//
+//			animationFrame++;
+//			if (animationFrame > 6) {
+//				animationFrame = 2;
+//			}
+//			setTexture((Texture) Enum.valueOf(textureClass,
+//					textureName + "_" + animationDirection + "_" + animationFrame));
+//		} else {
+//			this.direction = direction;
+//			switch (direction) {
+//			case SOUTH:
+//				setTexture((Texture) Enum.valueOf(textureClass, textureName + "_2_2"));
+//				break;
+//			case WEST:
+//				setTexture((Texture) Enum.valueOf(textureClass, textureName + "_1_2"));
+//				break;
+//			case EAST:
+//				setTexture((Texture) Enum.valueOf(textureClass, textureName + "_3_2"));
+//				break;
+//			case NORTH:
+//				setTexture((Texture) Enum.valueOf(textureClass, textureName + "_4_2"));
+//				break;
+//
+//			}
+//		}
+//	}
+	
+	public void stop() {
+		moving = false;
+		movementFrame = 1;
+		direction = Directions.SOUTH;
 	}
 }

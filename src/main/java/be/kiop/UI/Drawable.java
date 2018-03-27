@@ -4,6 +4,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Set;
 
+import be.kiop.exceptions.NoMoveAnimationException;
 import be.kiop.exceptions.SkinNotFoundException;
 import be.kiop.textures.Texture;
 import be.kiop.valueobjects.Position;
@@ -14,6 +15,8 @@ public abstract class Drawable {
 	private Texture texture;
 	private Set<Texture> availableTextures;
 	private Position position;
+	
+	public static final int ANIMATION_LENGTH = 4;
 
 	public Position getPosition() {
 		return position;
@@ -49,18 +52,38 @@ public abstract class Drawable {
 		this.availableTextures = availableTextures;
 	}
 	
-	public String getTextureAbsoluteName() {
-		String name = texture.name().substring(0, texture.name().lastIndexOf(String.valueOf(getAnimationFrame()))-1);
-		return name.substring(0, name.lastIndexOf("_"));
+	public int getAssociatedFrameNumber(int frameCounter) {
+		if (frameCounter>ANIMATION_LENGTH) {
+			throw new NoMoveAnimationException();
+		}
+		switch(frameCounter) {
+		case 1:
+			return 2;
+		case 2:
+			return 1;
+		case 3:
+			return 2;
+		case 4:
+			return 3;
+		default:
+			return 1;
+		}
 	}
 	
-	public int getAnimationDirection() {
-		String name = texture.name().substring(0, texture.name().lastIndexOf(String.valueOf(getAnimationFrame()))-1);
-		return Integer.parseInt(name.substring(name.lastIndexOf("_")+1));
-	}
+	public abstract void setNextTexture();
 	
-	public int getAnimationFrame() {
-		String name = texture.name();
-		return Integer.parseInt(name.substring(name.lastIndexOf("_")+1));
-	}
+//	public String getTextureAbsoluteName() {
+//		String name = texture.name().substring(0, texture.name().lastIndexOf(String.valueOf(getAnimationFrame()))-1);
+//		return name.substring(0, name.lastIndexOf("_"));
+//	}
+//	
+//	public int getAnimationDirection() {
+//		String name = texture.name().substring(0, texture.name().lastIndexOf(String.valueOf(getAnimationFrame()))-1);
+//		return Integer.parseInt(name.substring(name.lastIndexOf("_")+1));
+//	}
+//	
+//	public int getAnimationFrame() {
+//		String name = texture.name();
+//		return Integer.parseInt(name.substring(name.lastIndexOf("_")+1));
+//	}
 }
