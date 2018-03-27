@@ -17,4 +17,7 @@ public class Wall extends Obstacle{
 		super.setPosition(position);
 		setDestructible(false);
 	}
+	@Override
+	public void setNextTexture() {
+	}
 }

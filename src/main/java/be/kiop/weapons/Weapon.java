@@ -183,4 +183,9 @@ public abstract class Weapon extends Drawable implements Droppable {
 			return false;
 		return true;
 	}
+	
+	@Override
+	public void setNextTexture() {
+		
+	}
 }

@@ -200,6 +200,11 @@ public abstract class GameCharacter extends Drawable {
 	}
 
 	public void move(Directions direction, Set<Position> unavailablePositions) {
+		if(this.direction != direction) {
+			movementFrame = 1;
+		}
+		this.moving = true;
+		this.direction = direction;
 		switch (direction) {
 		case SOUTH:
 			for (int i = 0; i < SPEED; i++) {
@@ -294,11 +299,13 @@ public abstract class GameCharacter extends Drawable {
 				gender = ((CharacterGender) oldTexture).getGender();
 			}
 			String genderString = gender==null ? "" : gender.name();
-			String directionString = ((MoveAnimation) oldTexture).getDirection().name();
+			String directionString = direction.name();
 			
-			movementFrame ++;
+			movementFrame++;
+			movementFrame = movementFrame>Drawable.ANIMATION_LENGTH ? 1 : movementFrame; 
 			int associatedFrame = getAssociatedFrameNumber(movementFrame);
 			
+			System.out.println("coucou");
 			setTexture(TextureBuilder.getTexture(textureClass, textureString, genderString, directionString, Integer.toString(associatedFrame)));
 		}
 	}

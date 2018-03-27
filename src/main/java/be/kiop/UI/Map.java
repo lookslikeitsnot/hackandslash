@@ -11,6 +11,7 @@ import java.util.Set;
 
 import javax.swing.JPanel;
 
+import be.kiop.characters.GameCharacter;
 import be.kiop.characters.heroes.Hero;
 import be.kiop.characters.heroes.warriors.Warrior;
 import be.kiop.controllers.Keyboard;
@@ -54,7 +55,7 @@ public class Map extends JPanel {
 
 	private void placeFloor() {
 		try {
-			placeTexture(Floors.Floor_Parquet_Hor, textures, Floor.class, false, false);
+			placeTexture(Floors.Floor_Parquet_HORIZONTAL, textures, Floor.class, false, false);
 		} catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException
 				| IllegalArgumentException | InvocationTargetException e) {
 			e.printStackTrace();
@@ -63,7 +64,7 @@ public class Map extends JPanel {
 
 	private void placeWalls() {
 		try {
-			placeTexture(Walls.Wall_Small, obstacles, Wall.class, true, true);
+			placeTexture(Walls.Wall_Metallic, obstacles, Wall.class, true, true);
 		} catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException
 				| IllegalArgumentException | InvocationTargetException e) {
 			e.printStackTrace();
@@ -109,6 +110,9 @@ public class Map extends JPanel {
 			x = drawable.getPosition().getX();
 			y = drawable.getPosition().getY();
 //			long startTime = System.nanoTime();
+			if(drawable instanceof GameCharacter) {
+				drawable.setNextTexture();
+			}
 			skin = drawable.getTexture().getSkin();
 			
 			g.drawImage(skin, x, y, null);
@@ -120,7 +124,7 @@ public class Map extends JPanel {
 	}
 
 	private void placeHero() {
-		Warriors HERO_SKIN = Warriors.Warrior_Young_2_1;
+		Warriors HERO_SKIN = Warriors.Warrior_MALE_SOUTH_1;
 		String HERO_NAME = "Warrior";
 		float HERO_HEALTH = 100;
 		int HERO_LEVEL = 10;

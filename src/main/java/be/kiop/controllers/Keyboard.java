@@ -1,13 +1,11 @@
 package be.kiop.controllers;
 
 import java.awt.event.ActionEvent;
-import java.util.Timer;
 
 import javax.swing.AbstractAction;
 import javax.swing.ActionMap;
 import javax.swing.InputMap;
 import javax.swing.KeyStroke;
-import javax.swing.RepaintManager;
 
 import be.kiop.UI.Map;
 import be.kiop.characters.GameCharacter;
@@ -34,17 +32,17 @@ import be.kiop.valueobjects.Directions;
 //		int key = event.getKeyCode();
 //
 //		switch (key) {
-//		case KeyEvent.VK_RIGHT:
-//			map.moveCharacter(Directions.RIGHT, hero);
+//		case KeyEvent.VK_EAST:
+//			map.moveCharacter(Directions.EAST, hero);
 //			break;
-//		case KeyEvent.VK_LEFT:
-//			map.moveCharacter(Directions.LEFT, hero);
+//		case KeyEvent.VK_WEST:
+//			map.moveCharacter(Directions.WEST, hero);
 //			break;
-//		case KeyEvent.VK_DOWN:
-//			map.moveCharacter(Directions.DOWN, hero);
+//		case KeyEvent.VK_SOUTH:
+//			map.moveCharacter(Directions.SOUTH, hero);
 //			break;
-//		case KeyEvent.VK_UP:
-//			map.moveCharacter(Directions.UP, hero);
+//		case KeyEvent.VK_NORTH:
+//			map.moveCharacter(Directions.NORTH, hero);
 //			break;
 //		case KeyEvent.VK_SPACE:
 //			break;
@@ -63,23 +61,23 @@ import be.kiop.valueobjects.Directions;
 //}
 public class Keyboard {
 
-	private static final String MOVE_UP = "move up";
-	private static final String MOVE_DOWN = "move down";
-	private static final String MOVE_LEFT = "move left";
-	private static final String MOVE_RIGHT = "move right";
+	private static final String MOVE_NORTH = "move up";
+	private static final String MOVE_SOUTH = "move down";
+	private static final String MOVE_WEST = "move left";
+	private static final String MOVE_EAST = "move right";
 
 	public Keyboard(Map map, Hero hero) {
 		InputMap iMap = map.getInputMap(Map.WHEN_IN_FOCUSED_WINDOW);
 		ActionMap aMap = map.getActionMap();
 
-		iMap.put(KeyStroke.getKeyStroke("UP"), MOVE_UP);
-		iMap.put(KeyStroke.getKeyStroke("DOWN"), MOVE_DOWN);
-		iMap.put(KeyStroke.getKeyStroke("LEFT"), MOVE_LEFT);
-		iMap.put(KeyStroke.getKeyStroke("RIGHT"), MOVE_RIGHT);
-		aMap.put(MOVE_UP, new MoveAction(Directions.UP, hero, map));
-		aMap.put(MOVE_DOWN, new MoveAction(Directions.DOWN, hero, map));
-		aMap.put(MOVE_LEFT, new MoveAction(Directions.LEFT, hero, map));
-		aMap.put(MOVE_RIGHT, new MoveAction(Directions.RIGHT, hero, map));
+		iMap.put(KeyStroke.getKeyStroke("NORTH"), MOVE_NORTH);
+		iMap.put(KeyStroke.getKeyStroke("SOUTH"), MOVE_SOUTH);
+		iMap.put(KeyStroke.getKeyStroke("WEST"), MOVE_WEST);
+		iMap.put(KeyStroke.getKeyStroke("EAST"), MOVE_EAST);
+		aMap.put(MOVE_NORTH, new MoveAction(Directions.NORTH, hero, map));
+		aMap.put(MOVE_SOUTH, new MoveAction(Directions.SOUTH, hero, map));
+		aMap.put(MOVE_WEST, new MoveAction(Directions.WEST, hero, map));
+		aMap.put(MOVE_EAST, new MoveAction(Directions.EAST, hero, map));
 	}
 
 	private class MoveAction extends AbstractAction {
