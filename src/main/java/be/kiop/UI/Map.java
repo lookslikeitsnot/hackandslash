@@ -5,6 +5,7 @@ import java.awt.image.BufferedImage;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -147,6 +148,9 @@ public class Map extends JPanel {
 				((Ennemy) drawable).move(getHitBoxes());
 			}
 			skin = drawable.getTexture().getSkin();
+			if(collision()) {
+				System.out.println("aie");
+			}
 
 			g.drawImage(skin, x, y, null);
 //			long endTime = System.nanoTime();
@@ -176,7 +180,7 @@ public class Map extends JPanel {
 		fixedHitBoxes = new LinkedHashSet<>();
 		for (Drawable obstacle : obstacles) {
 			if (obstacle instanceof HitBox) {
-				fixedHitBoxes.addAll(((HitBox) obstacle).getHitbox());
+				fixedHitBoxes.addAll(((HitBox) obstacle).getHitBox(0));
 			}
 		}
 	}
@@ -186,14 +190,28 @@ public class Map extends JPanel {
 		dynamicHitBoxes.clear();
 		for (Drawable ennemy : ennemies) {
 			if (ennemy instanceof Ennemy) {
-				dynamicHitBoxes.addAll(((Ennemy) ennemy).getHitbox());
+				dynamicHitBoxes.addAll(((Ennemy) ennemy).getHitBox(0));
 			}
 		}
 		
-		dynamicHitBoxes.addAll(hero.getHitbox());
+		dynamicHitBoxes.addAll(hero.getHitBox(0));
 		allHitBoxes.addAll(dynamicHitBoxes);
 		
 //		System.out.println(allHitBoxes.size());
 		return allHitBoxes;
+	}
+	
+	public Set<Position> getDamageDealingHitBoxes(){
+		Set<Position> damageDealingHitBoxes = new LinkedHashSet<>();
+		for (Drawable ennemy : ennemies) {
+			if (ennemy instanceof Ennemy) {
+				damageDealingHitBoxes.addAll(((Ennemy) ennemy).getHitBox(5));
+			}
+		}
+		return damageDealingHitBoxes;
+	}
+	
+	public boolean collision() {
+		return !Collections.disjoint(getDamageDealingHitBoxes(), hero.getHitBox(1));
 	}
 }

@@ -21,6 +21,7 @@ import be.kiop.exceptions.OutOfBoardException;
 import be.kiop.exceptions.SkinNotFoundException;
 import be.kiop.items.Droppable;
 import be.kiop.textures.Floors;
+import be.kiop.textures.HitBoxTexture;
 import be.kiop.textures.Skeletons;
 import be.kiop.textures.Texture;
 import be.kiop.valueobjects.Directions;
@@ -354,8 +355,10 @@ public class SkeletonTest {
 	
 	@Test
 	public void move_cannotMoveNorth_GameCharacterNotMoved() {
+		int deltaX = ((ennemy.getTexture().getSize().getWidth() - ((HitBoxTexture) ennemy.getTexture()).getHitBoxSize().getWidth())/2);
+		int deltaY = ((ennemy.getTexture().getSize().getHeight() - ((HitBoxTexture) ennemy.getTexture()).getHitBoxSize().getHeight())/2);
 		Position pos = new Position(position.getX(), position.getY());
-		Position posNorth = new Position(position.getX(), position.getY()-1);
+		Position posNorth = new Position(position.getX()+deltaX, position.getY() + deltaY - 1);
 		ennemy.move(Directions.NORTH, Set.of(posNorth));
 		assertEquals(pos.getX(), ennemy.getPosition().getX());
 		assertEquals(pos.getY(), ennemy.getPosition().getY());

@@ -14,6 +14,7 @@ import be.kiop.exceptions.IllegalWeaponException;
 import be.kiop.exceptions.MaxLevelReachedException;
 import be.kiop.exceptions.MinLevelReachedException;
 import be.kiop.exceptions.NoMoveAnimationException;
+import be.kiop.textures.HitBoxTexture;
 import be.kiop.textures.MoveAnimation;
 import be.kiop.textures.Texture;
 import be.kiop.textures.TextureBuilder;
@@ -35,7 +36,7 @@ public abstract class GameCharacter extends Drawable implements Animated, HitBox
 	public final static int MAX_LEVEL = 100;
 	public final static int MAX_ARMOR = 100;
 	private float armor;
-	public final static int SPEED = 3;
+	public final static int SPEED = 2;
 	private boolean moving;
 	private int movementFrame = 1;
 	private Directions direction = Directions.SOUTH;
@@ -264,40 +265,32 @@ public abstract class GameCharacter extends Drawable implements Animated, HitBox
 	}
 
 	private boolean canMove(Directions direction, Set<Position> unavailablePositions) {
-		Set<Position> toCheck;
+		int textureCenterX = getPosition().getX() + getTexture().getSize().getWidth() / 2;
+		int textureCenterY = getPosition().getY() + getTexture().getSize().getHeight() / 2;
+		int minHitBoxX = textureCenterX - ((HitBoxTexture) getTexture()).getHitBoxSize().getWidth() / 2;
+		int minHitBoxY = textureCenterY - ((HitBoxTexture) getTexture()).getHitBoxSize().getHeight() / 2;
+		int maxHitBoxX = textureCenterX + ((HitBoxTexture) getTexture()).getHitBoxSize().getWidth() / 2;
+		int maxHitBoxY = textureCenterY + ((HitBoxTexture) getTexture()).getHitBoxSize().getHeight() / 2;
+		Set<Position> toCheck = new LinkedHashSet<>();
 		switch (direction) {
 		case SOUTH:
-			toCheck = IntStream.range(getPosition().getX(), getPosition().getX() + getTexture().getSize().getWidth())
-					.mapToObj(posX -> new Position(posX, getPosition().getY() + getTexture().getSize().getHeight() + 1))
+			toCheck = IntStream.range(minHitBoxX, maxHitBoxX).mapToObj(posX -> new Position(posX, maxHitBoxY + 1))
 					.collect(Collectors.toSet());
-			if (Collections.disjoint(unavailablePositions, toCheck)) {
-				return true;
-			}
 			break;
 		case WEST:
-			toCheck = IntStream.range(getPosition().getY(), getPosition().getY() + getTexture().getSize().getHeight())
-					.mapToObj(posY -> new Position(getPosition().getX() - 1, posY)).collect(Collectors.toSet());
-			if (Collections.disjoint(unavailablePositions, toCheck)) {
-				return true;
-			}
+			toCheck = IntStream.range(minHitBoxY, maxHitBoxY).mapToObj(posY -> new Position(minHitBoxX - 1, posY))
+					.collect(Collectors.toSet());
 			break;
 		case EAST:
-			toCheck = IntStream.range(getPosition().getY(), getPosition().getY() + getTexture().getSize().getHeight())
-					.mapToObj(posY -> new Position(getPosition().getX() + getTexture().getSize().getWidth() + 1, posY))
+			toCheck = IntStream.range(minHitBoxY, maxHitBoxY).mapToObj(posY -> new Position(maxHitBoxX + 1, posY))
 					.collect(Collectors.toSet());
-			if (Collections.disjoint(unavailablePositions, toCheck)) {
-				return true;
-			}
 			break;
 		case NORTH:
-			toCheck = IntStream.range(getPosition().getX(), getPosition().getX() + getTexture().getSize().getWidth())
-					.mapToObj(posX -> new Position(posX, getPosition().getY() - 1)).collect(Collectors.toSet());
-			if (Collections.disjoint(unavailablePositions, toCheck)) {
-				return true;
-			}
+			toCheck = IntStream.range(minHitBoxX, maxHitBoxX).mapToObj(posX -> new Position(posX, minHitBoxY - 1))
+					.collect(Collectors.toSet());
 			break;
 		}
-		return false;
+		return (Collections.disjoint(unavailablePositions, toCheck));
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
@@ -335,14 +328,14 @@ public abstract class GameCharacter extends Drawable implements Animated, HitBox
 	}
 
 	@Override
-	public Set<Position> getHitbox() {
+	public Set<Position> getHitBox(int range) {
 		Set<Position> positions = new LinkedHashSet<>();
 		int textureCenterX = getPosition().getX() + getTexture().getSize().getWidth() / 2;
 		int textureCenterY = getPosition().getY() + getTexture().getSize().getHeight() / 2;
-		int minHitBoxX = textureCenterX - 12;
-		int minHitBoxY = textureCenterY - 12;
-		int maxHitBoxX = textureCenterX + 12;
-		int maxHitBoxY = textureCenterY + 12;
+		int minHitBoxX = textureCenterX - ((HitBoxTexture) getTexture()).getHitBoxSize().getWidth() / 2 - range;
+		int minHitBoxY = textureCenterY - ((HitBoxTexture) getTexture()).getHitBoxSize().getHeight() / 2 - range;
+		int maxHitBoxX = textureCenterX + ((HitBoxTexture) getTexture()).getHitBoxSize().getWidth() / 2 + range;
+		int maxHitBoxY = textureCenterY + ((HitBoxTexture) getTexture()).getHitBoxSize().getHeight() / 2 + range;
 
 		for (int x = minHitBoxX; x <= maxHitBoxX; x++) {
 			for (int y = minHitBoxY; y <= maxHitBoxY; y++) {

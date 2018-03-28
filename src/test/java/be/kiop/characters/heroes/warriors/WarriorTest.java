@@ -22,6 +22,7 @@ import be.kiop.exceptions.OutOfBoardException;
 import be.kiop.exceptions.OutOfLivesException;
 import be.kiop.exceptions.SkinNotFoundException;
 import be.kiop.textures.Floors;
+import be.kiop.textures.HitBoxTexture;
 import be.kiop.textures.Skeletons;
 import be.kiop.textures.Texture;
 import be.kiop.textures.Warriors;
@@ -427,8 +428,12 @@ public class WarriorTest {
 
 	@Test
 	public void move_cannotMoveNorth_GameCharacterNotMoved() {
+		int deltaX = ((hero.getTexture().getSize().getWidth()
+				- ((HitBoxTexture) hero.getTexture()).getHitBoxSize().getWidth()) / 2);
+		int deltaY = ((hero.getTexture().getSize().getHeight()
+				- ((HitBoxTexture) hero.getTexture()).getHitBoxSize().getHeight()) / 2);
 		Position pos = new Position(position.getX(), position.getY());
-		Position posNorth = new Position(position.getX(), position.getY() - 1);
+		Position posNorth = new Position(position.getX() + deltaX, position.getY() + deltaY - 1);
 		hero.move(Directions.NORTH, Set.of(posNorth));
 		assertEquals(pos.getX(), hero.getPosition().getX());
 		assertEquals(pos.getY(), hero.getPosition().getY());
@@ -440,7 +445,7 @@ public class WarriorTest {
 		hero.setNextTexture();
 		assertEquals(HERO_NEXT_TEXTURE, hero.getTexture());
 	}
-	
+
 	@Test(expected = IllegalArgumentException.class)
 	public void setLives_lessThanOne_IllegalArgument() {
 		hero.setLives(0);
@@ -450,7 +455,7 @@ public class WarriorTest {
 	public void setLives_moreThanMax_IllegalArgument() {
 		hero.setLives(Hero.MAX_LIVES + 1);
 	}
-	
+
 	@Test(expected = CharacterDiedException.class)
 	public void setHealth_0andNoLivesLeft_CharacterDied() {
 		hero.setLives(1);

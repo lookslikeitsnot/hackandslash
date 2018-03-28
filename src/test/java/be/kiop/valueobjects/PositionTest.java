@@ -87,4 +87,9 @@ public class PositionTest {
 	public void hashCode_samePosition_equal() {
 		assertEquals(new Position(Board.getSize(true).getWidth()/2,Board.getSize(true).getHeight()/2).hashCode(), position.hashCode());
 	}
+	
+	@Test
+	public void toString_nA_goodRepresentation() {
+		assertEquals("Position [x=" + Board.getSize(true).getWidth()/2 + ", y=" + Board.getSize(true).getHeight()/2 + "]", position.toString());
+	}
 }
