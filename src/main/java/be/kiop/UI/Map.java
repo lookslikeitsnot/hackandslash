@@ -11,6 +11,8 @@ import java.util.Set;
 
 import javax.swing.JPanel;
 
+import be.kiop.characters.ennemies.Ennemy;
+import be.kiop.characters.ennemies.skeletons.Skeleton;
 import be.kiop.characters.heroes.Hero;
 import be.kiop.characters.heroes.warriors.Warrior;
 import be.kiop.controllers.Keyboard;
@@ -20,11 +22,14 @@ import be.kiop.obstacles.fires.Fire;
 import be.kiop.obstacles.walls.Wall;
 import be.kiop.textures.Fires;
 import be.kiop.textures.Floors;
+import be.kiop.textures.Skeletons;
 import be.kiop.textures.Texture;
 import be.kiop.textures.Walls;
 import be.kiop.textures.Warriors;
+import be.kiop.valueobjects.HitBox;
 import be.kiop.valueobjects.Position;
 import be.kiop.valueobjects.Size;
+import be.kiop.weapons.Bone;
 import be.kiop.weapons.Sword;
 import be.kiop.weapons.Weapon;
 
@@ -34,10 +39,10 @@ public class Map extends JPanel {
 	private List<Drawable> textures;
 	private List<Drawable> obstacles;
 	private List<Drawable> ennemies;
-	private Set<Position> hitBoxes;
+	private Set<Position> fixedHitBoxes;
+	private Set<Position> dynamicHitBoxes;
 	private Hero hero;
 	private Size size;
-	// public static final Dimension SKIN_DIMENSION = new Dimension(32, 32);
 
 	public Map(Size size) {
 		this.size = size;
@@ -45,14 +50,22 @@ public class Map extends JPanel {
 		textures = new ArrayList<>();
 		obstacles = new ArrayList<>();
 		ennemies = new ArrayList<>();
-		hitBoxes = new LinkedHashSet<>();
+		dynamicHitBoxes = new LinkedHashSet<>();
 		placeHero();
+		placeEnnemies();
 		placeWalls();
 		placeFloor();
 		placeFirePits();
+		setFixedHitBoxes();
 		new Keyboard(this, hero);
-
 		new RepaintTimer(this);
+	}
+
+	private void placeEnnemies() {
+		Set<Position> positions = Set.of(new Position(64, 64), new Position(544, 64), new Position(64, 512),
+				new Position(544, 512));
+		positions.stream().forEach(position -> ennemies.add(new Skeleton(Skeletons.Skeleton_SOUTH_2, position, "Skek",
+				100, new Bone(), 5, 100, Set.of(new Sword()))));
 	}
 
 	private void placeFloor() {
@@ -75,14 +88,14 @@ public class Map extends JPanel {
 	}
 
 	private void placeFirePits() {
-		Set<Position> positions = Set.of(new Position(32, 32), new Position(576, 32), new Position(32, 544), new Position(576, 544));
+		Set<Position> positions = Set.of(new Position(32, 32), new Position(576, 32), new Position(32, 544),
+				new Position(576, 544));
 		try {
 			placeTexture(Fires.Fire_1, obstacles, Fire.class, true, positions);
 		} catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException
 				| IllegalArgumentException | InvocationTargetException e) {
 			e.printStackTrace();
 		}
-		obstacles.add(new Fire(Fires.Fire_1, new Position(32, 32)));
 	}
 
 	private void placeFixedTexture(Texture texture, List<Drawable> list, Class<?> clazz, boolean shouldBeDrawn,
@@ -94,13 +107,6 @@ public class Map extends JPanel {
 				if ((x == 0 || y == 0 || x == size.getWidth() - texture.getSize().getWidth()
 						|| y == size.getHeight() - texture.getSize().getHeight()) == shouldBeDrawn) {
 					list.add(((Drawable) ctor.newInstance(texture, new Position(x, y))));
-					if (solid) {
-						for (int textureX = 0; textureX < texture.getSize().getWidth(); textureX++) {
-							for (int textureY = 0; textureY < texture.getSize().getHeight(); textureY++) {
-								hitBoxes.add(new Position(textureX + x, textureY + y));
-							}
-						}
-					}
 				}
 			}
 		}
@@ -110,20 +116,9 @@ public class Map extends JPanel {
 			Set<Position> positions) throws NoSuchMethodException, SecurityException, InstantiationException,
 			IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 		Constructor<?> ctor = clazz.getConstructor(Texture.class, Position.class);
-		int amount = 0;
 		for (Position position : positions) {
 			list.add(((Drawable) ctor.newInstance(texture, position)));
-			if (solid) {
-				for (int textureX = 0; textureX < texture.getSize().getWidth(); textureX++) {
-					for (int textureY = 0; textureY < texture.getSize().getHeight(); textureY++) {
-						hitBoxes.add(new Position(textureX + position.getX(), textureY + position.getY()));
-						amount++;
-					}
-				}
-			}
-
 		}
-		System.out.println("amount: " + amount);
 	}
 
 	private List<Drawable> getAllDrawables() {
@@ -147,6 +142,9 @@ public class Map extends JPanel {
 //			long startTime = System.nanoTime();
 			if (drawable instanceof Animated) {
 				((Animated) drawable).setNextTexture();
+			}
+			if(drawable instanceof Ennemy) {
+				((Ennemy) drawable).move(getHitBoxes());
 			}
 			skin = drawable.getTexture().getSkin();
 
@@ -174,7 +172,28 @@ public class Map extends JPanel {
 
 	}
 
+	private void setFixedHitBoxes() {
+		fixedHitBoxes = new LinkedHashSet<>();
+		for (Drawable obstacle : obstacles) {
+			if (obstacle instanceof HitBox) {
+				fixedHitBoxes.addAll(((HitBox) obstacle).getHitbox());
+			}
+		}
+	}
+
 	public Set<Position> getHitBoxes() {
-		return hitBoxes;
+		Set<Position> allHitBoxes = new LinkedHashSet<>(fixedHitBoxes);
+		dynamicHitBoxes.clear();
+		for (Drawable ennemy : ennemies) {
+			if (ennemy instanceof Ennemy) {
+				dynamicHitBoxes.addAll(((Ennemy) ennemy).getHitbox());
+			}
+		}
+		
+		dynamicHitBoxes.addAll(hero.getHitbox());
+		allHitBoxes.addAll(dynamicHitBoxes);
+		
+//		System.out.println(allHitBoxes.size());
+		return allHitBoxes;
 	}
 }

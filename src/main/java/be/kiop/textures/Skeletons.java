@@ -2,7 +2,6 @@ package be.kiop.textures;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import javax.imageio.ImageIO;
@@ -45,24 +44,20 @@ public enum Skeletons implements Texture, MoveAnimation {
 	Skeleton_Dog_NORTH_2("skeleton-dogs", "Skeleton_Dog", new Position(48, 144), new Size(48, 48), Directions.NORTH, 2),
 	Skeleton_Dog_NORTH_3("skeleton-dogs", "Skeleton_Dog", new Position(96, 144), new Size(48, 48), Directions.NORTH, 3);
 	
-	private Path path;
 	private String name;
-	private Position position;
 	private Size size;
 	private Directions direction;
 	private int movementFrame;
 	private BufferedImage skin;
 
 	Skeletons(String path, String name, Position position, Size size, Directions direction, int frame) {
-		this.path = Paths.get("src/main/resources/images/ennemies/skeletons/" + path + ".png");
 		this.name= name;
-		this.position = position;
 		this.size = size;
 		this.direction = direction;
 		this.movementFrame = frame;
 		
 		try {
-			BufferedImage sprites = ImageIO.read(this.path.toFile());
+			BufferedImage sprites = ImageIO.read(Paths.get("src/main/resources/images/ennemies/skeletons/" + path + ".png").toFile());
 			skin = sprites.getSubimage(position.getX(), position.getY(), size.getWidth(), size.getHeight());
 		} catch (IOException e) {
 			throw new SkinNotFoundException();
@@ -70,18 +65,8 @@ public enum Skeletons implements Texture, MoveAnimation {
 	}
 
 	@Override
-	public Path getPath() {
-		return path;
-	}
-
-	@Override
 	public String getName() {
 		return name;
-	}
-
-	@Override
-	public Position getPosition() {
-		return position;
 	}
 
 	@Override

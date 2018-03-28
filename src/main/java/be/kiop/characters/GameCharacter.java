@@ -1,8 +1,9 @@
 package be.kiop.characters;
 
 import java.util.Collections;
+import java.util.LinkedHashSet;
+import java.util.Random;
 import java.util.Set;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -20,11 +21,12 @@ import be.kiop.textures.Weapons;
 import be.kiop.utils.StringUtils;
 import be.kiop.valueobjects.Directions;
 import be.kiop.valueobjects.Genders;
+import be.kiop.valueobjects.HitBox;
 import be.kiop.valueobjects.Position;
 import be.kiop.weapons.Fist;
 import be.kiop.weapons.Weapon;
 
-public abstract class GameCharacter extends Drawable implements Animated {
+public abstract class GameCharacter extends Drawable implements Animated, HitBox {
 	private String name;
 	private float health;
 	private Weapon weapon;
@@ -33,10 +35,10 @@ public abstract class GameCharacter extends Drawable implements Animated {
 	public final static int MAX_LEVEL = 100;
 	public final static int MAX_ARMOR = 100;
 	private float armor;
-	public final static int SPEED = 1;
+	public final static int SPEED = 3;
 	private boolean moving;
-	private int movementFrame;
-	private Directions direction = Directions.NORTH;
+	private int movementFrame = 1;
+	private Directions direction = Directions.SOUTH;
 
 	protected void setName(String name) {
 		if (!StringUtils.isValidString(name)) {
@@ -172,9 +174,9 @@ public abstract class GameCharacter extends Drawable implements Animated {
 		gameCharacter.takeDamage(this.weapon.getDamage(), this.weapon.getPenetration());
 	}
 
-	public Set<Weapons> getAvailableWeapons() {
-		return availableWeapons;
-	}
+//	public Set<Weapons> getAvailableWeapons() {
+//		return availableWeapons;
+//	}
 
 	public void setAvailableWeapons(Set<Weapons> availableWeapons) {
 		if (availableWeapons == null || availableWeapons.isEmpty()) {
@@ -184,19 +186,19 @@ public abstract class GameCharacter extends Drawable implements Animated {
 	}
 
 	public void moveLeft() {
-		getPosition().setX(getPosition().getX() - SPEED);
+		getPosition().setX(getPosition().getX() - 1);
 	}
 
 	public void moveRight() {
-		getPosition().setX(getPosition().getX() + SPEED);
+		getPosition().setX(getPosition().getX() + 1);
 	}
 
 	public void moveUp() {
-		getPosition().setY(getPosition().getY() - SPEED);
+		getPosition().setY(getPosition().getY() - 1);
 	}
 
 	public void moveDown() {
-		getPosition().setY(getPosition().getY() + SPEED);
+		getPosition().setY(getPosition().getY() + 1);
 	}
 
 	public void teleport(int x, int y) {
@@ -204,9 +206,20 @@ public abstract class GameCharacter extends Drawable implements Animated {
 		getPosition().setY(y);
 	}
 
+	public void move(Set<Position> unavailablePositions) {
+		Random r = new Random();
+		int tried = 0;
+		while (!canMove(direction, unavailablePositions) && tried < 20) {
+			tried++;
+			this.direction = Directions.values()[r.nextInt(Directions.values().length)];
+		}
+		move(direction, unavailablePositions);
+
+	}
+
 	public void move(Directions direction, Set<Position> unavailablePositions) {
 		this.moving = true;
-		if(this.direction != direction) {
+		if (this.direction != direction) {
 			movementFrame = 1;
 		}
 		this.direction = direction;
@@ -254,29 +267,31 @@ public abstract class GameCharacter extends Drawable implements Animated {
 		Set<Position> toCheck;
 		switch (direction) {
 		case SOUTH:
-			toCheck = IntStream.range(getPosition().getX(), getPosition().getX()+getTexture().getSize().getWidth())
-			.mapToObj(posX -> new Position(posX, getPosition().getY()+getTexture().getSize().getHeight())).collect(Collectors.toSet());
+			toCheck = IntStream.range(getPosition().getX(), getPosition().getX() + getTexture().getSize().getWidth())
+					.mapToObj(posX -> new Position(posX, getPosition().getY() + getTexture().getSize().getHeight() + 1))
+					.collect(Collectors.toSet());
 			if (Collections.disjoint(unavailablePositions, toCheck)) {
 				return true;
 			}
 			break;
 		case WEST:
-			toCheck = IntStream.range(getPosition().getY(), getPosition().getY()+getTexture().getSize().getHeight())
-			.mapToObj(posY -> new Position(getPosition().getX(), posY)).collect(Collectors.toSet());
+			toCheck = IntStream.range(getPosition().getY(), getPosition().getY() + getTexture().getSize().getHeight())
+					.mapToObj(posY -> new Position(getPosition().getX() - 1, posY)).collect(Collectors.toSet());
 			if (Collections.disjoint(unavailablePositions, toCheck)) {
 				return true;
 			}
 			break;
 		case EAST:
-			toCheck = IntStream.range(getPosition().getY(), getPosition().getY()+getTexture().getSize().getHeight())
-			.mapToObj(posY -> new Position(getPosition().getX()+getTexture().getSize().getWidth(), posY)).collect(Collectors.toSet());
+			toCheck = IntStream.range(getPosition().getY(), getPosition().getY() + getTexture().getSize().getHeight())
+					.mapToObj(posY -> new Position(getPosition().getX() + getTexture().getSize().getWidth() + 1, posY))
+					.collect(Collectors.toSet());
 			if (Collections.disjoint(unavailablePositions, toCheck)) {
 				return true;
 			}
 			break;
 		case NORTH:
-			toCheck = IntStream.range(getPosition().getX(), getPosition().getX()+getTexture().getSize().getWidth())
-			.mapToObj(posX -> new Position(posX, getPosition().getY())).collect(Collectors.toSet());
+			toCheck = IntStream.range(getPosition().getX(), getPosition().getX() + getTexture().getSize().getWidth())
+					.mapToObj(posX -> new Position(posX, getPosition().getY() - 1)).collect(Collectors.toSet());
 			if (Collections.disjoint(unavailablePositions, toCheck)) {
 				return true;
 			}
@@ -284,15 +299,11 @@ public abstract class GameCharacter extends Drawable implements Animated {
 		}
 		return false;
 	}
-	
-	public void setMoving(boolean moving) {
-		this.moving = moving;
-	}
-	
+
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
 	public void setNextTexture() {
-		if(moving) {
+		if (moving) {
 			Genders gender = null;
 			Texture oldTexture = getTexture();
 			String textureString = oldTexture.getName();
@@ -303,22 +314,42 @@ public abstract class GameCharacter extends Drawable implements Animated {
 			} catch (ClassNotFoundException e) {
 				e.printStackTrace();
 			}
-			
-			if(!(oldTexture instanceof MoveAnimation)) {
+
+			if (!(oldTexture instanceof MoveAnimation)) {
 				throw new NoMoveAnimationException();
 			}
-			if(oldTexture instanceof CharacterGender) {
+			if (oldTexture instanceof CharacterGender) {
 				gender = ((CharacterGender) oldTexture).getGender();
 			}
-			String genderString = gender==null ? "" : gender.name();
+			String genderString = gender == null ? null : gender.name();
 			String directionString = direction.name();
-			
+
 			movementFrame++;
-			movementFrame = movementFrame>Drawable.ANIMATION_LENGTH ? 1 : movementFrame; 
+			movementFrame = movementFrame > Drawable.ANIMATION_LENGTH ? 1 : movementFrame;
 			int associatedFrame = getAssociatedFrameNumber(movementFrame);
-			
-			setTexture(TextureBuilder.getTexture(textureClass, textureString, genderString, directionString, Integer.toString(associatedFrame)));
+
+			setTexture(TextureBuilder.getTexture(textureClass, textureString, genderString, directionString,
+					Integer.toString(associatedFrame)));
 		}
 		this.moving = false;
+	}
+
+	@Override
+	public Set<Position> getHitbox() {
+		Set<Position> positions = new LinkedHashSet<>();
+		int textureCenterX = getPosition().getX() + getTexture().getSize().getWidth() / 2;
+		int textureCenterY = getPosition().getY() + getTexture().getSize().getHeight() / 2;
+		int minHitBoxX = textureCenterX - 12;
+		int minHitBoxY = textureCenterY - 12;
+		int maxHitBoxX = textureCenterX + 12;
+		int maxHitBoxY = textureCenterY + 12;
+
+		for (int x = minHitBoxX; x <= maxHitBoxX; x++) {
+			for (int y = minHitBoxY; y <= maxHitBoxY; y++) {
+				if (x == minHitBoxX || y == minHitBoxY || x == maxHitBoxX || y == maxHitBoxY)
+					positions.add(new Position(x, y));
+			}
+		}
+		return positions;
 	}
 }

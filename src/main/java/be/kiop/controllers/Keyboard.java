@@ -43,13 +43,11 @@ public class Keyboard {
 			this.direction = direction;
 			this.hero = hero;
 			this.map = map;
-//			new RepaintTimer(map);
 		}
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			hero.move(direction, map.getHitBoxes());
-//			map.repaint();
 		}
 	}
 }

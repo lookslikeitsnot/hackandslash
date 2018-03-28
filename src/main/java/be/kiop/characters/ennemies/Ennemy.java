@@ -22,6 +22,5 @@ public abstract class Ennemy extends GameCharacter implements Dropper{
 			throw new IllegalArgumentException();
 		}
 		this.droppables = droppables;
-		
 	}
 }

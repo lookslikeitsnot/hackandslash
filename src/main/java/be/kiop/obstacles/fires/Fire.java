@@ -20,6 +20,7 @@ public class Fire extends Obstacle implements Animated{
 		super.setTexture(fire);
 		super.setPosition(position);
 		setDestructible(false);
+		movementFrame = 1;
 	}
 	
 	@Override

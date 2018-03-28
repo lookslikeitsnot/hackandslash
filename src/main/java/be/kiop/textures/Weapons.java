@@ -2,7 +2,6 @@ package be.kiop.textures;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import javax.imageio.ImageIO;
@@ -23,19 +22,16 @@ public enum Weapons implements Texture {
 
 	private Class<?> weapon;
 	private String name;
-	private Path path;
-	private Position position;
 	private Size size;
 	private BufferedImage skin;
 
 	Weapons(Class<?> weapon, String path, String name, Position position, Size size) {
 		this.weapon = weapon;
-		this.path = Paths.get("src/main/resources/images/weapons/" + path + ".png");
 		this.name = name;
-		this.position = position;
 		this.size = size;
 		try {
-			BufferedImage sprites = ImageIO.read(this.path.toFile());
+			BufferedImage sprites = ImageIO
+					.read(Paths.get("src/main/resources/images/weapons/" + path + ".png").toFile());
 			skin = sprites.getSubimage(position.getX(), position.getY(), size.getWidth(), size.getHeight());
 		} catch (IOException e) {
 			throw new SkinNotFoundException();
@@ -46,20 +42,9 @@ public enum Weapons implements Texture {
 		return weapon;
 	}
 
-
-	@Override
-	public Path getPath() {
-		return path;
-	}
-	
 	@Override
 	public String getName() {
 		return name;
-	}
-
-	@Override
-	public Position getPosition() {
-		return position;
 	}
 
 	@Override

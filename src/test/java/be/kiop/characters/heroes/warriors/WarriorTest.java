@@ -2,6 +2,7 @@ package be.kiop.characters.heroes.warriors;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.stream.IntStream;
 
@@ -11,6 +12,8 @@ import org.junit.Test;
 import be.kiop.UI.Board;
 import be.kiop.characters.GameCharacter;
 import be.kiop.characters.ennemies.skeletons.Skeleton;
+import be.kiop.characters.heroes.Hero;
+import be.kiop.exceptions.CharacterDiedException;
 import be.kiop.exceptions.IllegalWeaponException;
 import be.kiop.exceptions.LostALifeException;
 import be.kiop.exceptions.MaxLevelReachedException;
@@ -22,6 +25,7 @@ import be.kiop.textures.Floors;
 import be.kiop.textures.Skeletons;
 import be.kiop.textures.Texture;
 import be.kiop.textures.Warriors;
+import be.kiop.valueobjects.Directions;
 import be.kiop.valueobjects.Position;
 import be.kiop.weapons.Bone;
 import be.kiop.weapons.Fist;
@@ -36,7 +40,8 @@ public class WarriorTest {
 	private final static float MARGIN = 0.1F;
 
 	private final static Warriors HERO_TEXTURE = Warriors.Warrior_FEMALE_SOUTH_2;
-	private final static Warriors VALID_TEXTURE =  Warriors.Warrior_MALE_SOUTH_2;
+	private final static Warriors HERO_NEXT_TEXTURE = Warriors.Warrior_FEMALE_SOUTH_1;
+	private final static Warriors VALID_TEXTURE = Warriors.Warrior_MALE_SOUTH_2;
 	private final static Floors INVALID_TEXTURE = Floors.Floor_Parquet_HORIZONTAL;
 	private final static String HERO_NAME = "Warrior";
 	private final static float HERO_HEALTH = 100;
@@ -49,11 +54,23 @@ public class WarriorTest {
 	@Before
 	public void before() {
 		weapon = new Sword();
-		position = new Position(Board.getSize(true).getWidth()/2, Board.getSize(true).getHeight()/2);
-		hero = new Warrior(HERO_TEXTURE , position, HERO_NAME, HERO_HEALTH, weapon, HERO_LEVEL, HERO_ARMOR, HERO_LIVES, HERO_EXPERIENCE,
-				HERO_SHIELD);
+		position = new Position(Board.getSize(true).getWidth() / 2, Board.getSize(true).getHeight() / 2);
+		hero = new Warrior(HERO_TEXTURE, position, HERO_NAME, HERO_HEALTH, weapon, HERO_LEVEL, HERO_ARMOR, HERO_LIVES,
+				HERO_EXPERIENCE, HERO_SHIELD);
 	}
-	
+
+	@Test(expected = IllegalArgumentException.class)
+	public void setName_null_IllegalArgument() {
+		new Warrior(HERO_TEXTURE, position, null, HERO_HEALTH, weapon, HERO_LEVEL, HERO_ARMOR, HERO_LIVES,
+				HERO_EXPERIENCE, HERO_SHIELD);
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void setName_invalid_IllegalArgument() {
+		new Warrior(HERO_TEXTURE, position, " ", HERO_HEALTH, weapon, HERO_LEVEL, HERO_ARMOR, HERO_LIVES,
+				HERO_EXPERIENCE, HERO_SHIELD);
+	}
+
 	@Test
 	public void getTexture_nA_gameCharacterTexture() {
 		assertEquals(HERO_TEXTURE, hero.getTexture());
@@ -79,47 +96,47 @@ public class WarriorTest {
 	@Test
 	public void moveLeft_nA_gameCharacterPositionXMinus1() {
 		hero.moveLeft();
-		assertEquals(Board.getSize(true).getWidth()/2-GameCharacter.SPEED, hero.getPosition().getX());
+		assertEquals(Board.getSize(true).getWidth() / 2 - 1, hero.getPosition().getX());
 	}
-	
-	@Test(expected=OutOfBoardException.class)
+
+	@Test(expected = OutOfBoardException.class)
 	public void moveLeft_untilOOB_OutOfBoardException() {
-		IntStream.range(0, Board.getSize(true).getWidth()+1).forEach(iteration -> hero.moveLeft());
+		IntStream.range(0, Board.getSize(true).getWidth() + 1).forEach(iteration -> hero.moveLeft());
 	}
-	
+
 	@Test
 	public void moveRight_nA_gameCharacterPositionXPlus1() {
 		hero.moveRight();
-		assertEquals(Board.getSize(true).getWidth()/2+GameCharacter.SPEED, hero.getPosition().getX());
+		assertEquals(Board.getSize(true).getWidth() / 2 + 1, hero.getPosition().getX());
 	}
-	
-	@Test(expected=OutOfBoardException.class)
+
+	@Test(expected = OutOfBoardException.class)
 	public void moveRight_untilOOB_OutOfBoardException() {
-		IntStream.range(0, Board.getSize(true).getWidth()+1).forEach(iteration -> hero.moveRight());
+		IntStream.range(0, Board.getSize(true).getWidth() + 1).forEach(iteration -> hero.moveRight());
 	}
-	
+
 	@Test
 	public void moveUp_nA_gameCharacterPositionYMinus1() {
 		hero.moveUp();
-		assertEquals(Board.getSize(true).getHeight()/2-GameCharacter.SPEED, hero.getPosition().getY());
+		assertEquals(Board.getSize(true).getHeight() / 2 - 1, hero.getPosition().getY());
 	}
-	
-	@Test(expected=OutOfBoardException.class)
+
+	@Test(expected = OutOfBoardException.class)
 	public void moveUp_untilOOB_OutOfBoardException() {
-		IntStream.range(0, Board.getSize(true).getHeight()+1).forEach(iteration -> hero.moveUp());
+		IntStream.range(0, Board.getSize(true).getHeight() + 1).forEach(iteration -> hero.moveUp());
 	}
-	
+
 	@Test
 	public void moveDown_nA_gameCharacterPositionYPlus1() {
 		hero.moveDown();
-		assertEquals(Board.getSize(true).getHeight()/2+GameCharacter.SPEED, hero.getPosition().getY());
+		assertEquals(Board.getSize(true).getHeight() / 2 + 1, hero.getPosition().getY());
 	}
-	
-	@Test(expected=OutOfBoardException.class)
+
+	@Test(expected = OutOfBoardException.class)
 	public void moveDown_untilOOB_OutOfBoardException() {
-		IntStream.range(0, Board.getSize(true).getWidth()+1).forEach(iteration -> hero.moveDown());
+		IntStream.range(0, Board.getSize(true).getWidth() + 1).forEach(iteration -> hero.moveDown());
 	}
-	
+
 	@Test
 	public void teleport_validPosition_gameCharacterPositionChanged() {
 		hero.teleport(1, 1);
@@ -275,6 +292,16 @@ public class WarriorTest {
 		IntStream.range(0, GameCharacter.MAX_LEVEL + 1).forEach(val -> hero.decreaseLevel());
 	}
 
+	@Test(expected = IllegalArgumentException.class)
+	public void setLevel_lessThan0_IllegalArgument() {
+		hero.setLevel(-1);
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void setLevel_moreThanMaxLevel_IllegalArgument() {
+		hero.setLevel(GameCharacter.MAX_LEVEL + 1);
+	}
+
 	@Test
 	public void getLives_nA_heroLives() {
 		assertEquals(HERO_LIVES, hero.getLives());
@@ -350,8 +377,83 @@ public class WarriorTest {
 
 	@Test
 	public void attack_ennemy_enemyTakesDamage() {
-		GameCharacter gc = new Skeleton(Skeletons.Skeleton_SOUTH_2, position, "Skeleton", HERO_HEALTH, new Bone(), 1, 0, Set.of(new Sword()));
+		GameCharacter gc = new Skeleton(Skeletons.Skeleton_SOUTH_2, position, "Skeleton", HERO_HEALTH, new Bone(), 1, 0,
+				Set.of(new Sword()));
 		hero.attack(gc);
 		assertEquals(HERO_HEALTH - weapon.getDamage(), gc.getHealth(), MARGIN);
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void setAvailableWeapons_null_IllegalArgument() {
+		hero.setAvailableWeapons(null);
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void setAvailableWeapons_emptySet_IllegalArgument() {
+		hero.setAvailableWeapons(new LinkedHashSet<>());
+	}
+
+	@Test
+	public void move_validMoveEast_GameCharacterMoved() {
+		Position pos = new Position(position.getX(), position.getY());
+		hero.move(Directions.EAST, new LinkedHashSet<>());
+		assertEquals(pos.getX() + GameCharacter.SPEED, hero.getPosition().getX());
+		assertEquals(pos.getY(), hero.getPosition().getY());
+	}
+
+	@Test
+	public void move_validMoveSouth_GameCharacterMoved() {
+		Position pos = new Position(position.getX(), position.getY());
+		hero.move(Directions.SOUTH, new LinkedHashSet<>());
+		assertEquals(pos.getX(), hero.getPosition().getX());
+		assertEquals(pos.getY() + GameCharacter.SPEED, hero.getPosition().getY());
+	}
+
+	@Test
+	public void move_validMoveWest_GameCharacterMoved() {
+		Position pos = new Position(position.getX(), position.getY());
+		hero.move(Directions.WEST, new LinkedHashSet<>());
+		assertEquals(pos.getX() - GameCharacter.SPEED, hero.getPosition().getX());
+		assertEquals(pos.getY(), hero.getPosition().getY());
+	}
+
+	@Test
+	public void move_validMoveNorth_GameCharacterMoved() {
+		Position pos = new Position(position.getX(), position.getY());
+		hero.move(Directions.NORTH, new LinkedHashSet<>());
+		assertEquals(pos.getX(), hero.getPosition().getX());
+		assertEquals(pos.getY() - GameCharacter.SPEED, hero.getPosition().getY());
+	}
+
+	@Test
+	public void move_cannotMoveNorth_GameCharacterNotMoved() {
+		Position pos = new Position(position.getX(), position.getY());
+		Position posNorth = new Position(position.getX(), position.getY() - 1);
+		hero.move(Directions.NORTH, Set.of(posNorth));
+		assertEquals(pos.getX(), hero.getPosition().getX());
+		assertEquals(pos.getY(), hero.getPosition().getY());
+	}
+
+	@Test
+	public void setNextTexture_nA_GameCharacterHasNextTexture() {
+		hero.move(Directions.SOUTH, new LinkedHashSet<>());
+		hero.setNextTexture();
+		assertEquals(HERO_NEXT_TEXTURE, hero.getTexture());
+	}
+	
+	@Test(expected = IllegalArgumentException.class)
+	public void setLives_lessThanOne_IllegalArgument() {
+		hero.setLives(0);
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void setLives_moreThanMax_IllegalArgument() {
+		hero.setLives(Hero.MAX_LIVES + 1);
+	}
+	
+	@Test(expected = CharacterDiedException.class)
+	public void setHealth_0andNoLivesLeft_CharacterDied() {
+		hero.setLives(1);
+		hero.setHealth(0);
 	}
 }
