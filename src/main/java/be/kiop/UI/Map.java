@@ -15,7 +15,6 @@ import javax.swing.JPanel;
 import be.kiop.characters.ennemies.Ennemy;
 import be.kiop.characters.ennemies.skeletons.Skeleton;
 import be.kiop.characters.heroes.Hero;
-import be.kiop.characters.heroes.warriors.Warrior;
 import be.kiop.controllers.Keyboard;
 import be.kiop.decorations.Floor;
 import be.kiop.listeners.RepaintTimer;
@@ -26,13 +25,11 @@ import be.kiop.textures.Floors;
 import be.kiop.textures.Skeletons;
 import be.kiop.textures.Texture;
 import be.kiop.textures.Walls;
-import be.kiop.textures.Warriors;
 import be.kiop.valueobjects.HitBox;
 import be.kiop.valueobjects.Position;
 import be.kiop.valueobjects.Size;
 import be.kiop.weapons.Bone;
 import be.kiop.weapons.Sword;
-import be.kiop.weapons.Weapon;
 
 public class Map extends JPanel {
 	private static final long serialVersionUID = 1L;
@@ -45,14 +42,15 @@ public class Map extends JPanel {
 	private Hero hero;
 	private Size size;
 
-	public Map(Size size) {
+	public Map(Size size, Hero hero) {
 		this.size = size;
 		setPreferredSize(size.toDimension());
 		textures = new ArrayList<>();
 		obstacles = new ArrayList<>();
 		ennemies = new ArrayList<>();
 		dynamicHitBoxes = new LinkedHashSet<>();
-		placeHero();
+		this.hero = hero;
+//		placeHero();
 		placeEnnemies();
 		placeWalls();
 		placeFloor();
@@ -141,15 +139,16 @@ public class Map extends JPanel {
 			x = drawable.getPosition().getX();
 			y = drawable.getPosition().getY();
 //			long startTime = System.nanoTime();
-			if (drawable instanceof Animated) {
-				((Animated) drawable).setNextTexture();
+			if (drawable instanceof Animation) {
+				((Animation) drawable).setNextTexture();
 			}
 			if(drawable instanceof Ennemy) {
 				((Ennemy) drawable).move(getHitBoxes());
 			}
 			skin = drawable.getTexture().getSkin();
 			if(collision()) {
-				System.out.println("aie");
+//				System.out.println("aie");
+				hero.takeDamage(0.01F);
 			}
 
 			g.drawImage(skin, x, y, null);
@@ -160,21 +159,21 @@ public class Map extends JPanel {
 //		System.out.println("duration: " + (endTime - startTime)/1000000);
 	}
 
-	private void placeHero() {
-		Warriors HERO_SKIN = Warriors.Warrior_MALE_SOUTH_1;
-		String HERO_NAME = "Warrior";
-		float HERO_HEALTH = 100;
-		int HERO_LEVEL = 10;
-		int HERO_LIVES = 5;
-		float HERO_ARMOR = 50;
-		float HERO_EXPERIENCE = 200;
-		float HERO_SHIELD = 10;
-		Weapon weapon = new Sword();
-		Position position = new Position(300, 300);
-		hero = new Warrior(HERO_SKIN, position, HERO_NAME, HERO_HEALTH, weapon, HERO_LEVEL, HERO_ARMOR, HERO_LIVES,
-				HERO_EXPERIENCE, HERO_SHIELD);
-
-	}
+//	private void placeHero() {
+//		Warriors HERO_SKIN = Warriors.Warrior_MALE_SOUTH_1;
+//		String HERO_NAME = "Warrior";
+//		float HERO_HEALTH = 100;
+//		int HERO_LEVEL = 10;
+//		int HERO_LIVES = 5;
+//		float HERO_ARMOR = 50;
+//		float HERO_EXPERIENCE = 200;
+//		float HERO_SHIELD = 10;
+//		Weapon weapon = new Sword();
+//		Position position = new Position(300, 300);
+//		hero = new Warrior(HERO_SKIN, position, HERO_NAME, HERO_HEALTH, weapon, HERO_LEVEL, HERO_ARMOR, HERO_LIVES,
+//				HERO_EXPERIENCE, HERO_SHIELD);
+//
+//	}
 
 	private void setFixedHitBoxes() {
 		fixedHitBoxes = new LinkedHashSet<>();
@@ -205,13 +204,13 @@ public class Map extends JPanel {
 		Set<Position> damageDealingHitBoxes = new LinkedHashSet<>();
 		for (Drawable ennemy : ennemies) {
 			if (ennemy instanceof Ennemy) {
-				damageDealingHitBoxes.addAll(((Ennemy) ennemy).getHitBox(5));
+				damageDealingHitBoxes.addAll(((Ennemy) ennemy).getHitBox(2));
 			}
 		}
 		return damageDealingHitBoxes;
 	}
 	
 	public boolean collision() {
-		return !Collections.disjoint(getDamageDealingHitBoxes(), hero.getHitBox(1));
+		return !Collections.disjoint(getDamageDealingHitBoxes(), hero.getHitBox(2));
 	}
 }

@@ -1,19 +1,22 @@
 package be.kiop.characters;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Random;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import be.kiop.UI.Animated;
+import be.kiop.UI.Animation;
 import be.kiop.UI.Drawable;
+import be.kiop.events.HealthEvent;
 import be.kiop.exceptions.CharacterDiedException;
 import be.kiop.exceptions.IllegalWeaponException;
 import be.kiop.exceptions.MaxLevelReachedException;
 import be.kiop.exceptions.MinLevelReachedException;
 import be.kiop.exceptions.NoMoveAnimationException;
+import be.kiop.listeners.HealthListener;
 import be.kiop.textures.HitBoxTexture;
 import be.kiop.textures.MoveAnimation;
 import be.kiop.textures.Texture;
@@ -27,7 +30,7 @@ import be.kiop.valueobjects.Position;
 import be.kiop.weapons.Fist;
 import be.kiop.weapons.Weapon;
 
-public abstract class GameCharacter extends Drawable implements Animated, HitBox {
+public abstract class GameCharacter extends Drawable implements Animation, HitBox {
 	private String name;
 	private float health;
 	private Weapon weapon;
@@ -41,6 +44,20 @@ public abstract class GameCharacter extends Drawable implements Animated, HitBox
 	private int movementFrame = 1;
 	private Directions direction = Directions.SOUTH;
 
+	private final Set<HealthListener> listeners = new HashSet<>();
+
+	public void addHealthListener(HealthListener listener) {
+		synchronized (listeners) {
+			listeners.add(listener);
+		}
+	}
+
+	public void removeHealthListener(HealthListener listener) {
+		synchronized (listeners) {
+			listeners.remove(listener);
+		}
+	}
+
 	protected void setName(String name) {
 		if (!StringUtils.isValidString(name)) {
 			throw new IllegalArgumentException();
@@ -49,7 +66,9 @@ public abstract class GameCharacter extends Drawable implements Animated, HitBox
 	}
 
 	public float getHealth() {
-		return health;
+		synchronized (listeners) {
+			return health;
+		}
 	}
 
 	private void decreaseHealth(float decrement) {
@@ -90,12 +109,30 @@ public abstract class GameCharacter extends Drawable implements Animated, HitBox
 	}
 
 	public void setHealth(float health) {
-		this.health = health;
-		if (this.health <= 0) {
-			this.health = 0;
-			throw new CharacterDiedException();
-		} else if (this.health >= getMaxHealth()) {
-			this.health = getMaxHealth();
+		HealthEvent event;
+		synchronized (listeners) {
+			event = new HealthEvent(this.health, health);
+			this.health = health;
+			if (this.health <= 0) {
+				this.health = 0;
+				throw new CharacterDiedException();
+			} else if (this.health >= getMaxHealth()) {
+				this.health = getMaxHealth();
+			}
+			
+		}
+		if (event.oldHealth != event.newHealth) {
+			broadcast(event);
+		}
+	}
+
+	private void broadcast(HealthEvent healthEvent) {
+		Set<HealthListener> snapshot;
+		synchronized (listeners) {
+			snapshot = new HashSet<>(listeners);
+		}
+		for (HealthListener listener : snapshot) {
+			listener.healthChanged(healthEvent);
 		}
 	}
 
