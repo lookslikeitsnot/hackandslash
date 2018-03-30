@@ -11,13 +11,13 @@ import be.kiop.valueobjects.Position;
 import be.kiop.valueobjects.Size;
 
 public enum Fires implements Texture, IdleAnimation, HitBoxTexture {
-	Fire_1("fires", "Fire", new Position(0, 0), new Size(32, 55), new Size(32, 55), 1),
-	Fire_2("fires", "Fire", new Position(32, 0), new Size(32, 55), new Size(32, 55), 2),
-	Fire_3("fires", "Fire", new Position(64, 0), new Size(32, 55), new Size(32, 55), 3),
+	Fire_1("fires", "Fire", new Position(0, 0), new Size(32, 55), new Size(20, 40), 1),
+	Fire_2("fires", "Fire", new Position(32, 0), new Size(32, 55), new Size(20, 40), 2),
+	Fire_3("fires", "Fire", new Position(64, 0), new Size(32, 55), new Size(20, 40), 3),
 
-	Fire_Off_1("fires", "Fire_Off", new Position(0, 0), new Size(32, 55), new Size(32, 55), 1),
-	Fire_Off_2("fires", "Fire_Off", new Position(32, 0), new Size(32, 55), new Size(32, 55), 2),
-	Fire_Off_3("fires", "Fire_Off", new Position(64, 0), new Size(32, 55), new Size(32, 55), 3);
+	Fire_Off_1("fires", "Fire_Off", new Position(0, 0), new Size(32, 55), new Size(20, 40), 1),
+	Fire_Off_2("fires", "Fire_Off", new Position(32, 0), new Size(32, 55), new Size(20, 40), 2),
+	Fire_Off_3("fires", "Fire_Off", new Position(64, 0), new Size(32, 55), new Size(20, 40), 3);
 
 	private String name;
 	private Size size;

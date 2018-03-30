@@ -17,12 +17,9 @@ public class HUD extends JPanel{
 	private static final long serialVersionUID = 1L;
 	private BufferedImage backgroundImage;
 
-//	private Hero hero;
-//	private Ennemy ennemy;
-
 	public HUD(Hero hero, Ennemy ennemy) {
 		try {
-			backgroundImage = ImageIO.read(new File("src/main/resources/images/backgrounds/background.png"));
+			backgroundImage = ImageIO.read(new File("src/main/resources/images/backgrounds/dark-background.jpg"));
 		} catch (IOException e) {
 			backgroundImage = null;
 			throw new SkinNotFoundException();
@@ -38,6 +35,6 @@ public class HUD extends JPanel{
 	
 	@Override
 	protected void paintComponent(Graphics g) {
-		g.drawImage(backgroundImage, 0,0, this.getWidth(), this.getHeight(), null);
+		g.drawImage(backgroundImage, 0,0, null); //, this.getWidth(), this.getHeight()
 	}
 }

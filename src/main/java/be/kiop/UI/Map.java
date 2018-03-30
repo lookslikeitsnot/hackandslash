@@ -162,22 +162,6 @@ public class Map extends JPanel {
 //		System.out.println("duration: " + (endTime - startTime)/1000000);
 	}
 
-//	private void placeHero() {
-//		Warriors HERO_SKIN = Warriors.Warrior_MALE_SOUTH_1;
-//		String HERO_NAME = "Warrior";
-//		float HERO_HEALTH = 100;
-//		int HERO_LEVEL = 10;
-//		int HERO_LIVES = 5;
-//		float HERO_ARMOR = 50;
-//		float HERO_EXPERIENCE = 200;
-//		float HERO_SHIELD = 10;
-//		Weapon weapon = new Sword();
-//		Position position = new Position(300, 300);
-//		hero = new Warrior(HERO_SKIN, position, HERO_NAME, HERO_HEALTH, weapon, HERO_LEVEL, HERO_ARMOR, HERO_LIVES,
-//				HERO_EXPERIENCE, HERO_SHIELD);
-//
-//	}
-
 	private void setFixedHitBoxes() {
 		fixedHitBoxes = new LinkedHashSet<>();
 		for (Drawable obstacle : obstacles) {

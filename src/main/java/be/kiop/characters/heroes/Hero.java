@@ -6,7 +6,6 @@ import java.util.Set;
 import be.kiop.characters.GameCharacter;
 import be.kiop.events.LifeEvent;
 import be.kiop.exceptions.CharacterDiedException;
-import be.kiop.exceptions.LostALifeException;
 import be.kiop.exceptions.OutOfLivesException;
 import be.kiop.listeners.LifeListener;
 
