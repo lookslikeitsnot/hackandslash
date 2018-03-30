@@ -73,7 +73,6 @@ public abstract class GameCharacter extends Drawable implements Animation, HitBo
 	}
 
 	private void decreaseHealth(float decrement) {
-		System.out.println("decrease health");
 		if (decrement < 0) {
 			throw new IllegalArgumentException();
 		}
@@ -92,7 +91,6 @@ public abstract class GameCharacter extends Drawable implements Animation, HitBo
 	}
 
 	public void takeDamage(float damage) {
-		System.out.println("take damage");
 		decreaseHealth(damage - armor * damage / 100);
 	}
 
@@ -112,9 +110,6 @@ public abstract class GameCharacter extends Drawable implements Animation, HitBo
 	}
 
 	public void setHealth(float health) {
-		System.out.println("setting health");
-		System.out.println("old health" + this.health);
-		System.out.println("new health" + health);
 		HealthEvent event;
 		synchronized (healthListeners) {
 			event = new HealthEvent(this.health, health);
@@ -133,7 +128,6 @@ public abstract class GameCharacter extends Drawable implements Animation, HitBo
 	}
 
 	private void broadcast(HealthEvent healthEvent) {
-		System.out.println("broadcasting");
 		Set<HealthListener> snapshot;
 		synchronized (healthListeners) {
 			snapshot = new HashSet<>(healthListeners);

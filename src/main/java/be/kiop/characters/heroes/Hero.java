@@ -13,7 +13,7 @@ import be.kiop.listeners.LifeListener;
 public abstract class Hero extends GameCharacter {
 	private int lives;
 	private float experience;
-	public static final int MAX_LIVES = 100;
+	public static final int MAX_LIVES = 5;
 	private final Set<LifeListener> lifeListeners = new HashSet<>();
 
 	public void decreaseLives() {
@@ -92,10 +92,10 @@ public abstract class Hero extends GameCharacter {
 		try {
 			super.setHealth(health);
 		} catch (CharacterDiedException ex) {
-			if (lives > 2) {
-				lives--;
+			if (lives > 1) {
+				setLives(lives-1);
 				setHealth(getMaxHealth());
-				throw new LostALifeException();
+//				throw new LostALifeException();
 			} else {
 				throw ex;
 			}

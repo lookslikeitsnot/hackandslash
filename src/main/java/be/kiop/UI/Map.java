@@ -145,8 +145,7 @@ public class Map extends JPanel {
 			if(drawable instanceof Ennemy) {
 				((Ennemy) drawable).move(getHitBoxes());
 				if(collision(((Ennemy) drawable).getHitBox(2), hero.getHitBox(2))) {
-					System.out.println("aue");
-					hero.takeDamage(((Ennemy) drawable).getWeapon().getDamage());
+					hero.takeDamage(((Ennemy) drawable).getWeapon().getDamage()*10);
 				}
 			}
 			skin = drawable.getTexture().getSkin();
