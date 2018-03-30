@@ -6,6 +6,7 @@ import java.util.Set;
 import be.kiop.characters.GameCharacter;
 import be.kiop.events.LifeEvent;
 import be.kiop.exceptions.CharacterDiedException;
+import be.kiop.exceptions.LostALifeException;
 import be.kiop.exceptions.OutOfLivesException;
 import be.kiop.listeners.LifeListener;
 
@@ -94,7 +95,7 @@ public abstract class Hero extends GameCharacter {
 			if (lives > 1) {
 				setLives(lives-1);
 				setHealth(getMaxHealth());
-//				throw new LostALifeException();
+				throw new LostALifeException();
 			} else {
 				throw ex;
 			}

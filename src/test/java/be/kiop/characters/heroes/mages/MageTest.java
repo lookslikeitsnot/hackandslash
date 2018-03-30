@@ -462,14 +462,15 @@ public class MageTest {
 		assertEquals(HERO_NEXT_TEXTURE, hero.getTexture());
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test(expected = OutOfLivesException.class)
 	public void setLives_lessThanOne_IllegalArgument() {
 		hero.setLives(0);
 	}
 
-	@Test(expected = IllegalArgumentException.class)
-	public void setLives_moreThanMax_IllegalArgument() {
+	@Test
+	public void setLives_moreThanMax_MaxLives() {
 		hero.setLives(Hero.MAX_LIVES + 1);
+		assertEquals(Hero.MAX_LIVES, hero.getLives());
 	}
 	
 	@Test(expected=IllegalArgumentException.class)
