@@ -44,19 +44,20 @@ public abstract class GameCharacter extends Drawable implements Animation, HitBo
 	private int movementFrame = 1;
 	private Directions direction = Directions.SOUTH;
 
-	private final Set<HealthListener> listeners = new HashSet<>();
+	private final Set<HealthListener> healthListeners = new HashSet<>();
 
 	public void addHealthListener(HealthListener listener) {
-		synchronized (listeners) {
-			listeners.add(listener);
+		synchronized (healthListeners) {
+			healthListeners.add(listener);
 		}
 	}
 
 	public void removeHealthListener(HealthListener listener) {
-		synchronized (listeners) {
-			listeners.remove(listener);
+		synchronized (healthListeners) {
+			healthListeners.remove(listener);
 		}
 	}
+
 
 	protected void setName(String name) {
 		if (!StringUtils.isValidString(name)) {
@@ -66,12 +67,13 @@ public abstract class GameCharacter extends Drawable implements Animation, HitBo
 	}
 
 	public float getHealth() {
-		synchronized (listeners) {
+		synchronized (healthListeners) {
 			return health;
 		}
 	}
 
 	private void decreaseHealth(float decrement) {
+		System.out.println("decrease health");
 		if (decrement < 0) {
 			throw new IllegalArgumentException();
 		}
@@ -90,6 +92,7 @@ public abstract class GameCharacter extends Drawable implements Animation, HitBo
 	}
 
 	public void takeDamage(float damage) {
+		System.out.println("take damage");
 		decreaseHealth(damage - armor * damage / 100);
 	}
 
@@ -109,8 +112,11 @@ public abstract class GameCharacter extends Drawable implements Animation, HitBo
 	}
 
 	public void setHealth(float health) {
+		System.out.println("setting health");
+		System.out.println("old health" + this.health);
+		System.out.println("new health" + health);
 		HealthEvent event;
-		synchronized (listeners) {
+		synchronized (healthListeners) {
 			event = new HealthEvent(this.health, health);
 			this.health = health;
 			if (this.health <= 0) {
@@ -127,9 +133,10 @@ public abstract class GameCharacter extends Drawable implements Animation, HitBo
 	}
 
 	private void broadcast(HealthEvent healthEvent) {
+		System.out.println("broadcasting");
 		Set<HealthListener> snapshot;
-		synchronized (listeners) {
-			snapshot = new HashSet<>(listeners);
+		synchronized (healthListeners) {
+			snapshot = new HashSet<>(healthListeners);
 		}
 		for (HealthListener listener : snapshot) {
 			listener.healthChanged(healthEvent);

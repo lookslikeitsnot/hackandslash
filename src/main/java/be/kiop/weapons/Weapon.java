@@ -48,9 +48,13 @@ public abstract class Weapon extends Drawable implements Droppable {
 	public Weapon(String name, float maxDamage, float minRange, float maxRange, float maxAttackSpeed) {
 		this.name = name;
 		this.maxDamage = maxDamage;
+		this.damage = maxDamage;
 		this.minRange = minRange;
 		this.maxRange = maxRange;
+		this.range = minRange;
 		this.maxAttackSpeed = maxAttackSpeed;
+		this.attackSpeed = maxAttackSpeed;
+		this.penetration = 0;
 	}
 
 //	public void setName(String name) {

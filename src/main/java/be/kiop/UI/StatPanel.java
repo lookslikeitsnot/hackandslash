@@ -9,13 +9,17 @@ import javax.swing.JProgressBar;
 import javax.swing.UIManager;
 
 import be.kiop.characters.GameCharacter;
+import be.kiop.characters.heroes.Hero;
 import be.kiop.events.HealthEvent;
+import be.kiop.events.LifeEvent;
 import be.kiop.listeners.HealthListener;
+import be.kiop.listeners.LifeListener;
 
-public class StatPanel extends JPanel implements HealthListener{
+public class StatPanel extends JPanel implements HealthListener, LifeListener{
 	private static final long serialVersionUID = 1L;
 	
 	private JProgressBar healthBar;
+	private JLabel lifeLabel;
 	private JLabel nameLabel;
 	private JLabel healthLabel;
 	
@@ -29,14 +33,22 @@ public class StatPanel extends JPanel implements HealthListener{
 		
 		this.gc = gc;
 		this.gc.addHealthListener(this);
+		
+		if(gc instanceof Hero) {
+			((Hero) gc).addLifeListener(this);
+			lifeLabel = new JLabel();
+			lifeLabel.setText(String.valueOf(((Hero) gc).getLives()));
+			lifeLabel.setForeground(Color.red);
+			add(lifeLabel);
+		}
 		setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
 		
 		nameLabel = new JLabel(gc.getName());
-		healthLabel = new JLabel("Health");
+//		healthLabel = new JLabel("Health");
 		nameLabel.setForeground(Color.red);
-		healthLabel.setForeground(Color.red);
+//		healthLabel.setForeground(Color.red);
 		add(nameLabel);
-		add(healthLabel);
+//		add(healthLabel);
 		healthBar = new JProgressBar(0, (int) gc.getMaxHealth());
 		healthBar.setValue((int) gc.getHealth());
 		healthBar.setStringPainted(true);
@@ -49,5 +61,11 @@ public class StatPanel extends JPanel implements HealthListener{
 	public void healthChanged(HealthEvent event) {
 		healthBar.setValue((int) gc.getHealth());
 		healthBar.setString((int)gc.getHealth() + "/" + (int)gc.getMaxHealth());
+	}
+
+	@Override
+	public void lifeChanged(LifeEvent event) {
+		lifeLabel.setText(String.valueOf(((Hero)gc).getLives()));
+		
 	}
 }

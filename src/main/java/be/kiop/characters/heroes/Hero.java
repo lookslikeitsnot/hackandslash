@@ -1,14 +1,20 @@
 package be.kiop.characters.heroes;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import be.kiop.characters.GameCharacter;
+import be.kiop.events.LifeEvent;
 import be.kiop.exceptions.CharacterDiedException;
 import be.kiop.exceptions.LostALifeException;
 import be.kiop.exceptions.OutOfLivesException;
+import be.kiop.listeners.LifeListener;
 
 public abstract class Hero extends GameCharacter {
 	private int lives;
 	private float experience;
 	public static final int MAX_LIVES = 100;
+	private final Set<LifeListener> lifeListeners = new HashSet<>();
 
 	public void decreaseLives() {
 		lives--;
@@ -23,14 +29,36 @@ public abstract class Hero extends GameCharacter {
 	}
 
 	public int getLives() {
-		return lives;
+		synchronized (lifeListeners) {
+			return lives;
+		}
 	}
 
 	public void setLives(int lives) {
-		if (lives < 1 || lives > MAX_LIVES) {
-			throw new IllegalArgumentException();
+		LifeEvent lifeEvent;
+		synchronized (lifeListeners) {
+			lifeEvent = new LifeEvent(this.lives, lives);
+			this.lives = lives;
+			if(this.lives < 1) {
+				this.lives = 0;
+				throw new OutOfLivesException();
+			} else if(this.lives > MAX_LIVES) {
+				this.lives = MAX_LIVES;
+			}
 		}
-		this.lives = lives;
+		if (lifeEvent.oldLives != lifeEvent.newLives) {
+			broadcast(lifeEvent);
+		}
+	}
+	
+	private void broadcast(LifeEvent lifeEvent) {
+		Set<LifeListener> snapshot;
+		synchronized (lifeListeners) {
+			snapshot = new HashSet<>(lifeListeners);
+		}
+		for (LifeListener listener : snapshot) {
+			listener.lifeChanged(lifeEvent);
+		}
 	}
 
 	public float getExperience() {
@@ -71,6 +99,19 @@ public abstract class Hero extends GameCharacter {
 			} else {
 				throw ex;
 			}
+		}
+	}
+	
+	
+	public void addLifeListener(LifeListener listener) {
+		synchronized (lifeListeners) {
+			lifeListeners.add(listener);
+		}
+	}
+
+	public void removeLifeListener(LifeListener listener) {
+		synchronized (lifeListeners) {
+			lifeListeners.remove(listener);
 		}
 	}
 }

@@ -144,12 +144,16 @@ public class Map extends JPanel {
 			}
 			if(drawable instanceof Ennemy) {
 				((Ennemy) drawable).move(getHitBoxes());
+				if(collision(((Ennemy) drawable).getHitBox(2), hero.getHitBox(2))) {
+					System.out.println("aue");
+					hero.takeDamage(((Ennemy) drawable).getWeapon().getDamage());
+				}
 			}
 			skin = drawable.getTexture().getSkin();
-			if(collision()) {
-//				System.out.println("aie");
-				hero.takeDamage(0.01F);
-			}
+//			if(collision()) {
+////				System.out.println("aie");
+//				hero.takeDamage(0.01F);
+//			}
 
 			g.drawImage(skin, x, y, null);
 //			long endTime = System.nanoTime();
@@ -200,17 +204,17 @@ public class Map extends JPanel {
 		return allHitBoxes;
 	}
 	
-	public Set<Position> getDamageDealingHitBoxes(){
-		Set<Position> damageDealingHitBoxes = new LinkedHashSet<>();
-		for (Drawable ennemy : ennemies) {
-			if (ennemy instanceof Ennemy) {
-				damageDealingHitBoxes.addAll(((Ennemy) ennemy).getHitBox(2));
-			}
-		}
-		return damageDealingHitBoxes;
-	}
+//	private Set<Position> getDamageDealingHitBoxes(){
+//		Set<Position> damageDealingHitBoxes = new LinkedHashSet<>();
+//		for (Drawable ennemy : ennemies) {
+//			if (ennemy instanceof Ennemy) {
+//				damageDealingHitBoxes.addAll(((Ennemy) ennemy).getHitBox(2));
+//			}
+//		}
+//		return damageDealingHitBoxes;
+//	}
 	
-	public boolean collision() {
-		return !Collections.disjoint(getDamageDealingHitBoxes(), hero.getHitBox(2));
+	public boolean collision(Set<Position> hitBox1,  Set<Position> hitBox2) {
+		return !Collections.disjoint(hitBox1, hitBox2);
 	}
 }
