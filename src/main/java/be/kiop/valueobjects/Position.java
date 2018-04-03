@@ -30,6 +30,7 @@ public class Position {
 
 	public void setY(int y) {
 		if(y < 0 || y > Board.getSize(true).getHeight()) {
+			System.out.println("y: "+ y );
 			throw new OutOfBoardException();
 		}
 		this.y = y;

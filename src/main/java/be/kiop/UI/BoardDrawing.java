@@ -55,7 +55,7 @@ public class BoardDrawing extends JPanel {
 		placeEnnemies();
 		placeWalls();
 		placeFloor();
-		placeFirePits();
+//		placeFirePits();
 		setFixedHitBoxes();
 		new Keyboard(this, hero);
 		new RepaintTimer(this);

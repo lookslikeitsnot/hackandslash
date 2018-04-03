@@ -13,7 +13,8 @@ import be.kiop.valueobjects.Size;
 
 public enum Walls implements Texture, OrientedTexture {
 	Wall_Metallic("walls", "Wall_Metallic", new Position(0, 0), new Size(32, 32), Orientations.NONE),
-	Wall_Mettalic_Dark("walls", "Wall_Metallic", new Position(64, 0), new Size(32, 32), Orientations.NONE);
+	Wall_Mettalic_Dark("walls", "Wall_Metallic", new Position(64, 0), new Size(32, 32), Orientations.NONE),
+	Wall_Stone("walls1", "Wall_Stone", new Position(32, 32), new Size(32, 48), Orientations.NONE);
 
 	private String name;
 	private Size size;
