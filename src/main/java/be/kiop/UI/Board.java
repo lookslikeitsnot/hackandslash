@@ -46,7 +46,7 @@ public class Board extends JFrame {
 	public Board() {
 		hero = generateHero();
 		walls = generateAllWalls();
-		ennemies = generateEnnemies(4);
+		ennemies = generateEnnemies(16);
 		setLayout(new BorderLayout());
 		boardDrawing = new BoardDrawing(size, hero, walls, ennemies);
 		hud = new HUD(hero, null);
@@ -125,7 +125,7 @@ public class Board extends JFrame {
 
 			Position ennemmyPosition = new Position(randomX, randomY);
 			Enemy ennemy = new Skeleton(skel, ennemmyPosition, "Skek", 100, new Bone(), 5, 100, Set.of(new Sword()));
-			while (collision(ennemy.getHitBox(0), getAllHitBoxes())) {
+			while (collision(ennemy.getHitBox(2), getAllHitBoxes())) {
 				randomX = random.nextInt(size.getWidth() - 2 * exteriorWallSize.getWidth()- skel.getSize().getWidth())
 						+ exteriorWallSize.getWidth();
 				randomY = random.nextInt(size.getHeight() - 2 * exteriorWallSize.getHeight() - skel.getSize().getHeight())
