@@ -1,6 +1,9 @@
 package be.kiop.UI;
 
+import java.awt.AlphaComposite;
+import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -12,6 +15,7 @@ import java.util.Set;
 
 import javax.swing.JPanel;
 
+import be.kiop.characters.GameCharacter;
 import be.kiop.characters.ennemies.Ennemy;
 import be.kiop.characters.ennemies.skeletons.Skeleton;
 import be.kiop.characters.heroes.Hero;
@@ -36,23 +40,23 @@ public class BoardDrawing extends JPanel {
 	private List<Drawable> textures;
 	private List<Drawable> obstacles;
 	private Set<Wall> walls;
-	private List<Drawable> ennemies;
+	private Set<Ennemy> ennemies;
 	private Set<Position> fixedHitBoxes;
 	private Set<Position> dynamicHitBoxes;
 	private Hero hero;
 	private Size size;
 
-	public BoardDrawing(Size size, Hero hero, Set<Wall> walls) {
+	public BoardDrawing(Size size, Hero hero, Set<Wall> walls, Set<Ennemy> ennemies) {
 		this.size = size;
 		this.walls = walls;
 		setPreferredSize(size.toDimension());
 		textures = new ArrayList<>();
 		obstacles = new ArrayList<>();
-		ennemies = new ArrayList<>();
+		this.ennemies = ennemies;
 		dynamicHitBoxes = new LinkedHashSet<>();
 		this.hero = hero;
 //		placeHero();
-		placeEnnemies();
+//		placeEnnemies();
 		placeWalls();
 		placeFloor();
 //		placeFirePits();
@@ -148,13 +152,20 @@ public class BoardDrawing extends JPanel {
 				((Ennemy) drawable).move(getHitBoxes());
 				if(collision(((Ennemy) drawable).getHitBox(2), hero.getHitBox(2))) {
 					hero.takeDamage(((Ennemy) drawable).getWeapon().getDamage()*10);
+					hero.setTakingDamage(true);
+				} 
+			}
+			if (drawable instanceof GameCharacter) {
+				if(((GameCharacter) drawable).isTakingDamage()) {
+					skin = colorFilter(drawable.getTexture().getSkin(), Color.red);
+				}
+				else {
+					skin = drawable.getTexture().getSkin();
 				}
 			}
-			skin = drawable.getTexture().getSkin();
-//			if(collision()) {
-////				System.out.println("aie");
-//				hero.takeDamage(0.01F);
-//			}
+			else {
+				skin = drawable.getTexture().getSkin();
+			}
 
 			g.drawImage(skin, x, y, null);
 //			long endTime = System.nanoTime();
@@ -162,6 +173,7 @@ public class BoardDrawing extends JPanel {
 		}
 //		long endTime = System.nanoTime();
 //		System.out.println("duration: " + (endTime - startTime)/1000000);
+		hero.setTakingDamage(false);
 	}
 
 	private void setFixedHitBoxes() {
@@ -185,21 +197,24 @@ public class BoardDrawing extends JPanel {
 		dynamicHitBoxes.addAll(hero.getHitBox(0));
 		allHitBoxes.addAll(dynamicHitBoxes);
 		
-//		System.out.println(allHitBoxes.size());
 		return allHitBoxes;
 	}
-	
-//	private Set<Position> getDamageDealingHitBoxes(){
-//		Set<Position> damageDealingHitBoxes = new LinkedHashSet<>();
-//		for (Drawable ennemy : ennemies) {
-//			if (ennemy instanceof Ennemy) {
-//				damageDealingHitBoxes.addAll(((Ennemy) ennemy).getHitBox(2));
-//			}
-//		}
-//		return damageDealingHitBoxes;
-//	}
 	
 	public boolean collision(Set<Position> hitBox1,  Set<Position> hitBox2) {
 		return !Collections.disjoint(hitBox1, hitBox2);
 	}
+	
+	private static BufferedImage colorFilter(BufferedImage skin, Color color)
+    {
+        int w = skin.getWidth();
+        int h = skin.getHeight();
+        BufferedImage filteredSkin = new BufferedImage(w,h,BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g = filteredSkin.createGraphics();
+        g.drawImage(skin, 0,0, null);
+        g.setComposite(AlphaComposite.SrcAtop);
+        g.setColor(color);
+        g.fillRect(0,0,w,h);
+        g.dispose();
+        return filteredSkin;
+    }
 }

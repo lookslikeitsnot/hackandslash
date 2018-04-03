@@ -1,10 +1,9 @@
 package be.kiop.UI;
 
 import java.awt.BorderLayout;
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
@@ -13,13 +12,17 @@ import java.util.stream.Collectors;
 import javax.swing.JFrame;
 
 import be.kiop.characters.ennemies.Ennemy;
+import be.kiop.characters.ennemies.skeletons.Skeleton;
 import be.kiop.characters.heroes.Hero;
 import be.kiop.characters.heroes.warriors.Warrior;
+import be.kiop.obstacles.Obstacle;
 import be.kiop.obstacles.walls.Wall;
+import be.kiop.textures.Skeletons;
 import be.kiop.textures.Walls;
 import be.kiop.textures.Warriors;
 import be.kiop.valueobjects.Position;
 import be.kiop.valueobjects.Size;
+import be.kiop.weapons.Bone;
 import be.kiop.weapons.Sword;
 import be.kiop.weapons.Weapon;
 
@@ -30,8 +33,8 @@ public class Board extends JFrame {
 	private HUD hud;
 
 	private Hero hero;
-	private Set<Ennemy> ennemies;
-	private Set<Wall> walls;
+	private Set<Ennemy> ennemies = new LinkedHashSet<>();
+	private Set<Wall> walls = new LinkedHashSet<>();
 
 	private static final Size exteriorWallSize = new Size(32, 32);
 
@@ -43,8 +46,9 @@ public class Board extends JFrame {
 	public Board() {
 		hero = generateHero();
 		walls = generateAllWalls();
+		ennemies = generateEnnemies(4);
 		setLayout(new BorderLayout());
-		boardDrawing = new BoardDrawing(size, hero, walls);
+		boardDrawing = new BoardDrawing(size, hero, walls, ennemies);
 		hud = new HUD(hero, null);
 //		map.setBorder(BorderFactory.createLineBorder(Color.red));
 		add(hud, BorderLayout.NORTH);
@@ -57,7 +61,7 @@ public class Board extends JFrame {
 
 	}
 
-	private Hero generateHero() {
+	private static Hero generateHero() {
 		Warriors HERO_SKIN = Warriors.Warrior_MALE_SOUTH_1;
 		String HERO_NAME = "Warrior";
 		float HERO_HEALTH = 1000;
@@ -72,14 +76,14 @@ public class Board extends JFrame {
 				HERO_EXPERIENCE, HERO_SHIELD);
 	}
 
-	private Set<Wall> generateAllWalls() {
+	private static Set<Wall> generateAllWalls() {
 		Set<Wall> allWalls = new LinkedHashSet<>();
 		allWalls.addAll(generateInteriorWalls(Walls.Wall_Stone));
 		allWalls.addAll(generateExteriorWalls(Walls.Wall_Mettalic_Dark));
 		return allWalls;
 	}
 
-	private Set<Wall> generateExteriorWalls(Walls wall) {
+	private static Set<Wall> generateExteriorWalls(Walls wall) {
 		Set<Wall> walls = new LinkedHashSet<>();
 		for (int x = 0; x <= size.getWidth(); x += wall.getSize().getWidth()) {
 			for (int y = 0; y <= size.getHeight(); y += wall.getSize().getHeight()) {
@@ -102,15 +106,37 @@ public class Board extends JFrame {
 		return walls;
 	}
 
-	private Set<Wall> generateInteriorWalls(Walls wall) {
-		Set<Position> maze = properMaze();
-//		System.out.println("max x:" + maze.stream().map(pos->pos.getX()).max(Comparator.naturalOrder()));
-//		System.out.println("max y:" + maze.stream().map(pos->pos.getY()).max(Comparator.naturalOrder()));
+	private static Set<Wall> generateInteriorWalls(Walls wall) {
+		Set<Position> maze = generateMaze();
 		return maze.stream().map(position -> new Wall(wall, position)).collect(Collectors.toSet());
 	}
 
-	private List<Ennemy> generateEnnemies(int amount) {
-		return new ArrayList<>();
+	private Set<Ennemy> generateEnnemies(int amount) {
+		Set<Ennemy> ennemies = new LinkedHashSet<>();
+		Skeletons skel = Skeletons.Skeleton_SOUTH_2;
+
+		for (int i = 0; i < amount; i++) {
+			Random random = new Random();
+
+			int randomX = random.nextInt(size.getWidth() - 2 * exteriorWallSize.getWidth() - skel.getSize().getWidth())
+					+ exteriorWallSize.getWidth();
+			int randomY = random.nextInt(size.getHeight() - 2 * exteriorWallSize.getHeight() - skel.getSize().getHeight())
+					+ exteriorWallSize.getHeight();
+
+			Position ennemmyPosition = new Position(randomX, randomY);
+			Ennemy ennemy = new Skeleton(skel, ennemmyPosition, "Skek", 100, new Bone(), 5, 100, Set.of(new Sword()));
+			while (collision(ennemy.getHitBox(0), getAllHitBoxes())) {
+				randomX = random.nextInt(size.getWidth() - 2 * exteriorWallSize.getWidth()- skel.getSize().getWidth())
+						+ exteriorWallSize.getWidth();
+				randomY = random.nextInt(size.getHeight() - 2 * exteriorWallSize.getHeight() - skel.getSize().getHeight())
+						+ exteriorWallSize.getHeight();
+
+				ennemmyPosition = new Position(randomX, randomY);
+				ennemy = new Skeleton(skel, ennemmyPosition, "Skek", 100, new Bone(), 5, 100, Set.of(new Sword()));
+			}
+			ennemies.add(ennemy);
+		}
+		return ennemies;
 	}
 
 	public static Size getSize(boolean i) {
@@ -124,7 +150,7 @@ public class Board extends JFrame {
 		Board.size = size;
 	}
 
-	private Set<Position> properMaze() {
+	private static Set<Position> generateMaze() {
 		int tries = 10000;
 		Size corridorSize = new Size(32, 48);
 
@@ -199,5 +225,28 @@ public class Board extends JFrame {
 
 		return tested.entrySet().stream().filter(a -> a.getValue() == false).map(Map.Entry::getKey)
 				.collect(Collectors.toSet());
+	}
+
+	public boolean collision(Set<Position> hitBox1, Set<Position> hitBox2) {
+		return !Collections.disjoint(hitBox1, hitBox2);
+	}
+
+	public Set<Position> getAllHitBoxes() {
+		Set<Position> allHitBoxes = new LinkedHashSet<>();
+		for (Ennemy ennemy : ennemies) {
+			allHitBoxes.addAll(ennemy.getHitBox(0));
+		}
+		for (Obstacle obstacle : getAllObstacles()) {
+			allHitBoxes.addAll(obstacle.getHitBox(0));
+		}
+
+		allHitBoxes.addAll(hero.getHitBox(0));
+
+		return allHitBoxes;
+	}
+
+	public Set<Obstacle> getAllObstacles() {
+		Set<Obstacle> allObstacles = new LinkedHashSet<>(walls);
+		return allObstacles;
 	}
 }

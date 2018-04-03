@@ -44,6 +44,7 @@ public abstract class GameCharacter extends Drawable implements Animation, HitBo
 	private int movementFrame = 1;
 	private Directions direction = Directions.SOUTH;
 	private boolean attacking;
+	private boolean takingDamage;
 
 	private final Set<HealthListener> healthListeners = new HashSet<>();
 
@@ -391,5 +392,13 @@ public abstract class GameCharacter extends Drawable implements Animation, HitBo
 
 	public void setAttacking(boolean attacking) {
 		this.attacking = attacking;
+	}
+
+	public boolean isTakingDamage() {
+		return takingDamage;
+	}
+
+	public void setTakingDamage(boolean takingDamage) {
+		this.takingDamage = takingDamage;
 	}
 }
