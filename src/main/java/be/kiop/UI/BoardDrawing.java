@@ -9,7 +9,6 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -17,22 +16,14 @@ import javax.swing.JPanel;
 
 import be.kiop.characters.GameCharacter;
 import be.kiop.characters.enemies.Enemy;
-import be.kiop.characters.enemies.skeletons.Skeleton;
 import be.kiop.characters.heroes.Hero;
 import be.kiop.controllers.Keyboard;
 import be.kiop.decorations.Floor;
-import be.kiop.listeners.RepaintTimer;
-import be.kiop.obstacles.fires.Fire;
 import be.kiop.obstacles.walls.Wall;
-import be.kiop.textures.Fires;
 import be.kiop.textures.Floors;
-import be.kiop.textures.Skeletons;
 import be.kiop.textures.Texture;
-import be.kiop.valueobjects.HitBox;
 import be.kiop.valueobjects.Position;
 import be.kiop.valueobjects.Size;
-import be.kiop.weapons.Bone;
-import be.kiop.weapons.Sword;
 
 public class BoardDrawing extends JPanel {
 	private static final long serialVersionUID = 1L;
@@ -41,37 +32,37 @@ public class BoardDrawing extends JPanel {
 	private List<Drawable> obstacles;
 	private Set<Wall> walls;
 	private Set<Enemy> ennemies;
-	private Set<Position> fixedHitBoxes;
-	private Set<Position> dynamicHitBoxes;
+//	private Set<Position> fixedHitBoxes;
+//	private Set<Position> dynamicHitBoxes;
 	private Hero hero;
 	private Size size;
 
-	public BoardDrawing(Size size, Hero hero, Set<Wall> walls, Set<Enemy> ennemies) {
+	public BoardDrawing(Size size, Hero hero, Set<Wall> walls, Set<Enemy> ennemies, Board board) {	//, Set<Position> fixedHitBoxes
 		this.size = size;
 		this.walls = walls;
 		setPreferredSize(size.toDimension());
 		textures = new ArrayList<>();
 		obstacles = new ArrayList<>();
 		this.ennemies = ennemies;
-		dynamicHitBoxes = new LinkedHashSet<>();
+//		dynamicHitBoxes = new LinkedHashSet<>();
 		this.hero = hero;
+//		this.fixedHitBoxes = fixedHitBoxes;
 //		placeHero();
 //		placeEnnemies();
 		placeWalls();
 		placeFloor();
 //		placeFirePits();
-		setFixedHitBoxes();
-		new Keyboard(this, hero);
-		new RepaintTimer(this);
+		new Keyboard(this, hero, board);
+		
 	}
 
-	private void placeEnnemies() {
-		Set<Position> positions = Set.of(new Position(64, 64), new Position(544, 64), new Position(64, 512),
-				new Position(544, 512));
-		positions.stream().forEach(position -> ennemies.add(new Skeleton(Skeletons.Skeleton_SOUTH_2, position, "Skek",
-				100, new Bone(), 5, 100, Set.of(new Sword()))));
-	}
-
+//	private void placeEnnemies() {
+//		Set<Position> positions = Set.of(new Position(64, 64), new Position(544, 64), new Position(64, 512),
+//				new Position(544, 512));
+//		positions.stream().forEach(position -> ennemies.add(new Skeleton(Skeletons.Skeleton_SOUTH_2, position, "Skek",
+//				100, new Bone(), 5, 100, Set.of(new Sword()))));
+//	}
+//
 	private void placeFloor() {
 		try {
 			placeFixedTexture(Floors.Floor_Parquet_HORIZONTAL, textures, Floor.class, false, false);
@@ -92,16 +83,16 @@ public class BoardDrawing extends JPanel {
 
 	}
 
-	private void placeFirePits() {
-		Set<Position> positions = Set.of(new Position(32, 32), new Position(576, 32), new Position(32, 544),
-				new Position(576, 544));
-		try {
-			placeTexture(Fires.Fire_1, obstacles, Fire.class, true, positions);
-		} catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException
-				| IllegalArgumentException | InvocationTargetException e) {
-			e.printStackTrace();
-		}
-	}
+//	private void placeFirePits() {
+//		Set<Position> positions = Set.of(new Position(32, 32), new Position(576, 32), new Position(32, 544),
+//				new Position(576, 544));
+//		try {
+//			placeTexture(Fires.Fire_1, obstacles, Fire.class, true, positions);
+//		} catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException
+//				| IllegalArgumentException | InvocationTargetException e) {
+//			e.printStackTrace();
+//		}
+//	}
 
 	private void placeFixedTexture(Texture texture, List<Drawable> list, Class<?> clazz, boolean shouldBeDrawn,
 			boolean solid) throws NoSuchMethodException, SecurityException, InstantiationException,
@@ -116,15 +107,15 @@ public class BoardDrawing extends JPanel {
 			}
 		}
 	}
-
-	private void placeTexture(Texture texture, List<Drawable> list, Class<?> clazz, boolean solid,
-			Set<Position> positions) throws NoSuchMethodException, SecurityException, InstantiationException,
-			IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-		Constructor<?> ctor = clazz.getConstructor(Texture.class, Position.class);
-		for (Position position : positions) {
-			list.add(((Drawable) ctor.newInstance(texture, position)));
-		}
-	}
+//
+//	private void placeTexture(Texture texture, List<Drawable> list, Class<?> clazz, boolean solid,
+//			Set<Position> positions) throws NoSuchMethodException, SecurityException, InstantiationException,
+//			IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+//		Constructor<?> ctor = clazz.getConstructor(Texture.class, Position.class);
+//		for (Position position : positions) {
+//			list.add(((Drawable) ctor.newInstance(texture, position)));
+//		}
+//	}
 
 	private List<Drawable> getAllDrawables() {
 		List<Drawable> allDrawables = new ArrayList<>();
@@ -148,13 +139,7 @@ public class BoardDrawing extends JPanel {
 			if (drawable instanceof Animation) {
 				((Animation) drawable).setNextTexture();
 			}
-			if(drawable instanceof Enemy) {
-				((Enemy) drawable).move(getHitBoxes());
-				if(collision(((Enemy) drawable).getHitBox(2), hero.getHitBox(2))) {
-					hero.takeDamage(((Enemy) drawable).getWeapon().getDamage()*10);
-					hero.setTakingDamage(true);
-				} 
-			}
+			
 			if (drawable instanceof GameCharacter) {
 				if(((GameCharacter) drawable).isTakingDamage()) {
 					skin = colorFilter(drawable.getTexture().getSkin(), Color.red);
@@ -176,29 +161,29 @@ public class BoardDrawing extends JPanel {
 		hero.setTakingDamage(false);
 	}
 
-	private void setFixedHitBoxes() {
-		fixedHitBoxes = new LinkedHashSet<>();
-		for (Drawable obstacle : obstacles) {
-			if (obstacle instanceof HitBox) {
-				fixedHitBoxes.addAll(((HitBox) obstacle).getHitBox(0));
-			}
-		}
-	}
+//	private void setFixedHitBoxes() {
+//		fixedHitBoxes = new LinkedHashSet<>();
+//		for (Drawable obstacle : obstacles) {
+//			if (obstacle instanceof HitBox) {
+//				fixedHitBoxes.addAll(((HitBox) obstacle).getHitBox(0));
+//			}
+//		}
+//	}
 
-	public Set<Position> getHitBoxes() {
-		Set<Position> allHitBoxes = new LinkedHashSet<>(fixedHitBoxes);
-		dynamicHitBoxes.clear();
-		for (Drawable ennemy : ennemies) {
-			if (ennemy instanceof Enemy) {
-				dynamicHitBoxes.addAll(((Enemy) ennemy).getHitBox(0));
-			}
-		}
-		
-		dynamicHitBoxes.addAll(hero.getHitBox(0));
-		allHitBoxes.addAll(dynamicHitBoxes);
-		
-		return allHitBoxes;
-	}
+//	public Set<Position> getHitBoxes() {
+//		Set<Position> allHitBoxes = new LinkedHashSet<>(fixedHitBoxes);
+//		dynamicHitBoxes.clear();
+//		for (Drawable ennemy : ennemies) {
+//			if (ennemy instanceof Enemy) {
+//				dynamicHitBoxes.addAll(((Enemy) ennemy).getHitBox(0));
+//			}
+//		}
+//		
+//		dynamicHitBoxes.addAll(hero.getHitBox(0));
+//		allHitBoxes.addAll(dynamicHitBoxes);
+//		
+//		return allHitBoxes;
+//	}
 	
 	public boolean collision(Set<Position> hitBox1,  Set<Position> hitBox2) {
 		return !Collections.disjoint(hitBox1, hitBox2);

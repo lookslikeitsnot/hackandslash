@@ -5,14 +5,14 @@ import java.awt.event.ActionListener;
 
 import javax.swing.Timer;
 
-import be.kiop.UI.BoardDrawing;
+import be.kiop.UI.Board;
 
 public class RepaintTimer implements ActionListener {
 	Timer timer;
-	BoardDrawing map;
+	Board board;
 
-	public RepaintTimer(BoardDrawing map) {
-		this.map = map;
+	public RepaintTimer(Board board) {
+		this.board = board;
 		timer = new Timer(100, this);
 		timer.start();
 
@@ -21,7 +21,7 @@ public class RepaintTimer implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent ev) {
 		if (ev.getSource() == timer) {
-			map.repaint();
+			board.repaint();
 		}
 	}
 }

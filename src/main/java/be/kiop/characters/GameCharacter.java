@@ -26,6 +26,7 @@ import be.kiop.utils.StringUtils;
 import be.kiop.valueobjects.Directions;
 import be.kiop.valueobjects.Genders;
 import be.kiop.valueobjects.HitBox;
+import be.kiop.valueobjects.NextDirection;
 import be.kiop.valueobjects.Position;
 import be.kiop.weapons.Fist;
 import be.kiop.weapons.Weapon;
@@ -245,6 +246,27 @@ public abstract class GameCharacter extends Drawable implements Animation, HitBo
 	public void teleport(int x, int y) {
 		getPosition().setX(x);
 		getPosition().setY(y);
+	}
+	
+	public void mazeMove(Set<Position> unavailablePositions) {
+//		System.out.println("dir1: " + direction.name());
+		Directions nextDirection = NextDirection.valueOf(direction.name()).getNextDirection();
+		if(canMove(nextDirection, unavailablePositions)) {
+			direction = nextDirection;
+			move(unavailablePositions);
+		} else if(canMove(direction, unavailablePositions)) {
+			move(unavailablePositions);
+		} else {
+			nextDirection = NextDirection.valueOf(nextDirection.name()).getNextDirection();
+			if(canMove(nextDirection, unavailablePositions)) {
+				direction = nextDirection;
+				move(unavailablePositions);
+			} else {
+				direction  = NextDirection.valueOf(nextDirection.name()).getNextDirection();
+				move(unavailablePositions);
+			}
+		}
+//		System.out.println("dir2: " + direction.name());
 	}
 
 	public void move(Set<Position> unavailablePositions) {
