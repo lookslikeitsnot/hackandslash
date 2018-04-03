@@ -11,8 +11,8 @@ import java.util.stream.Collectors;
 
 import javax.swing.JFrame;
 
-import be.kiop.characters.ennemies.Ennemy;
-import be.kiop.characters.ennemies.skeletons.Skeleton;
+import be.kiop.characters.enemies.Enemy;
+import be.kiop.characters.enemies.skeletons.Skeleton;
 import be.kiop.characters.heroes.Hero;
 import be.kiop.characters.heroes.warriors.Warrior;
 import be.kiop.obstacles.Obstacle;
@@ -33,7 +33,7 @@ public class Board extends JFrame {
 	private HUD hud;
 
 	private Hero hero;
-	private Set<Ennemy> ennemies = new LinkedHashSet<>();
+	private Set<Enemy> ennemies = new LinkedHashSet<>();
 	private Set<Wall> walls = new LinkedHashSet<>();
 
 	private static final Size exteriorWallSize = new Size(32, 32);
@@ -111,8 +111,8 @@ public class Board extends JFrame {
 		return maze.stream().map(position -> new Wall(wall, position)).collect(Collectors.toSet());
 	}
 
-	private Set<Ennemy> generateEnnemies(int amount) {
-		Set<Ennemy> ennemies = new LinkedHashSet<>();
+	private Set<Enemy> generateEnnemies(int amount) {
+		Set<Enemy> ennemies = new LinkedHashSet<>();
 		Skeletons skel = Skeletons.Skeleton_SOUTH_2;
 
 		for (int i = 0; i < amount; i++) {
@@ -124,7 +124,7 @@ public class Board extends JFrame {
 					+ exteriorWallSize.getHeight();
 
 			Position ennemmyPosition = new Position(randomX, randomY);
-			Ennemy ennemy = new Skeleton(skel, ennemmyPosition, "Skek", 100, new Bone(), 5, 100, Set.of(new Sword()));
+			Enemy ennemy = new Skeleton(skel, ennemmyPosition, "Skek", 100, new Bone(), 5, 100, Set.of(new Sword()));
 			while (collision(ennemy.getHitBox(0), getAllHitBoxes())) {
 				randomX = random.nextInt(size.getWidth() - 2 * exteriorWallSize.getWidth()- skel.getSize().getWidth())
 						+ exteriorWallSize.getWidth();
@@ -233,7 +233,7 @@ public class Board extends JFrame {
 
 	public Set<Position> getAllHitBoxes() {
 		Set<Position> allHitBoxes = new LinkedHashSet<>();
-		for (Ennemy ennemy : ennemies) {
+		for (Enemy ennemy : ennemies) {
 			allHitBoxes.addAll(ennemy.getHitBox(0));
 		}
 		for (Obstacle obstacle : getAllObstacles()) {

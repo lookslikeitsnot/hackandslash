@@ -11,7 +11,7 @@ import org.junit.Test;
 
 import be.kiop.UI.Board;
 import be.kiop.characters.GameCharacter;
-import be.kiop.characters.ennemies.skeletons.Skeleton;
+import be.kiop.characters.enemies.skeletons.Skeleton;
 import be.kiop.characters.heroes.Hero;
 import be.kiop.exceptions.CharacterDiedException;
 import be.kiop.exceptions.IllegalWeaponException;
@@ -377,7 +377,7 @@ public class WarriorTest {
 	}
 
 	@Test
-	public void attack_ennemy_enemyTakesDamage() {
+	public void attack_enemy_enemyTakesDamage() {
 		GameCharacter gc = new Skeleton(Skeletons.Skeleton_SOUTH_2, position, "Skeleton", HERO_HEALTH, new Bone(), 1, 0,
 				Set.of(new Sword()));
 		hero.attack(gc);

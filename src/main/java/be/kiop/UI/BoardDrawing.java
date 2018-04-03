@@ -16,8 +16,8 @@ import java.util.Set;
 import javax.swing.JPanel;
 
 import be.kiop.characters.GameCharacter;
-import be.kiop.characters.ennemies.Ennemy;
-import be.kiop.characters.ennemies.skeletons.Skeleton;
+import be.kiop.characters.enemies.Enemy;
+import be.kiop.characters.enemies.skeletons.Skeleton;
 import be.kiop.characters.heroes.Hero;
 import be.kiop.controllers.Keyboard;
 import be.kiop.decorations.Floor;
@@ -40,13 +40,13 @@ public class BoardDrawing extends JPanel {
 	private List<Drawable> textures;
 	private List<Drawable> obstacles;
 	private Set<Wall> walls;
-	private Set<Ennemy> ennemies;
+	private Set<Enemy> ennemies;
 	private Set<Position> fixedHitBoxes;
 	private Set<Position> dynamicHitBoxes;
 	private Hero hero;
 	private Size size;
 
-	public BoardDrawing(Size size, Hero hero, Set<Wall> walls, Set<Ennemy> ennemies) {
+	public BoardDrawing(Size size, Hero hero, Set<Wall> walls, Set<Enemy> ennemies) {
 		this.size = size;
 		this.walls = walls;
 		setPreferredSize(size.toDimension());
@@ -148,10 +148,10 @@ public class BoardDrawing extends JPanel {
 			if (drawable instanceof Animation) {
 				((Animation) drawable).setNextTexture();
 			}
-			if(drawable instanceof Ennemy) {
-				((Ennemy) drawable).move(getHitBoxes());
-				if(collision(((Ennemy) drawable).getHitBox(2), hero.getHitBox(2))) {
-					hero.takeDamage(((Ennemy) drawable).getWeapon().getDamage()*10);
+			if(drawable instanceof Enemy) {
+				((Enemy) drawable).move(getHitBoxes());
+				if(collision(((Enemy) drawable).getHitBox(2), hero.getHitBox(2))) {
+					hero.takeDamage(((Enemy) drawable).getWeapon().getDamage()*10);
 					hero.setTakingDamage(true);
 				} 
 			}
@@ -189,8 +189,8 @@ public class BoardDrawing extends JPanel {
 		Set<Position> allHitBoxes = new LinkedHashSet<>(fixedHitBoxes);
 		dynamicHitBoxes.clear();
 		for (Drawable ennemy : ennemies) {
-			if (ennemy instanceof Ennemy) {
-				dynamicHitBoxes.addAll(((Ennemy) ennemy).getHitBox(0));
+			if (ennemy instanceof Enemy) {
+				dynamicHitBoxes.addAll(((Enemy) ennemy).getHitBox(0));
 			}
 		}
 		

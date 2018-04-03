@@ -9,7 +9,7 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 
-import be.kiop.characters.ennemies.Ennemy;
+import be.kiop.characters.enemies.Enemy;
 import be.kiop.characters.heroes.Hero;
 import be.kiop.exceptions.SkinNotFoundException;
 
@@ -17,7 +17,7 @@ public class HUD extends JPanel{
 	private static final long serialVersionUID = 1L;
 	private BufferedImage backgroundImage;
 
-	public HUD(Hero hero, Ennemy ennemy) {
+	public HUD(Hero hero, Enemy ennemy) {
 		try {
 			backgroundImage = ImageIO.read(new File("src/main/resources/images/backgrounds/dark-background.jpg"));
 		} catch (IOException e) {

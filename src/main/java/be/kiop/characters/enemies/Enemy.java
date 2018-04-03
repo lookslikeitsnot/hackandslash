@@ -1,4 +1,4 @@
-package be.kiop.characters.ennemies;
+package be.kiop.characters.enemies;
 
 import java.util.Optional;
 import java.util.Random;
@@ -8,7 +8,7 @@ import be.kiop.characters.GameCharacter;
 import be.kiop.items.Droppable;
 import be.kiop.items.Dropper;
 
-public abstract class Ennemy extends GameCharacter implements Dropper{
+public abstract class Enemy extends GameCharacter implements Dropper{
 	private Set<Droppable> droppables;
 	
 	@Override
