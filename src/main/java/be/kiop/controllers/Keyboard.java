@@ -7,7 +7,7 @@ import javax.swing.ActionMap;
 import javax.swing.InputMap;
 import javax.swing.KeyStroke;
 
-import be.kiop.UI.Map;
+import be.kiop.UI.BoardDrawing;
 import be.kiop.characters.GameCharacter;
 import be.kiop.characters.heroes.Hero;
 import be.kiop.valueobjects.Directions;
@@ -19,8 +19,8 @@ public class Keyboard {
 	private static final String MOVE_WEST = "move left";
 	private static final String MOVE_EAST = "move right";
 
-	public Keyboard(Map map, Hero hero) {
-		InputMap iMap = map.getInputMap(Map.WHEN_IN_FOCUSED_WINDOW);
+	public Keyboard(BoardDrawing map, Hero hero) {
+		InputMap iMap = map.getInputMap(BoardDrawing.WHEN_IN_FOCUSED_WINDOW);
 		ActionMap aMap = map.getActionMap();
 
 		iMap.put(KeyStroke.getKeyStroke("UP"), MOVE_NORTH);
@@ -37,9 +37,9 @@ public class Keyboard {
 		private static final long serialVersionUID = 1L;
 		Directions direction;
 		GameCharacter hero;
-		Map map;
+		BoardDrawing map;
 
-		MoveAction(Directions direction, GameCharacter hero, Map map) {
+		MoveAction(Directions direction, GameCharacter hero, BoardDrawing map) {
 			this.direction = direction;
 			this.hero = hero;
 			this.map = map;

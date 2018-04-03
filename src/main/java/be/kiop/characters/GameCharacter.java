@@ -43,6 +43,7 @@ public abstract class GameCharacter extends Drawable implements Animation, HitBo
 	private boolean moving;
 	private int movementFrame = 1;
 	private Directions direction = Directions.SOUTH;
+	private boolean attacking;
 
 	private final Set<HealthListener> healthListeners = new HashSet<>();
 
@@ -382,5 +383,13 @@ public abstract class GameCharacter extends Drawable implements Animation, HitBo
 			}
 		}
 		return positions;
+	}
+
+	public boolean isAttacking() {
+		return attacking;
+	}
+
+	public void setAttacking(boolean attacking) {
+		this.attacking = attacking;
 	}
 }

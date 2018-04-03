@@ -5,13 +5,13 @@ import java.awt.event.ActionListener;
 
 import javax.swing.Timer;
 
-import be.kiop.UI.Map;
+import be.kiop.UI.BoardDrawing;
 
 public class RepaintTimer implements ActionListener {
 	Timer timer;
-	Map map;
+	BoardDrawing map;
 
-	public RepaintTimer(Map map) {
+	public RepaintTimer(BoardDrawing map) {
 		this.map = map;
 		timer = new Timer(100, this);
 		timer.start();

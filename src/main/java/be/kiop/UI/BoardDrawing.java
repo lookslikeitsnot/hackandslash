@@ -24,26 +24,27 @@ import be.kiop.textures.Fires;
 import be.kiop.textures.Floors;
 import be.kiop.textures.Skeletons;
 import be.kiop.textures.Texture;
-import be.kiop.textures.Walls;
 import be.kiop.valueobjects.HitBox;
 import be.kiop.valueobjects.Position;
 import be.kiop.valueobjects.Size;
 import be.kiop.weapons.Bone;
 import be.kiop.weapons.Sword;
 
-public class Map extends JPanel {
+public class BoardDrawing extends JPanel {
 	private static final long serialVersionUID = 1L;
 
 	private List<Drawable> textures;
 	private List<Drawable> obstacles;
+	private Set<Wall> walls;
 	private List<Drawable> ennemies;
 	private Set<Position> fixedHitBoxes;
 	private Set<Position> dynamicHitBoxes;
 	private Hero hero;
 	private Size size;
 
-	public Map(Size size, Hero hero) {
+	public BoardDrawing(Size size, Hero hero, Set<Wall> walls) {
 		this.size = size;
+		this.walls = walls;
 		setPreferredSize(size.toDimension());
 		textures = new ArrayList<>();
 		obstacles = new ArrayList<>();
@@ -77,12 +78,13 @@ public class Map extends JPanel {
 	}
 
 	private void placeWalls() {
-		try {
-			placeFixedTexture(Walls.Wall_Metallic, obstacles, Wall.class, true, true);
-		} catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException
-				| IllegalArgumentException | InvocationTargetException e) {
-			e.printStackTrace();
-		}
+		obstacles.addAll(walls);
+//		try {
+//			placeFixedTexture(Walls.Wall_Metallic, obstacles, Wall.class, true, true);
+//		} catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException
+//				| IllegalArgumentException | InvocationTargetException e) {
+//			e.printStackTrace();
+//		}
 
 	}
 
