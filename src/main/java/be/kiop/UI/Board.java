@@ -54,7 +54,7 @@ public class Board extends JFrame {
 		walls = generateAllWalls();
 		fixedHitBoxes = getFixedHitBoxes();
 		
-		enemies = generateEnemies(4);
+		enemies = generateEnemies(32);
 		
 		setLayout(new BorderLayout());
 		boardDrawing = new BoardDrawing(size, hero, walls, enemies, this);
@@ -133,9 +133,16 @@ public class Board extends JFrame {
 					+ exteriorWallSize.getWidth();
 			int randomY = random.nextInt(size.getHeight() - 2 * exteriorWallSize.getHeight() - skel.getSize().getHeight())
 					+ exteriorWallSize.getHeight();
+			
+			int diffX = (skel.getSkin().getWidth()-skel.getHitBoxSize().getWidth())/2;
+			int diffY = (skel.getSkin().getHeight()-skel.getHitBoxSize().getHeight())/2;
 
 			Position enemmyPosition = new Position(randomX, randomY);
-			Enemy enemy = new Skeleton(skel, enemmyPosition, "Skek", 100, new Bone(), 5, 100, Set.of(new Sword()));
+			Position enemmyTopLeftPosition = new Position(randomX+diffX, randomY+diffY);
+			Position enemmyTopRightPosition = new Position(randomX+diffX+skel.getHitBoxSize().getWidth(), randomY+diffY);
+			Position enemmyBottomLeftPosition = new Position(randomX+diffX, randomY+diffY+skel.getHitBoxSize().getHeight());
+			Position enemmyBottomRightPosition = new Position(randomX+diffX+skel.getHitBoxSize().getWidth(), randomY+diffY+skel.getHitBoxSize().getHeight());
+//			Enemy enemy = new Skeleton(skel, enemmyPosition, "Skek", 100, new Bone(), 5, 100, Set.of(new Sword()));
 //			while (collision(enemy.getHitBox(2), getAllHitBoxes(-4))) {
 //				randomX = random.nextInt(size.getWidth() - 2 * exteriorWallSize.getWidth()- skel.getSize().getWidth())
 //						+ exteriorWallSize.getWidth();
@@ -145,16 +152,20 @@ public class Board extends JFrame {
 //				enemmyPosition = new Position(randomX, randomY);
 //				enemy = new Skeleton(skel, enemmyPosition, "Skek", 100, new Bone(), 5, 100, Set.of(new Sword()));
 //			}
-			while(!isInMap(enemmyPosition)) {
+			while(!isInMap(enemmyTopLeftPosition) || !isInMap(enemmyTopRightPosition) || !isInMap(enemmyBottomRightPosition) || !isInMap(enemmyBottomLeftPosition)) {
 				randomX = random.nextInt(size.getWidth() - 2 * exteriorWallSize.getWidth() - skel.getSize().getWidth())
 						+ exteriorWallSize.getWidth();
 				randomY = random.nextInt(size.getHeight() - 2 * exteriorWallSize.getHeight() - skel.getSize().getHeight())
 						+ exteriorWallSize.getHeight();
 
 				enemmyPosition = new Position(randomX, randomY);
+				enemmyTopLeftPosition = new Position(randomX+diffX, randomY+diffY);
+				enemmyTopRightPosition = new Position(randomX+diffX+skel.getHitBoxSize().getWidth(), randomY+diffY);
+				enemmyBottomLeftPosition = new Position(randomX+diffX, randomY+diffY+skel.getHitBoxSize().getHeight());
+				enemmyBottomRightPosition = new Position(randomX+diffX+skel.getHitBoxSize().getWidth(), randomY+diffY+skel.getHitBoxSize().getHeight());
 			}
-			enemy = new Skeleton(skel, enemmyPosition, "Skek", 100, new Bone(), 5, 100, Set.of(new Sword()));
-			enemies.add(enemy);
+
+			enemies.add(new Skeleton(skel, enemmyPosition, "Skek", 100, new Bone(), 5, 100, Set.of(new Sword())));
 		}
 		return enemies;
 	}
@@ -305,28 +316,25 @@ public class Board extends JFrame {
 	}
 	
 	private boolean isInMap(Position position) {
-		Enemy enemy = new Skeleton(Skeletons.Skeleton_Dog_EAST_2, position, "SSkek", 10, new Bone(), 1, 0, Set.of(new Bone()));
-		try {
-			IntStream.range(0, 10).forEach(time -> enemy.mazeMove(fixedHitBoxes));
-			
-		} catch (OutOfBoardException e) {
-			return false;
+//		Enemy enemy = new Skeleton(Skeletons.Skeleton_Dog_EAST_2, position, "SSkek", 10, new Bone(), 1, 0, Set.of(new Bone()));
+//		try {
+//			IntStream.range(0, 10).forEach(time -> enemy.mazeMove(fixedHitBoxes));
+//			
+//		} catch (OutOfBoardException e) {
+//			return false;
+//		}
+//		return true;
+		Set<Position> lineBetween = new LinkedHashSet<>();
+		for(int x = exteriorWallSize.getWidth()+1; x < position.getX();x++) {
+			lineBetween.add(new Position(x, exteriorWallSize.getHeight()+1));
 		}
-		return true;
-//		Set<Position> lineBetween = new LinkedHashSet<>();
-//		int slope = (position.getY()-exteriorWallSize.getHeight()+1)/(position.getX()-exteriorWallSize.getWidth()+1);
-//		int cst = position.getY()-position.getX()*slope;
-//		for(int x = exteriorWallSize.getWidth()+1; x < position.getX();x++) {
-//			lineBetween.add(new Position(x, slope*x+cst));
-//		}
-//		for(int y = exteriorWallSize.getHeight()+1; y < position.getY();y++) {
-//			if(slope != 0)
-//				lineBetween.add(new Position((y-cst)/slope, y));
-//		}
+		for(int y = exteriorWallSize.getHeight()+1; y < position.getY();y++) {
+			lineBetween.add(new Position(position.getX(),y));
+		}
 //		System.out.println("line length: " + lineBetween.size());
-//		lineBetween.retainAll(fixedHitBoxes);
+		lineBetween.retainAll(fixedHitBoxes);
 //		System.out.println("corresponding: " + lineBetween.size());
-//		return lineBetween.size()%2==0;
+		return lineBetween.size()%2==0;
 	}
 	
 	public boolean pathExistsBetween(Position pos1, Position pos2) {
