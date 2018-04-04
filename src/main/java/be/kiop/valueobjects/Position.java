@@ -6,8 +6,8 @@ import be.kiop.exceptions.OutOfBoardException;
 public class Position {
 	private int x;
 	private int y;
-	//private int z;
-	
+	// private int z;
+
 	public Position(int x, int y) {
 		setX(x);
 		setY(y);
@@ -18,7 +18,7 @@ public class Position {
 	}
 
 	public void setX(int x) {
-		if(x < 0 || x > Board.getSize(true).getWidth()) {
+		if (x < 0 || x > Board.getSize(true).getWidth()) {
 			throw new OutOfBoardException();
 		}
 		this.x = x;
@@ -29,8 +29,8 @@ public class Position {
 	}
 
 	public void setY(int y) {
-		if(y < 0 || y > Board.getSize(true).getHeight()) {
-			System.out.println("y: "+ y );
+		if (y < 0 || y > Board.getSize(true).getHeight()) {
+			System.out.println("y: " + y);
 			throw new OutOfBoardException();
 		}
 		this.y = y;
@@ -64,5 +64,37 @@ public class Position {
 	@Override
 	public String toString() {
 		return "Position [x=" + x + ", y=" + y + "]";
+	}
+
+	public Position right() {
+		try {
+			return new Position(x + 1, y);
+		} catch (OutOfBoardException ex) {
+			return null;
+		}
+	}
+
+	public Position down() {
+		try {
+			return new Position(x, y + 1);
+		} catch (OutOfBoardException ex) {
+			return null;
+		}
+	}
+
+	public Position left() {
+		try {
+			return new Position(x - 1, y);
+		} catch (OutOfBoardException ex) {
+			return null;
+		}
+	}
+
+	public Position up() {
+		try {
+			return new Position(x, y - 1);
+		} catch (OutOfBoardException ex) {
+			return null;
+		}
 	}
 }

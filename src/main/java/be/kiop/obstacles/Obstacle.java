@@ -42,9 +42,9 @@ public abstract class Obstacle extends Drawable implements HitBox {
 			maxHitBoxY -= (textureHeight-hitBoxHeight)/2;
 		}
 		
-		for (int x = minHitBoxX; x <= maxHitBoxX; x++) {
-			for (int y = minHitBoxY; y <= maxHitBoxY; y++) {
-				if (x == minHitBoxX || y == minHitBoxY || x == maxHitBoxX || y == maxHitBoxY)
+		for (int x = minHitBoxX; x < maxHitBoxX; x++) {
+			for (int y = minHitBoxY; y < maxHitBoxY; y++) {
+				if (x == minHitBoxX || y == minHitBoxY || x == maxHitBoxX-1 || y == maxHitBoxY-1)
 					positions.add(new Position(x, y));
 			}
 		}

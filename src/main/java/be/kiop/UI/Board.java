@@ -9,7 +9,6 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 import javax.swing.JFrame;
 
@@ -17,7 +16,6 @@ import be.kiop.characters.enemies.Enemy;
 import be.kiop.characters.enemies.skeletons.Skeleton;
 import be.kiop.characters.heroes.Hero;
 import be.kiop.characters.heroes.warriors.Warrior;
-import be.kiop.exceptions.OutOfBoardException;
 import be.kiop.listeners.RepaintTimer;
 import be.kiop.obstacles.Obstacle;
 import be.kiop.obstacles.walls.Wall;
@@ -47,14 +45,16 @@ public class Board extends JFrame {
 	static int testHeight = 1008;
 	private static Size size = new Size(2 * exteriorWallSize.getWidth() + testWidth,
 			2 * exteriorWallSize.getHeight() + testHeight);
+	
+	private final static Size corridorSize = new Size(32, 48);
 
 	public Board() {
 		hero = generateHero();
 		
 		walls = generateAllWalls();
-		fixedHitBoxes = getFixedHitBoxes();
+		fixedHitBoxes = calculateFixedHitBoxes();
 		
-		enemies = generateEnemies(32);
+		enemies = generateEnemies(16);
 		
 		setLayout(new BorderLayout());
 		boardDrawing = new BoardDrawing(size, hero, walls, enemies, this);
@@ -128,44 +128,24 @@ public class Board extends JFrame {
 
 		for (int i = 0; i < amount; i++) {
 			Random random = new Random();
-
-			int randomX = random.nextInt(size.getWidth() - 2 * exteriorWallSize.getWidth() - skel.getSize().getWidth())
-					+ exteriorWallSize.getWidth();
-			int randomY = random.nextInt(size.getHeight() - 2 * exteriorWallSize.getHeight() - skel.getSize().getHeight())
-					+ exteriorWallSize.getHeight();
+			int offsetX = (skel.getSkin().getWidth()-corridorSize.getWidth())/2;
+			int offsetY = (skel.getSkin().getHeight()-corridorSize.getHeight())/2;
 			
-			int diffX = (skel.getSkin().getWidth()-skel.getHitBoxSize().getWidth())/2;
-			int diffY = (skel.getSkin().getHeight()-skel.getHitBoxSize().getHeight())/2;
-
-			Position enemmyPosition = new Position(randomX, randomY);
-			Position enemmyTopLeftPosition = new Position(randomX+diffX, randomY+diffY);
-			Position enemmyTopRightPosition = new Position(randomX+diffX+skel.getHitBoxSize().getWidth(), randomY+diffY);
-			Position enemmyBottomLeftPosition = new Position(randomX+diffX, randomY+diffY+skel.getHitBoxSize().getHeight());
-			Position enemmyBottomRightPosition = new Position(randomX+diffX+skel.getHitBoxSize().getWidth(), randomY+diffY+skel.getHitBoxSize().getHeight());
-//			Enemy enemy = new Skeleton(skel, enemmyPosition, "Skek", 100, new Bone(), 5, 100, Set.of(new Sword()));
-//			while (collision(enemy.getHitBox(2), getAllHitBoxes(-4))) {
-//				randomX = random.nextInt(size.getWidth() - 2 * exteriorWallSize.getWidth()- skel.getSize().getWidth())
-//						+ exteriorWallSize.getWidth();
-//				randomY = random.nextInt(size.getHeight() - 2 * exteriorWallSize.getHeight() - skel.getSize().getHeight())
-//						+ exteriorWallSize.getHeight();
-//
-//				enemmyPosition = new Position(randomX, randomY);
-//				enemy = new Skeleton(skel, enemmyPosition, "Skek", 100, new Bone(), 5, 100, Set.of(new Sword()));
-//			}
-			while(!isInMap(enemmyTopLeftPosition) || !isInMap(enemmyTopRightPosition) || !isInMap(enemmyBottomRightPosition) || !isInMap(enemmyBottomLeftPosition)) {
-				randomX = random.nextInt(size.getWidth() - 2 * exteriorWallSize.getWidth() - skel.getSize().getWidth())
-						+ exteriorWallSize.getWidth();
-				randomY = random.nextInt(size.getHeight() - 2 * exteriorWallSize.getHeight() - skel.getSize().getHeight())
-						+ exteriorWallSize.getHeight();
-
-				enemmyPosition = new Position(randomX, randomY);
-				enemmyTopLeftPosition = new Position(randomX+diffX, randomY+diffY);
-				enemmyTopRightPosition = new Position(randomX+diffX+skel.getHitBoxSize().getWidth(), randomY+diffY);
-				enemmyBottomLeftPosition = new Position(randomX+diffX, randomY+diffY+skel.getHitBoxSize().getHeight());
-				enemmyBottomRightPosition = new Position(randomX+diffX+skel.getHitBoxSize().getWidth(), randomY+diffY+skel.getHitBoxSize().getHeight());
+			int randX = random.nextInt((size.getWidth()-2*exteriorWallSize.getWidth())/corridorSize.getWidth());
+			int randY = random.nextInt((size.getHeight()-2*exteriorWallSize.getHeight())/corridorSize.getHeight());
+			
+			int posX = randX*corridorSize.getWidth()+exteriorWallSize.getWidth();
+			int posY = randY*corridorSize.getHeight()+exteriorWallSize.getHeight();
+			
+			while(fixedHitBoxes.contains(new Position(posX, posY))) {
+				randX = random.nextInt((size.getWidth()-2*exteriorWallSize.getWidth())/corridorSize.getWidth());
+				randY = random.nextInt((size.getHeight()-2*exteriorWallSize.getHeight())/corridorSize.getHeight());
+				
+				posX = randX*corridorSize.getWidth()+exteriorWallSize.getWidth();
+				posY = randY*corridorSize.getHeight()+exteriorWallSize.getHeight();
 			}
 
-			enemies.add(new Skeleton(skel, enemmyPosition, "Skek", 100, new Bone(), 5, 100, Set.of(new Sword())));
+			enemies.add(new Skeleton(skel, new Position(posX-offsetX, posY-offsetY), "Skek", 100, new Bone(), 5, 100, Set.of(new Sword())));
 		}
 		return enemies;
 	}
@@ -198,7 +178,6 @@ public class Board extends JFrame {
 
 	private static Set<Position> generateMaze() {
 		int tries = 10000;
-		Size corridorSize = new Size(32, 48);
 
 		Map<Position, Boolean> tested = new LinkedHashMap<>();
 
@@ -288,23 +267,26 @@ public class Board extends JFrame {
 		return allHitBoxes;
 	}
 	
-	public Set<Position> getFixedHitBoxes() {
+	private Set<Position> calculateFixedHitBoxes() {
 		Set<Position> fixedHitBoxes = new LinkedHashSet<>();
 		
 		for (Obstacle obstacle : getAllObstacles()) {
 			for(Position pos: obstacle.getHitBox(0)) {
-				if(pos.getX() >= exteriorWallSize.getWidth() && pos.getX() <= size.getWidth() - exteriorWallSize.getWidth()) {
-					if(pos.getY() >= exteriorWallSize.getHeight() && pos.getY() <= size.getHeight() - exteriorWallSize.getHeight()) {
-						if(fixedHitBoxes.contains(pos)) {
-							fixedHitBoxes.remove(pos);
-						} else {
+				if(pos.getX() >= exteriorWallSize.getWidth()-1 && pos.getX() <= size.getWidth() - exteriorWallSize.getWidth()) {
+					if(pos.getY() >= exteriorWallSize.getHeight()-1 && pos.getY() <= size.getHeight() - exteriorWallSize.getHeight()) {
+
+						if(!(fixedHitBoxes.contains(pos.right()) || fixedHitBoxes.contains(pos.down()) || fixedHitBoxes.contains(pos.left()) || fixedHitBoxes.contains(pos.up()))) {
 							fixedHitBoxes.add(pos);
-						}
-						
+						}						
 					}
 				}
 			}
 		}
+//		System.out.println("hitbox size= " + fixedHitBoxes.size());
+		return fixedHitBoxes;
+	}
+	
+	public Set<Position> getFixedHitBoxes(){
 		return fixedHitBoxes;
 	}
 	
@@ -313,31 +295,5 @@ public class Board extends JFrame {
 	public Set<Obstacle> getAllObstacles() {
 		Set<Obstacle> allObstacles = new LinkedHashSet<>(walls);
 		return allObstacles;
-	}
-	
-	private boolean isInMap(Position position) {
-//		Enemy enemy = new Skeleton(Skeletons.Skeleton_Dog_EAST_2, position, "SSkek", 10, new Bone(), 1, 0, Set.of(new Bone()));
-//		try {
-//			IntStream.range(0, 10).forEach(time -> enemy.mazeMove(fixedHitBoxes));
-//			
-//		} catch (OutOfBoardException e) {
-//			return false;
-//		}
-//		return true;
-		Set<Position> lineBetween = new LinkedHashSet<>();
-		for(int x = exteriorWallSize.getWidth()+1; x < position.getX();x++) {
-			lineBetween.add(new Position(x, exteriorWallSize.getHeight()+1));
-		}
-		for(int y = exteriorWallSize.getHeight()+1; y < position.getY();y++) {
-			lineBetween.add(new Position(position.getX(),y));
-		}
-//		System.out.println("line length: " + lineBetween.size());
-		lineBetween.retainAll(fixedHitBoxes);
-//		System.out.println("corresponding: " + lineBetween.size());
-		return lineBetween.size()%2==0;
-	}
-	
-	public boolean pathExistsBetween(Position pos1, Position pos2) {
-		return true;
 	}
 }

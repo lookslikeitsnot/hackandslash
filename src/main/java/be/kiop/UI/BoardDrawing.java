@@ -37,7 +37,8 @@ public class BoardDrawing extends JPanel {
 	private Hero hero;
 	private Size size;
 
-	public BoardDrawing(Size size, Hero hero, Set<Wall> walls, Set<Enemy> ennemies, Board board) {	//, Set<Position> fixedHitBoxes
+	public BoardDrawing(Size size, Hero hero, Set<Wall> walls, Set<Enemy> ennemies, Board board) { // , Set<Position>
+																									// fixedHitBoxes
 		this.size = size;
 		this.walls = walls;
 		setPreferredSize(size.toDimension());
@@ -51,9 +52,8 @@ public class BoardDrawing extends JPanel {
 //		placeEnnemies();
 		placeWalls();
 		placeFloor();
-//		placeFirePits();
 		new Keyboard(this, hero, board);
-		
+
 	}
 
 //	private void placeEnnemies() {
@@ -139,67 +139,63 @@ public class BoardDrawing extends JPanel {
 			if (drawable instanceof Animation) {
 				((Animation) drawable).setNextTexture();
 			}
-			
+
 			if (drawable instanceof GameCharacter) {
-				if(((GameCharacter) drawable).isTakingDamage()) {
+				if (((GameCharacter) drawable).isTakingDamage()) {
 					skin = colorFilter(drawable.getTexture().getSkin(), Color.red);
-				}
-				else {
+				} else {
 					skin = drawable.getTexture().getSkin();
 				}
-			}
-			else {
+
+			} else {
 				skin = drawable.getTexture().getSkin();
 			}
 
 			g.drawImage(skin, x, y, null);
+
+			/*
+			 * HITBOX OF CHARACTERS if (drawable instanceof GameCharacter) {
+			 * g.setColor(Color.RED);
+			 * 
+			 * int hitBoxWidth = ((HitBoxTexture)
+			 * drawable.getTexture()).getHitBoxSize().getWidth(); int hitBoxHeight =
+			 * ((HitBoxTexture) drawable.getTexture()).getHitBoxSize().getHeight();
+			 * 
+			 * int offSetX = (drawable.getTexture().getSize().getWidth() - hitBoxWidth) / 2;
+			 * int offSetY = (drawable.getTexture().getSize().getHeight() - hitBoxHeight) /
+			 * 2;
+			 * 
+			 * g.drawRect(x + offSetX, y + offSetY, hitBoxWidth, hitBoxHeight); }
+			 */
+
 //			long endTime = System.nanoTime();
 //			System.out.println("duration: " + (endTime - startTime)/1000000);
 		}
+
+		/*
+		 * HITBOX OF OBSTACLES g.setColor(Color.green); for (Position position :
+		 * board.getFixedHitBoxes()) { g.drawLine(position.getX(), position.getY(),
+		 * position.getX(), position.getY()); }
+		 */
 //		long endTime = System.nanoTime();
 //		System.out.println("duration: " + (endTime - startTime)/1000000);
 		hero.setTakingDamage(false);
 	}
 
-//	private void setFixedHitBoxes() {
-//		fixedHitBoxes = new LinkedHashSet<>();
-//		for (Drawable obstacle : obstacles) {
-//			if (obstacle instanceof HitBox) {
-//				fixedHitBoxes.addAll(((HitBox) obstacle).getHitBox(0));
-//			}
-//		}
-//	}
-
-//	public Set<Position> getHitBoxes() {
-//		Set<Position> allHitBoxes = new LinkedHashSet<>(fixedHitBoxes);
-//		dynamicHitBoxes.clear();
-//		for (Drawable ennemy : ennemies) {
-//			if (ennemy instanceof Enemy) {
-//				dynamicHitBoxes.addAll(((Enemy) ennemy).getHitBox(0));
-//			}
-//		}
-//		
-//		dynamicHitBoxes.addAll(hero.getHitBox(0));
-//		allHitBoxes.addAll(dynamicHitBoxes);
-//		
-//		return allHitBoxes;
-//	}
-	
-	public boolean collision(Set<Position> hitBox1,  Set<Position> hitBox2) {
+	public boolean collision(Set<Position> hitBox1, Set<Position> hitBox2) {
 		return !Collections.disjoint(hitBox1, hitBox2);
 	}
-	
-	private static BufferedImage colorFilter(BufferedImage skin, Color color)
-    {
-        int w = skin.getWidth();
-        int h = skin.getHeight();
-        BufferedImage filteredSkin = new BufferedImage(w,h,BufferedImage.TYPE_INT_ARGB);
-        Graphics2D g = filteredSkin.createGraphics();
-        g.drawImage(skin, 0,0, null);
-        g.setComposite(AlphaComposite.SrcAtop);
-        g.setColor(color);
-        g.fillRect(0,0,w,h);
-        g.dispose();
-        return filteredSkin;
-    }
+
+	private static BufferedImage colorFilter(BufferedImage skin, Color color) {
+		int w = skin.getWidth();
+		int h = skin.getHeight();
+		BufferedImage filteredSkin = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
+		Graphics2D g = filteredSkin.createGraphics();
+		g.drawImage(skin, 0, 0, null);
+		g.setComposite(AlphaComposite.SrcAtop);
+		g.setColor(color);
+		g.fillRect(0, 0, w, h);
+		g.dispose();
+		return filteredSkin;
+	}
 }
