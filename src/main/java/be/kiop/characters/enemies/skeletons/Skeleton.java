@@ -28,5 +28,6 @@ public class Skeleton extends Enemy {
 		super.setWeapon(weapon);
 		super.setArmor(armor);
 		super.setDroppables(droppables);
+		super.setId(Enemy.counter++);
 	}
 }

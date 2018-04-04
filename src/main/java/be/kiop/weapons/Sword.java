@@ -30,7 +30,7 @@ public class Sword extends Weapon {
 	}
 
 	public Sword() {
-		super(DEFAULT_NAME, 4, 80, 100, 1);
+		super(DEFAULT_NAME, 50, 80, 100, 1);
 		this.critChance = 0;
 		this.maxCritChance = 0;
 	}

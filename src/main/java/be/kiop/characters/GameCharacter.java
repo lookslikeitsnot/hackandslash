@@ -11,7 +11,6 @@ import java.util.stream.IntStream;
 import be.kiop.UI.Animation;
 import be.kiop.UI.Drawable;
 import be.kiop.events.HealthEvent;
-import be.kiop.exceptions.CharacterDiedException;
 import be.kiop.exceptions.IllegalWeaponException;
 import be.kiop.exceptions.MaxLevelReachedException;
 import be.kiop.exceptions.MinLevelReachedException;
@@ -126,7 +125,7 @@ public abstract class GameCharacter extends Drawable implements Animation, HitBo
 			this.health = health;
 			if (this.health <= 0) {
 				this.health = 0;
-				throw new CharacterDiedException();
+//				throw new CharacterDiedException();
 			} else if (this.health >= getMaxHealth()) {
 				this.health = getMaxHealth();
 			}

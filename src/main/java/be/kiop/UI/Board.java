@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Graphics;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
@@ -166,7 +167,7 @@ public class Board extends JFrame {
 			}
 
 			enemies.add(new Skeleton(skel, new Position(posX - offsetX, posY - offsetY), "Skek", 100, new Bone(), 5,
-					100, Set.of(new Sword())));
+					50, Set.of(new Sword())));
 		}
 		return enemies;
 	}
@@ -186,6 +187,7 @@ public class Board extends JFrame {
 	public void paint(Graphics g) {
 		hud.repaint();
 
+		removeTheDeaths();
 		findActiveEnemy();
 		moveEnemies();
 
@@ -205,6 +207,23 @@ public class Board extends JFrame {
 			}
 
 		}
+	}
+	
+	private void removeTheDeaths() {
+		for (Iterator<Enemy> iterator = enemies.iterator(); iterator.hasNext();) {
+		    Enemy enemy =  iterator.next();
+		    if(enemy.getHealth() == 0) {
+		    	iterator.remove();
+		    }       
+		}
+//		for(Enemy enemy:enemies) {
+//			if(enemy.getHealth() == 0) {
+//				System.out.println("enemy id: " + enemy.getId());
+//				enemies.remove(enemy);
+//				System.out.println("enemies length: " + enemies.size());
+//				
+//			}
+//		}
 	}
 
 	private static Set<Position> generateMaze() {
