@@ -82,9 +82,9 @@ public class Board extends JFrame {
 	private static Hero generateHero() {
 		Warriors HERO_SKIN = Warriors.Warrior_MALE_SOUTH_1;
 		String HERO_NAME = "Warrior";
-		float HERO_HEALTH = 1000;
-		int HERO_LEVEL = 10;
-		int HERO_LIVES = 5;
+		float HERO_HEALTH = 100;
+		int HERO_LEVEL = 1;
+		int HERO_LIVES = 3;
 		float HERO_ARMOR = 50;
 		float HERO_EXPERIENCE = 200;
 		float HERO_SHIELD = 10;
@@ -216,14 +216,6 @@ public class Board extends JFrame {
 		    	iterator.remove();
 		    }       
 		}
-//		for(Enemy enemy:enemies) {
-//			if(enemy.getHealth() == 0) {
-//				System.out.println("enemy id: " + enemy.getId());
-//				enemies.remove(enemy);
-//				System.out.println("enemies length: " + enemies.size());
-//				
-//			}
-//		}
 	}
 
 	private static Set<Position> generateMaze() {

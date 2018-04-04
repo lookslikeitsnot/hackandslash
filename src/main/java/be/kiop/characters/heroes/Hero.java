@@ -39,10 +39,10 @@ public abstract class Hero extends GameCharacter {
 		synchronized (lifeListeners) {
 			lifeEvent = new LifeEvent(this.lives, lives);
 			this.lives = lives;
-			if(this.lives < 1) {
+			if (this.lives < 1) {
 				this.lives = 0;
 				throw new OutOfLivesException();
-			} else if(this.lives > MAX_LIVES) {
+			} else if (this.lives > MAX_LIVES) {
 				this.lives = MAX_LIVES;
 			}
 		}
@@ -50,7 +50,7 @@ public abstract class Hero extends GameCharacter {
 			broadcast(lifeEvent);
 		}
 	}
-	
+
 	private void broadcast(LifeEvent lifeEvent) {
 		Set<LifeListener> snapshot;
 		synchronized (lifeListeners) {
@@ -89,20 +89,19 @@ public abstract class Hero extends GameCharacter {
 
 	@Override
 	public void setHealth(float health) {
-		try {
-			super.setHealth(health);
-		} catch (CharacterDiedException ex) {
+		super.setHealth(health);
+		if(getHealth() == 0) {
 			if (lives > 1) {
-				setLives(lives-1);
+				setLives(lives - 1);
 				setHealth(getMaxHealth());
 				throw new LostALifeException();
 			} else {
-				throw ex;
+				throw new CharacterDiedException();
+
 			}
 		}
 	}
-	
-	
+
 	public void addLifeListener(LifeListener listener) {
 		synchronized (lifeListeners) {
 			lifeListeners.add(listener);
