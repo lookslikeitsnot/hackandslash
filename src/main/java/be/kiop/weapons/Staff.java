@@ -13,7 +13,7 @@ public class Staff extends Weapon{
 	private float manaCost;
 	public static final String DEFAULT_NAME= "Staff";
 
-	public Staff(Weapons weapon, Position position, String name, float damage, float maxDamage, float range, float minRange, float maxRange,
+	public Staff(Weapons weapon, Position position, String name, float damage, float maxDamage, int range, int minRange, int maxRange,
 			float attackSpeed, float maxAttackSpeed, float penetration, float manaCost) {
 		super(name, maxDamage, minRange, maxRange, maxAttackSpeed);
 		super.setAvailableTextures(AVAILABLE_TEXTURES);

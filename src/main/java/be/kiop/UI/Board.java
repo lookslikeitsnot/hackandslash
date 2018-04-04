@@ -2,10 +2,12 @@ package be.kiop.UI;
 
 import java.awt.BorderLayout;
 import java.awt.Graphics;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -18,7 +20,9 @@ import be.kiop.characters.heroes.Hero;
 import be.kiop.characters.heroes.warriors.Warrior;
 import be.kiop.listeners.RepaintTimer;
 import be.kiop.obstacles.Obstacle;
+import be.kiop.obstacles.fires.Fire;
 import be.kiop.obstacles.walls.Wall;
+import be.kiop.textures.Fires;
 import be.kiop.textures.Skeletons;
 import be.kiop.textures.Walls;
 import be.kiop.textures.Warriors;
@@ -35,8 +39,10 @@ public class Board extends JFrame {
 	private HUD hud;
 
 	private Hero hero;
+	private Enemy activeEnemy;
 	private Set<Enemy> enemies = new LinkedHashSet<>();
 	private Set<Wall> walls = new LinkedHashSet<>();
+	private Set<Fire> fires = new LinkedHashSet<>();
 	private final Set<Position> fixedHitBoxes;
 
 	private static final Size exteriorWallSize = new Size(32, 32);
@@ -45,24 +51,25 @@ public class Board extends JFrame {
 	static int testHeight = 1008;
 	private static Size size = new Size(2 * exteriorWallSize.getWidth() + testWidth,
 			2 * exteriorWallSize.getHeight() + testHeight);
-	
+
 	private final static Size corridorSize = new Size(32, 48);
 
 	public Board() {
 		hero = generateHero();
-		
+
 		walls = generateAllWalls();
 		fixedHitBoxes = calculateFixedHitBoxes();
-		
+		fires = generateFirePits();
+
 		enemies = generateEnemies(16);
-		
+
 		setLayout(new BorderLayout());
-		boardDrawing = new BoardDrawing(size, hero, walls, enemies, this);
+		boardDrawing = new BoardDrawing(size, hero, walls, fires, enemies, this);
 		hud = new HUD(hero, null);
 //		map.setBorder(BorderFactory.createLineBorder(Color.red));
 		add(hud, BorderLayout.NORTH);
 		add(boardDrawing, BorderLayout.CENTER);
-		
+
 		new RepaintTimer(this);
 
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -113,13 +120,24 @@ public class Board extends JFrame {
 				}
 			}
 		}
-		walls.add(new Wall(wall, new Position(size.getWidth() - wall.getSize().getWidth(), size.getHeight() - wall.getSize().getHeight())));
+		walls.add(new Wall(wall, new Position(size.getWidth() - wall.getSize().getWidth(),
+				size.getHeight() - wall.getSize().getHeight())));
 		return walls;
 	}
 
 	private static Set<Wall> generateInteriorWalls(Walls wall) {
 		Set<Position> maze = generateMaze();
 		return maze.stream().map(position -> new Wall(wall, position)).collect(Collectors.toSet());
+	}
+	
+	private static Set<Fire> generateFirePits() {
+		Fires fire = Fires.Fire_2;
+		Set<Position> positions = Set.of(
+				new Position(0,0), 
+				new Position(0, size.getHeight() - fire.getSize().getHeight()), 
+				new Position(size.getWidth() - fire.getSize().getWidth(), 0),
+				new Position(size.getWidth() - fire.getSize().getWidth(), size.getHeight() - fire.getSize().getHeight()));
+		return positions.stream().map(pos-> new Fire(fire, pos)).collect(Collectors.toSet());
 	}
 
 	private Set<Enemy> generateEnemies(int amount) {
@@ -128,24 +146,27 @@ public class Board extends JFrame {
 
 		for (int i = 0; i < amount; i++) {
 			Random random = new Random();
-			int offsetX = (skel.getSkin().getWidth()-corridorSize.getWidth())/2;
-			int offsetY = (skel.getSkin().getHeight()-corridorSize.getHeight())/2;
-			
-			int randX = random.nextInt((size.getWidth()-2*exteriorWallSize.getWidth())/corridorSize.getWidth());
-			int randY = random.nextInt((size.getHeight()-2*exteriorWallSize.getHeight())/corridorSize.getHeight());
-			
-			int posX = randX*corridorSize.getWidth()+exteriorWallSize.getWidth();
-			int posY = randY*corridorSize.getHeight()+exteriorWallSize.getHeight();
-			
-			while(fixedHitBoxes.contains(new Position(posX, posY))) {
-				randX = random.nextInt((size.getWidth()-2*exteriorWallSize.getWidth())/corridorSize.getWidth());
-				randY = random.nextInt((size.getHeight()-2*exteriorWallSize.getHeight())/corridorSize.getHeight());
-				
-				posX = randX*corridorSize.getWidth()+exteriorWallSize.getWidth();
-				posY = randY*corridorSize.getHeight()+exteriorWallSize.getHeight();
+			int offsetX = (skel.getSkin().getWidth() - corridorSize.getWidth()) / 2;
+			int offsetY = (skel.getSkin().getHeight() - corridorSize.getHeight()) / 2;
+
+			int randX = random.nextInt((size.getWidth() - 2 * exteriorWallSize.getWidth()) / corridorSize.getWidth());
+			int randY = random
+					.nextInt((size.getHeight() - 2 * exteriorWallSize.getHeight()) / corridorSize.getHeight());
+
+			int posX = randX * corridorSize.getWidth() + exteriorWallSize.getWidth();
+			int posY = randY * corridorSize.getHeight() + exteriorWallSize.getHeight();
+
+			while (fixedHitBoxes.contains(new Position(posX, posY))) {
+				randX = random.nextInt((size.getWidth() - 2 * exteriorWallSize.getWidth()) / corridorSize.getWidth());
+				randY = random
+						.nextInt((size.getHeight() - 2 * exteriorWallSize.getHeight()) / corridorSize.getHeight());
+
+				posX = randX * corridorSize.getWidth() + exteriorWallSize.getWidth();
+				posY = randY * corridorSize.getHeight() + exteriorWallSize.getHeight();
 			}
 
-			enemies.add(new Skeleton(skel, new Position(posX-offsetX, posY-offsetY), "Skek", 100, new Bone(), 5, 100, Set.of(new Sword())));
+			enemies.add(new Skeleton(skel, new Position(posX - offsetX, posY - offsetY), "Skek", 100, new Bone(), 5,
+					100, Set.of(new Sword())));
 		}
 		return enemies;
 	}
@@ -160,24 +181,34 @@ public class Board extends JFrame {
 		}
 		Board.size = size;
 	}
-	
+
 	@Override
 	public void paint(Graphics g) {
-			hud.repaint();
+		hud.repaint();
 
-		Set<Position> allHitBoxes = getAllHitBoxes(0);
-		for(Enemy enemy: enemies) {
-			enemy.move(allHitBoxes);
-			if(collision(enemy.getHitBox(2), hero.getHitBox(2))) {
-				hero.takeDamage(enemy.getWeapon().getDamage()*10);
-				hero.setTakingDamage(true);
-			} 
-		}
+		findActiveEnemy();
+		moveEnemies();
+
 		boardDrawing.repaint();
 	}
 
+	private void moveEnemies() {
+		Set<Position> allHitBoxes = getAllHitBoxes(0);
+		for (Enemy enemy : enemies) {
+			enemy.move(allHitBoxes);
+			if (enemy.isActive()) {
+//				System.out.println("I can see you");
+				if (collision(enemy.getHitBox(2), hero.getHitBox(2))) {
+					hero.takeDamage(enemy.getWeapon().getDamage() * 10);
+				}
+				enemy.setActive(false);
+			}
+
+		}
+	}
+
 	private static Set<Position> generateMaze() {
-		int tries = 10000;
+		int tries = 4000;
 
 		Map<Position, Boolean> tested = new LinkedHashMap<>();
 
@@ -252,7 +283,7 @@ public class Board extends JFrame {
 				.collect(Collectors.toSet());
 	}
 
-	public boolean collision(Set<Position> hitBox1, Set<Position> hitBox2) {
+	private boolean collision(Set<Position> hitBox1, Set<Position> hitBox2) {
 		return !Collections.disjoint(hitBox1, hitBox2);
 	}
 
@@ -266,18 +297,21 @@ public class Board extends JFrame {
 //		System.out.println("hitbox size: " + allHitBoxes.size());
 		return allHitBoxes;
 	}
-	
+
 	private Set<Position> calculateFixedHitBoxes() {
 		Set<Position> fixedHitBoxes = new LinkedHashSet<>();
-		
-		for (Obstacle obstacle : getAllObstacles()) {
-			for(Position pos: obstacle.getHitBox(0)) {
-				if(pos.getX() >= exteriorWallSize.getWidth()-1 && pos.getX() <= size.getWidth() - exteriorWallSize.getWidth()) {
-					if(pos.getY() >= exteriorWallSize.getHeight()-1 && pos.getY() <= size.getHeight() - exteriorWallSize.getHeight()) {
 
-						if(!(fixedHitBoxes.contains(pos.right()) || fixedHitBoxes.contains(pos.down()) || fixedHitBoxes.contains(pos.left()) || fixedHitBoxes.contains(pos.up()))) {
+		for (Obstacle obstacle : getAllObstacles()) {
+			for (Position pos : obstacle.getHitBox(0)) {
+				if (pos.getX() >= exteriorWallSize.getWidth() - 1
+						&& pos.getX() <= size.getWidth() - exteriorWallSize.getWidth()) {
+					if (pos.getY() >= exteriorWallSize.getHeight() - 1
+							&& pos.getY() <= size.getHeight() - exteriorWallSize.getHeight()) {
+
+						if (!(fixedHitBoxes.contains(pos.right()) || fixedHitBoxes.contains(pos.down())
+								|| fixedHitBoxes.contains(pos.left()) || fixedHitBoxes.contains(pos.up()))) {
 							fixedHitBoxes.add(pos);
-						}						
+						}
 					}
 				}
 			}
@@ -285,15 +319,37 @@ public class Board extends JFrame {
 //		System.out.println("hitbox size= " + fixedHitBoxes.size());
 		return fixedHitBoxes;
 	}
-	
-	public Set<Position> getFixedHitBoxes(){
+
+	public Set<Position> getFixedHitBoxes() {
 		return fixedHitBoxes;
 	}
-	
-	
 
 	public Set<Obstacle> getAllObstacles() {
 		Set<Obstacle> allObstacles = new LinkedHashSet<>(walls);
 		return allObstacles;
+	}
+
+	public Enemy getActiveEnemy() {
+		return activeEnemy;
+	}
+
+	public Optional<Enemy> enemyInRange() {
+//		System.out.println("range: " + hero.getWeapon().getRange());
+		for (Enemy enemy : enemies) {
+			if (hero.inFrontOf(hero.getWeapon().getRange(), hero.getWeapon().getRange(), enemy.getCenter(),
+					fixedHitBoxes)) {
+//				System.out.println("ennemy in range");
+				return Optional.ofNullable(enemy);
+			}
+		}
+		return Optional.empty();
+	}
+
+	private void findActiveEnemy() {
+		for (Enemy enemy : enemies) {
+			if (enemy.inFrontOf(64, 96, hero.getCenter(), fixedHitBoxes)) {
+				enemy.setActive(true);
+			}
+		}
 	}
 }

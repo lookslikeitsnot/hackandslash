@@ -18,9 +18,9 @@ public class StaffTest {
 	private static final Weapons WEAPON_SKIN = Weapons.Staff;
 	private static final float WEAPON_DAMAGE = 8;
 	private static final float WEAPON_MAX_DAMAGE = 14;
-	private static final float WEAPON_RANGE = 5;
-	private static final float WEAPON_MIN_RANGE = 3;
-	private static final float WEAPON_MAX_RANGE = 7;
+	private static final int WEAPON_RANGE = 5;
+	private static final int WEAPON_MIN_RANGE = 3;
+	private static final int WEAPON_MAX_RANGE = 7;
 	private static final float WEAPON_ATTACK_SPEED = 2;
 	private static final float WEAPON_MAX_ATTACK_SPEED = 8;
 	private static final float WEAPON_PENETRATION = 30;

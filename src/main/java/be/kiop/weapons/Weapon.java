@@ -9,9 +9,9 @@ public abstract class Weapon extends Drawable implements Droppable {
 	private float damage;
 	private final float maxDamage;
 
-	private float range;
-	private final float minRange;
-	private final float maxRange;
+	private int range;
+	private final int minRange;
+	private final int maxRange;
 
 	private float attackSpeed;
 	private final float maxAttackSpeed;
@@ -45,7 +45,7 @@ public abstract class Weapon extends Drawable implements Droppable {
 	// this.penetration = 0;
 	// }
 
-	public Weapon(String name, float maxDamage, float minRange, float maxRange, float maxAttackSpeed) {
+	public Weapon(String name, float maxDamage, int minRange, int maxRange, float maxAttackSpeed) {
 		this.name = name;
 		this.maxDamage = maxDamage;
 		this.damage = maxDamage;
@@ -96,25 +96,25 @@ public abstract class Weapon extends Drawable implements Droppable {
 		}
 	}
 
-	public float getRange() {
+	public int getRange() {
 		return range;
 	}
 
-	public void increaseRange(float increment) {
+	public void increaseRange(int increment) {
 		if (increment < 0) {
 			throw new IllegalArgumentException();
 		}
 		setRange(this.range + increment);
 	}
 
-	public void decreaseRange(float decrement) {
+	public void decreaseRange(int decrement) {
 		if (decrement < 0) {
 			throw new IllegalArgumentException();
 		}
 		setRange(this.range - decrement);
 	}
 
-	public void setRange(float range) {
+	public void setRange(int range) {
 		if (range < this.minRange) {
 			this.range = this.minRange;
 		} else if (range > this.maxRange) {

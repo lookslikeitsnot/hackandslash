@@ -101,6 +101,13 @@ public abstract class Drawable {
 		return true;
 	}
 	
+	public Position getCenter() {
+		return new Position(position.getX() + texture.getSize().getWidth() / 2,
+				position.getY() + texture.getSize().getHeight() / 2);
+	}
+
+	
+	
 //	public abstract void setNextTexture();
 	
 //	public String getTextureAbsoluteName() {

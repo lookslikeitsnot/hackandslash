@@ -8,7 +8,6 @@ import java.awt.image.BufferedImage;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -19,6 +18,7 @@ import be.kiop.characters.enemies.Enemy;
 import be.kiop.characters.heroes.Hero;
 import be.kiop.controllers.Keyboard;
 import be.kiop.decorations.Floor;
+import be.kiop.obstacles.fires.Fire;
 import be.kiop.obstacles.walls.Wall;
 import be.kiop.textures.Floors;
 import be.kiop.textures.Texture;
@@ -32,15 +32,16 @@ public class BoardDrawing extends JPanel {
 	private List<Drawable> obstacles;
 	private Set<Wall> walls;
 	private Set<Enemy> ennemies;
-//	private Set<Position> fixedHitBoxes;
+	private Set<Fire> fires;
 //	private Set<Position> dynamicHitBoxes;
 	private Hero hero;
 	private Size size;
 
-	public BoardDrawing(Size size, Hero hero, Set<Wall> walls, Set<Enemy> ennemies, Board board) { // , Set<Position>
+	public BoardDrawing(Size size, Hero hero, Set<Wall> walls, Set<Fire> fires, Set<Enemy> ennemies, Board board) { // , Set<Position>
 																									// fixedHitBoxes
 		this.size = size;
 		this.walls = walls;
+		this.fires = fires;
 		setPreferredSize(size.toDimension());
 		textures = new ArrayList<>();
 		obstacles = new ArrayList<>();
@@ -51,6 +52,7 @@ public class BoardDrawing extends JPanel {
 //		placeHero();
 //		placeEnnemies();
 		placeWalls();
+		placeFirePits();
 		placeFloor();
 		new Keyboard(this, hero, board);
 
@@ -74,25 +76,13 @@ public class BoardDrawing extends JPanel {
 
 	private void placeWalls() {
 		obstacles.addAll(walls);
-//		try {
-//			placeFixedTexture(Walls.Wall_Metallic, obstacles, Wall.class, true, true);
-//		} catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException
-//				| IllegalArgumentException | InvocationTargetException e) {
-//			e.printStackTrace();
-//		}
-
+	}
+	
+	private void placeFirePits() {
+		obstacles.addAll(fires);
 	}
 
-//	private void placeFirePits() {
-//		Set<Position> positions = Set.of(new Position(32, 32), new Position(576, 32), new Position(32, 544),
-//				new Position(576, 544));
-//		try {
-//			placeTexture(Fires.Fire_1, obstacles, Fire.class, true, positions);
-//		} catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException
-//				| IllegalArgumentException | InvocationTargetException e) {
-//			e.printStackTrace();
-//		}
-//	}
+
 
 	private void placeFixedTexture(Texture texture, List<Drawable> list, Class<?> clazz, boolean shouldBeDrawn,
 			boolean solid) throws NoSuchMethodException, SecurityException, InstantiationException,
@@ -143,6 +133,7 @@ public class BoardDrawing extends JPanel {
 			if (drawable instanceof GameCharacter) {
 				if (((GameCharacter) drawable).isTakingDamage()) {
 					skin = colorFilter(drawable.getTexture().getSkin(), Color.red);
+					((GameCharacter) drawable).reset();
 				} else {
 					skin = drawable.getTexture().getSkin();
 				}
@@ -179,11 +170,6 @@ public class BoardDrawing extends JPanel {
 		 */
 //		long endTime = System.nanoTime();
 //		System.out.println("duration: " + (endTime - startTime)/1000000);
-		hero.setTakingDamage(false);
-	}
-
-	public boolean collision(Set<Position> hitBox1, Set<Position> hitBox2) {
-		return !Collections.disjoint(hitBox1, hitBox2);
 	}
 
 	private static BufferedImage colorFilter(BufferedImage skin, Color color) {

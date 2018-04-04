@@ -46,6 +46,11 @@ public abstract class GameCharacter extends Drawable implements Animation, HitBo
 	private Directions direction = Directions.SOUTH;
 	private boolean attacking;
 	private boolean takingDamage;
+	
+	public void reset() {
+		attacking = false;
+		takingDamage = false;
+	}
 
 	private final Set<HealthListener> healthListeners = new HashSet<>();
 
@@ -60,7 +65,6 @@ public abstract class GameCharacter extends Drawable implements Animation, HitBo
 			healthListeners.remove(listener);
 		}
 	}
-
 
 	protected void setName(String name) {
 		if (!StringUtils.isValidString(name)) {
@@ -79,6 +83,7 @@ public abstract class GameCharacter extends Drawable implements Animation, HitBo
 		if (decrement < 0) {
 			throw new IllegalArgumentException();
 		}
+		takingDamage = true;
 		setHealth(this.health - decrement);
 	}
 
@@ -98,9 +103,11 @@ public abstract class GameCharacter extends Drawable implements Animation, HitBo
 	}
 
 	public void takeDamage(float damage, float penetration) {
+		
 		if (penetration < 0) {
 			throw new IllegalArgumentException();
 		}
+		
 		float damageFactor = armor - penetration;
 		if (damageFactor < 0) {
 			damageFactor = 0;
@@ -123,7 +130,7 @@ public abstract class GameCharacter extends Drawable implements Animation, HitBo
 			} else if (this.health >= getMaxHealth()) {
 				this.health = getMaxHealth();
 			}
-			
+
 		}
 		if (event.oldHealth != event.newHealth) {
 			broadcast(event);
@@ -212,8 +219,13 @@ public abstract class GameCharacter extends Drawable implements Animation, HitBo
 		}
 	}
 
-	public void attack(GameCharacter gameCharacter) {
-		gameCharacter.takeDamage(this.weapon.getDamage(), this.weapon.getPenetration());
+	public void attack(GameCharacter gc) {
+//		System.out.println("attacking");
+		attacking = true;
+		if (gc != null) {
+			gc.takeDamage(this.weapon.getDamage(), this.weapon.getPenetration());
+		}
+
 	}
 
 //	public Set<Weapons> getAvailableWeapons() {
@@ -247,22 +259,22 @@ public abstract class GameCharacter extends Drawable implements Animation, HitBo
 		getPosition().setX(x);
 		getPosition().setY(y);
 	}
-	
+
 	public void mazeMove(Set<Position> unavailablePositions) {
 //		System.out.println("dir1: " + direction.name());
 		Directions nextDirection = NextDirection.valueOf(direction.name()).getNextDirection();
-		if(canMove(nextDirection, unavailablePositions)) {
+		if (canMove(nextDirection, unavailablePositions)) {
 			direction = nextDirection;
 			move(unavailablePositions);
-		} else if(canMove(direction, unavailablePositions)) {
+		} else if (canMove(direction, unavailablePositions)) {
 			move(unavailablePositions);
 		} else {
 			nextDirection = NextDirection.valueOf(nextDirection.name()).getNextDirection();
-			if(canMove(nextDirection, unavailablePositions)) {
+			if (canMove(nextDirection, unavailablePositions)) {
 				direction = nextDirection;
 				move(unavailablePositions);
 			} else {
-				direction  = NextDirection.valueOf(nextDirection.name()).getNextDirection();
+				direction = NextDirection.valueOf(nextDirection.name()).getNextDirection();
 				move(unavailablePositions);
 			}
 		}
@@ -420,7 +432,63 @@ public abstract class GameCharacter extends Drawable implements Animation, HitBo
 		return takingDamage;
 	}
 
-	public void setTakingDamage(boolean takingDamage) {
-		this.takingDamage = takingDamage;
+//	public void setTakingDamage(boolean takingDamage) {
+//		this.takingDamage = takingDamage;
+//	}
+
+	public boolean inFrontOf(int rangeX, int rangeY, Position potentiallyInFront, Set<Position> unavailablePositions) {
+		int potX = potentiallyInFront.getX();
+		int potY = potentiallyInFront.getY();
+
+		Position center = getCenter();
+		int centerX = center.getX();
+		int centerY = center.getY();
+		
+		int minX = potX>centerX?centerX:potX;
+		int minY = potY>centerY?centerY:potY;
+		int maxX = potX<centerX?centerX:potX;
+		int maxY = potY<centerY?centerY:potY;
+		
+		if(maxX-minX > rangeX || maxY-minY > rangeY) {
+			return false;
+		}
+		
+		
+		Set<Position> line = new LinkedHashSet<>();
+
+		switch (direction) {
+		case EAST:
+			if (potX < centerX || maxY-minY>24) {
+				return false;
+			}
+			break;
+		case SOUTH:
+			if (potY < centerY || maxX-minX>24) {
+				return false;
+			}
+			break;
+		case WEST:
+			if (potX > centerX || maxY-minY>16) {
+				return false;
+			}
+			break;
+		case NORTH:
+			if (potY > centerY || maxX-minX>16) {
+				return false;
+			}
+			break;
+		default:
+			break;
+
+		}
+		for(int x = minX; x < maxX; x++) {
+			for(int y = minY; y < maxY; y++) {
+				line.add(new Position(x, y));
+			}
+		}
+		if(line.isEmpty()) {
+			return false;
+		}
+		return Collections.disjoint(line, unavailablePositions);
 	}
 }

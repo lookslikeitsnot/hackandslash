@@ -14,9 +14,9 @@ public class Sword extends Weapon {
 	private final float maxCritChance;
 	public static final String DEFAULT_NAME = "Sword";
 
-	public Sword(Weapons weapon, Position position, String name, float damage, float maxDamage, float range,
-			float minRange, float maxRange, float attackSpeed, float maxAttackSpeed, float penetration,
-			float critChance, float maxCritChance) {
+	public Sword(Weapons weapon, Position position, String name, float damage, float maxDamage, int range, int minRange,
+			int maxRange, float attackSpeed, float maxAttackSpeed, float penetration, float critChance,
+			float maxCritChance) {
 		super(name, maxDamage, minRange, maxRange, maxAttackSpeed);
 		super.setAvailableTextures(AVAILABLE_TEXTURES);
 		super.setTexture(weapon);
@@ -30,7 +30,7 @@ public class Sword extends Weapon {
 	}
 
 	public Sword() {
-		super(DEFAULT_NAME, 4, 2, 2, 1);
+		super(DEFAULT_NAME, 4, 80, 100, 1);
 		this.critChance = 0;
 		this.maxCritChance = 0;
 	}

@@ -10,6 +10,7 @@ import be.kiop.items.Dropper;
 
 public abstract class Enemy extends GameCharacter implements Dropper{
 	private Set<Droppable> droppables;
+	private boolean active;
 	
 	@Override
 	public Optional<Droppable> getDrop() {
@@ -22,5 +23,13 @@ public abstract class Enemy extends GameCharacter implements Dropper{
 			throw new IllegalArgumentException();
 		}
 		this.droppables = droppables;
+	}
+
+	public boolean isActive() {
+		return active;
+	}
+
+	public void setActive(boolean active) {
+		this.active = active;
 	}
 }
