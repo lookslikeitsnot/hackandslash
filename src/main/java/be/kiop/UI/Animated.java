@@ -1,5 +1,5 @@
 package be.kiop.UI;
 
-public interface Animation {
+public interface Animated {
 	public void setNextTexture();
 }

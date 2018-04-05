@@ -26,6 +26,7 @@ import be.kiop.obstacles.Obstacle;
 import be.kiop.obstacles.fires.Fire;
 import be.kiop.obstacles.walls.Wall;
 import be.kiop.textures.Fires;
+import be.kiop.textures.Floors;
 import be.kiop.textures.Skeletons;
 import be.kiop.textures.Walls;
 import be.kiop.textures.Warriors;
@@ -69,7 +70,7 @@ public class Board extends JFrame {
 		enemies = generateEnemies(32);
 
 		setLayout(new BorderLayout());
-		boardDrawing = new BoardDrawing(size, hero, walls, fires, enemies, drops, this);
+		boardDrawing = new BoardDrawing(size, Floors.Floor_Stone_Dark_Putple_NONE, hero, walls, fires, enemies, drops, this);
 		hud = new HUD(hero, null);
 //		map.setBorder(BorderFactory.createLineBorder(Color.red));
 		add(hud, BorderLayout.NORTH);

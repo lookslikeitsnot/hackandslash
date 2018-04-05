@@ -8,7 +8,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import be.kiop.UI.Animation;
+import be.kiop.UI.Animated;
 import be.kiop.UI.Drawable;
 import be.kiop.events.HealthEvent;
 import be.kiop.exceptions.IllegalWeaponException;
@@ -31,7 +31,7 @@ import be.kiop.valueobjects.Size;
 import be.kiop.weapons.Fist;
 import be.kiop.weapons.Weapon;
 
-public abstract class GameCharacter extends Drawable implements Animation, HitBox {
+public abstract class GameCharacter extends Drawable implements Animated, HitBox {
 	private String name;
 	private float health;
 	private Weapon weapon;

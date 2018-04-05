@@ -13,7 +13,11 @@ import be.kiop.valueobjects.Size;
 
 public enum Floors implements Texture, OrientedTexture {
 	Floor_Parquet_HORIZONTAL("floors", "Floor_Parquet", new Position(0,0), new Size(32, 32), Orientations.HORIZONTAL),
-	Floor_Parquet_VERTICAL("floors", "Floor_Parquet", new Position(32,0), new Size(32, 32), Orientations.VERTICAL);
+	Floor_Parquet_VERTICAL("floors", "Floor_Parquet", new Position(32,0), new Size(32, 32), Orientations.VERTICAL),
+	Floor_Stone_Light_Brown_NONE("floors", "Floor_Stone_Light_Brown", new Position(0,64), new Size(32, 32), Orientations.NONE),
+	Floor_Stone_Brown_NONE("floors", "Floor_Stone_Brown", new Position(64,96), new Size(32, 32), Orientations.NONE),
+	Floor_Stone_Light_Grey_NONE("floors", "Floor_Stone_Light_Grey", new Position(32,64), new Size(32, 32), Orientations.NONE),
+	Floor_Stone_Dark_Putple_NONE("floors", "Floor_Stone_Dark_Putple", new Position(64,64), new Size(32, 32), Orientations.NONE);
 
 	private String name;
 	private Size size;

@@ -4,14 +4,14 @@ import java.util.Arrays;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import be.kiop.UI.Animation;
+import be.kiop.UI.Animated;
 import be.kiop.UI.Drawable;
 import be.kiop.obstacles.Obstacle;
 import be.kiop.textures.Fires;
 import be.kiop.textures.Texture;
 import be.kiop.valueobjects.Position;
 
-public class Fire extends Obstacle implements Animation{
+public class Fire extends Obstacle implements Animated{
 	private int movementFrame;
 	private final static Set<Texture> AVAILABLE_TEXTURES = Arrays.stream(Fires.values()).collect(Collectors.toSet());
 	
