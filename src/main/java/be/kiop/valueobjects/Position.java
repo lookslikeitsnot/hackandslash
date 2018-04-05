@@ -96,26 +96,36 @@ public class Position {
 			return null;
 		}
 	}
-	
+
 	public void add(Position position) {
 		this.x += position.getX();
 		this.y += position.getY();
 	}
-	
+
+	public void add(int x, int y) {
+		this.x += x;
+		this.y += y;
+	}
+
 	public static Position sum(Position pos1, Position pos2) {
-		int sumX = pos1.x+pos2.x;
-		int sumY = pos1.y+pos2.y;
+		int sumX = pos1.x + pos2.x;
+		int sumY = pos1.y + pos2.y;
 		return new Position(sumX, sumY);
 	}
-	
+
 	public void substract(Position position) {
 		this.x -= position.getX();
 		this.y -= position.getY();
 	}
-	
+
+	public void substract(int x, int y) {
+		this.x -= x;
+		this.y -= y;
+	}
+
 	public static Position difference(Position pos1, Position pos2) {
-		int difX = pos1.x-pos2.x;
-		int difY = pos1.y-pos2.y;
+		int difX = pos1.x - pos2.x;
+		int difY = pos1.y - pos2.y;
 		return new Position(difX, difY);
 	}
 }

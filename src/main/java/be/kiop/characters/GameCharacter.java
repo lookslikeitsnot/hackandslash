@@ -27,6 +27,7 @@ import be.kiop.valueobjects.Genders;
 import be.kiop.valueobjects.HitBox;
 import be.kiop.valueobjects.NextDirection;
 import be.kiop.valueobjects.Position;
+import be.kiop.valueobjects.Size;
 import be.kiop.weapons.Fist;
 import be.kiop.weapons.Weapon;
 
@@ -45,7 +46,7 @@ public abstract class GameCharacter extends Drawable implements Animation, HitBo
 	private Directions direction = Directions.SOUTH;
 	private boolean attacking;
 	private boolean takingDamage;
-	
+
 	public void reset() {
 		attacking = false;
 		takingDamage = false;
@@ -102,11 +103,11 @@ public abstract class GameCharacter extends Drawable implements Animation, HitBo
 	}
 
 	public void takeDamage(float damage, float penetration) {
-		
+
 		if (penetration < 0) {
 			throw new IllegalArgumentException();
 		}
-		
+
 		float damageFactor = armor - penetration;
 		if (damageFactor < 0) {
 			damageFactor = 0;
@@ -442,29 +443,32 @@ public abstract class GameCharacter extends Drawable implements Animation, HitBo
 		Position center = getCenter();
 		int centerX = center.getX();
 		int centerY = center.getY();
-		
-		int minX = potX>centerX?centerX:potX;
-		int minY = potY>centerY?centerY:potY;
-		int maxX = potX<centerX?centerX:potX;
-		int maxY = potY<centerY?centerY:potY;
-		
-		if(maxX-minX > rangeX || maxY-minY > rangeY) {
+
+		int minX = potX > centerX ? centerX : potX;
+		int minY = potY > centerY ? centerY : potY;
+		int maxX = potX < centerX ? centerX : potX;
+		int maxY = potY < centerY ? centerY : potY;
+
+		if (maxX - minX > rangeX || maxY - minY > rangeY) {
 			return false;
 		}
-		
-		
+
 		Set<Position> line = new LinkedHashSet<>();
+
+		Size hitBoxSize = ((HitBoxTexture) getTexture()).getHitBoxSize();
 
 		switch (direction) {
 		case EAST:
-			if (potX < centerX || maxY-minY>24) {
+			if (potX < centerX || maxY-minY>24 ) {
 				return false;
 			}
+			minX += hitBoxSize.getWidth();
 			break;
 		case SOUTH:
 			if (potY < centerY || maxX-minX>24) {
 				return false;
 			}
+			minY += hitBoxSize.getHeight();
 			break;
 		case WEST:
 			if (potX > centerX || maxY-minY>16) {
@@ -480,12 +484,12 @@ public abstract class GameCharacter extends Drawable implements Animation, HitBo
 			break;
 
 		}
-		for(int x = minX; x < maxX; x++) {
-			for(int y = minY; y < maxY; y++) {
+		for (int x = minX; x < maxX; x++) {
+			for (int y = minY; y < maxY; y++) {
 				line.add(new Position(x, y));
 			}
 		}
-		if(line.isEmpty()) {
+		if (line.isEmpty()) {
 			return false;
 		}
 		return Collections.disjoint(line, unavailablePositions);
