@@ -18,7 +18,7 @@ import be.kiop.exceptions.MaxLevelReachedException;
 import be.kiop.exceptions.MinLevelReachedException;
 import be.kiop.exceptions.OutOfBoardException;
 import be.kiop.exceptions.SkinNotFoundException;
-import be.kiop.items.Droppable;
+import be.kiop.items.Drop;
 import be.kiop.textures.Floors;
 import be.kiop.textures.HitBoxTexture;
 import be.kiop.textures.Skeletons;
@@ -46,7 +46,7 @@ public class SkeletonTest {
 	private final static float ENNEMY_HEALTH = 100;
 	private final static int ENNEMY_LEVEL = 10;
 	private final static float ENNEMY_ARMOR = 50;
-	private final static Set<Droppable> ENNEMY_DROPPABLES = Set.of(new Sword(Weapons.Sword, new Position(48,48), "Heavy Sword", 50, 75, 40, 30, 100, 5, 10, 20, 50, 70));
+	private final static Set<Drop> ENNEMY_DROPPABLES = Set.of(new Sword(Weapons.Sword, new Position(48,48), "Heavy Sword", 50, 75, 40, 30, 100, 5, 10, 20, 50, 70));
 
 	@Before
 	public void before() {
@@ -377,7 +377,7 @@ public class SkeletonTest {
 
 	@Test
 	public void getDrop_nA_optionalOfSword() {
-		Optional<Droppable> optionalWeapon = Optional.of(new Sword(Weapons.Sword, new Position(48,48), "Heavy Sword", 50, 75, 40, 30, 100, 5, 10, 20, 50, 70));
+		Optional<Drop> optionalWeapon = Optional.of(new Sword(Weapons.Sword, new Position(48,48), "Heavy Sword", 50, 75, 40, 30, 100, 5, 10, 20, 50, 70));
 		assertEquals(optionalWeapon, enemy.getDrop());
 	}
 

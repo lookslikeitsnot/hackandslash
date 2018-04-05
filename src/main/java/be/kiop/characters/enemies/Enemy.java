@@ -5,23 +5,23 @@ import java.util.Random;
 import java.util.Set;
 
 import be.kiop.characters.GameCharacter;
-import be.kiop.items.Droppable;
+import be.kiop.items.Drop;
 import be.kiop.items.Dropper;
 
 public abstract class Enemy extends GameCharacter implements Dropper{
 	private int id;
-	private Set<Droppable> droppables;
+	private Set<Drop> droppables;
 	private boolean active;
 	
 	public static int counter = 0;
 
 	@Override
-	public Optional<Droppable> getDrop() {
+	public Optional<Drop> getDrop() {
 		return droppables.stream().skip(new Random().nextInt(droppables.size())).findFirst();
 	}
 
 	@Override
-	public void setDroppables(Set<Droppable> droppables) {
+	public void setDroppables(Set<Drop> droppables) {
 		if(droppables == null) {
 			throw new IllegalArgumentException();
 		}

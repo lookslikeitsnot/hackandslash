@@ -2,10 +2,12 @@ package be.kiop.UI;
 
 import java.awt.BorderLayout;
 import java.awt.Graphics;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
@@ -18,6 +20,7 @@ import be.kiop.characters.enemies.Enemy;
 import be.kiop.characters.enemies.skeletons.Skeleton;
 import be.kiop.characters.heroes.Hero;
 import be.kiop.characters.heroes.warriors.Warrior;
+import be.kiop.items.Drop;
 import be.kiop.listeners.RepaintTimer;
 import be.kiop.obstacles.Obstacle;
 import be.kiop.obstacles.fires.Fire;
@@ -44,6 +47,7 @@ public class Board extends JFrame {
 	private Set<Enemy> enemies = new LinkedHashSet<>();
 	private Set<Wall> walls = new LinkedHashSet<>();
 	private Set<Fire> fires = new LinkedHashSet<>();
+	private List<Drop> drops = new ArrayList<>();
 	private final Set<Position> fixedHitBoxes;
 
 	private static final Size exteriorWallSize = new Size(32, 32);
@@ -62,10 +66,10 @@ public class Board extends JFrame {
 		fixedHitBoxes = calculateFixedHitBoxes();
 		fires = generateFirePits();
 
-		enemies = generateEnemies(16);
+		enemies = generateEnemies(32);
 
 		setLayout(new BorderLayout());
-		boardDrawing = new BoardDrawing(size, hero, walls, fires, enemies, this);
+		boardDrawing = new BoardDrawing(size, hero, walls, fires, enemies, drops, this);
 		hud = new HUD(hero, null);
 //		map.setBorder(BorderFactory.createLineBorder(Color.red));
 		add(hud, BorderLayout.NORTH);
@@ -188,7 +192,7 @@ public class Board extends JFrame {
 	public void paint(Graphics g) {
 		hud.repaint();
 
-		removeTheDeaths();
+		handleTheDeads();
 		findActiveEnemy();
 		moveEnemies();
 
@@ -210,10 +214,15 @@ public class Board extends JFrame {
 		}
 	}
 	
-	private void removeTheDeaths() {
+	private void handleTheDeads() {
 		for (Iterator<Enemy> iterator = enemies.iterator(); iterator.hasNext();) {
 		    Enemy enemy =  iterator.next();
 		    if(enemy.getHealth() == 0) {
+		    	Drop drop = enemy.getDrop().get();
+		    	if(drop != null) {
+		    		drop.setPosition(Position.difference(enemy.getCenter(), drop.getTextureCenter()));
+		    		drops.add(drop);
+		    	}
 		    	iterator.remove();
 		    }       
 		}

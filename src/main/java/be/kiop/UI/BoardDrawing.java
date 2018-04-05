@@ -19,6 +19,7 @@ import be.kiop.characters.enemies.Enemy;
 import be.kiop.characters.heroes.Hero;
 import be.kiop.controllers.Keyboard;
 import be.kiop.decorations.Floor;
+import be.kiop.items.Drop;
 import be.kiop.obstacles.fires.Fire;
 import be.kiop.obstacles.walls.Wall;
 import be.kiop.textures.Floors;
@@ -34,20 +35,20 @@ public class BoardDrawing extends JPanel {
 
 	private Hero hero;
 	private Set<Enemy> ennemies;
+	private List<Drop> drops;
 	private Set<Wall> walls;
 	private Set<Fire> fires;
 
 	private Size size;
 
-	public BoardDrawing(Size size, Hero hero, Set<Wall> walls, Set<Fire> fires, Set<Enemy> ennemies, Board board) { // ,
-																													// Set<Position>
-		// fixedHitBoxes
+	public BoardDrawing(Size size, Hero hero, Set<Wall> walls, Set<Fire> fires, Set<Enemy> ennemies, List<Drop> drops, Board board) {
 		this.size = size;
-		this.walls = walls;
-		this.fires = fires;
 		this.ennemies = ennemies;
 		this.hero = hero;
-
+		this.drops = drops;
+		this.walls = walls;
+		this.fires = fires;
+		
 		textures = new ArrayList<>();
 		obstacles = new ArrayList<>();
 
@@ -116,6 +117,7 @@ public class BoardDrawing extends JPanel {
 		int y;
 		BufferedImage skin;
 		BufferedImage weaponImage;
+
 		for (Drawable drawable : getAllDrawables()) {
 			x = drawable.getPosition().getX();
 			y = drawable.getPosition().getY();
@@ -163,6 +165,9 @@ public class BoardDrawing extends JPanel {
 
 //			long endTime = System.nanoTime();
 //			System.out.println("duration: " + (endTime - startTime)/1000000);
+		}
+		for(Drop drop:drops) {
+			g.drawImage(drop.getTexture().getSkin(), drop.getPosition().getX(), drop.getPosition().getY(), null);
 		}
 
 		/*

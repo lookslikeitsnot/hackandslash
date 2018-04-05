@@ -1,9 +1,10 @@
 package be.kiop.weapons;
 
 import be.kiop.UI.Drawable;
-import be.kiop.items.Droppable;
+import be.kiop.items.Drop;
+import be.kiop.valueobjects.Position;
 
-public abstract class Weapon extends Drawable implements Droppable {
+public abstract class Weapon extends Drawable implements Drop {
 	private final String name;
 
 	private float damage;
@@ -153,5 +154,12 @@ public abstract class Weapon extends Drawable implements Droppable {
 		if (!name.equals(other.name))
 			return false;
 		return true;
+	}
+
+	@Override
+	public Position getTextureCenter() {
+		int textureWidth = getTexture().getSize().getWidth();
+		int textureHeight = getTexture().getSize().getHeight();
+		return new Position(textureWidth/2, textureHeight/2);
 	}
 }

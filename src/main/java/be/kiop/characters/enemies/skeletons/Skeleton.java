@@ -5,7 +5,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import be.kiop.characters.enemies.Enemy;
-import be.kiop.items.Droppable;
+import be.kiop.items.Drop;
 import be.kiop.textures.Skeletons;
 import be.kiop.textures.Texture;
 import be.kiop.textures.Weapons;
@@ -17,7 +17,7 @@ public class Skeleton extends Enemy {
 	private final static Set<Weapons> availableWeapons = Set.of(Weapons.Bone);
 
 	public Skeleton(Skeletons skeleton, Position position, String name, float health, Weapon weapon, int level, float armor,
-			Set<Droppable> droppables) {
+			Set<Drop> droppables) {
 		super.setAvailableTextures(AVAILABLE_TEXTURES);
 		super.setTexture(skeleton);
 		super.setPosition(position);
