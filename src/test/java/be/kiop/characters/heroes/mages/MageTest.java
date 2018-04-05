@@ -27,6 +27,7 @@ import be.kiop.textures.HitBoxTexture;
 import be.kiop.textures.Mages;
 import be.kiop.textures.Skeletons;
 import be.kiop.textures.Texture;
+import be.kiop.textures.Weapons;
 import be.kiop.valueobjects.Directions;
 import be.kiop.valueobjects.Position;
 import be.kiop.weapons.Bone;
@@ -237,7 +238,8 @@ public class MageTest {
 
 	@Test(expected = IllegalWeaponException.class)
 	public void changeWeapon_invalidWeapon_exception() {
-		hero.changeWeapon(new Sword());
+		hero.changeWeapon(
+				new Sword(Weapons.Sword, new Position(48, 48), "Heavy Sword", 50, 75, 40, 30, 100, 5, 10, 20, 50, 70));
 	}
 
 	@Test(expected = IllegalArgumentException.class)
@@ -396,8 +398,10 @@ public class MageTest {
 
 	@Test
 	public void attack_enemy_enemyTakesDamage() {
-		GameCharacter gc = new Skeleton(Skeletons.Skeleton_SOUTH_2, position, "Skeleton", HERO_HEALTH, new Bone(), 1, 0,
-				Set.of(new Sword()));
+		GameCharacter gc = new Skeleton(Skeletons.Skeleton_SOUTH_2, position, "Skeleton", HERO_HEALTH,
+				new Bone(Weapons.Bone, position, "Little Bone", 50, 75, 40, 30, 100, 5, 10, 20), 1, 0,
+				Set.of(new Sword(Weapons.Sword, new Position(48, 48), "Heavy Sword", 50, 75, 40, 30, 100, 5, 10, 20, 50,
+						70)));
 		hero.attack(gc);
 		assertEquals(HERO_HEALTH - weapon.getDamage(), gc.getHealth(), MARGIN);
 	}
@@ -446,10 +450,12 @@ public class MageTest {
 
 	@Test
 	public void move_cannotMoveNorth_GameCharacterNotMoved() {
-		int deltaX = ((hero.getTexture().getSize().getWidth() - ((HitBoxTexture) hero.getTexture()).getHitBoxSize().getWidth())/2);
-		int deltaY = ((hero.getTexture().getSize().getHeight() - ((HitBoxTexture) hero.getTexture()).getHitBoxSize().getHeight())/2);
+		int deltaX = ((hero.getTexture().getSize().getWidth()
+				- ((HitBoxTexture) hero.getTexture()).getHitBoxSize().getWidth()) / 2);
+		int deltaY = ((hero.getTexture().getSize().getHeight()
+				- ((HitBoxTexture) hero.getTexture()).getHitBoxSize().getHeight()) / 2);
 		Position pos = new Position(position.getX(), position.getY());
-		Position posNorth = new Position(position.getX()+deltaX, position.getY() + deltaY - 1);
+		Position posNorth = new Position(position.getX() + deltaX, position.getY() + deltaY - 1);
 		hero.move(Directions.NORTH, Set.of(posNorth));
 		assertEquals(pos.getX(), hero.getPosition().getX());
 		assertEquals(pos.getY(), hero.getPosition().getY());
@@ -472,12 +478,12 @@ public class MageTest {
 		hero.setLives(Hero.MAX_LIVES + 1);
 		assertEquals(Hero.MAX_LIVES, hero.getLives());
 	}
-	
-	@Test(expected=IllegalArgumentException.class)
+
+	@Test(expected = IllegalArgumentException.class)
 	public void setExperience_lessThanZero_IllegalArgument() {
 		hero.setExperience(-1);
 	}
-	
+
 	@Test(expected = CharacterDiedException.class)
 	public void setHealth_0andNoLivesLeft_CharacterDied() {
 		hero.setLives(1);

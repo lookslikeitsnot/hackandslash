@@ -490,4 +490,8 @@ public abstract class GameCharacter extends Drawable implements Animation, HitBo
 		}
 		return Collections.disjoint(line, unavailablePositions);
 	}
+
+	public Directions getDirection() {
+		return direction;
+	}
 }

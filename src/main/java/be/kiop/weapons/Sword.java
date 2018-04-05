@@ -29,11 +29,12 @@ public class Sword extends Weapon {
 		setCritChance(critChance);
 	}
 
-	public Sword() {
-		super(DEFAULT_NAME, 50, 80, 100, 1);
-		this.critChance = 0;
-		this.maxCritChance = 0;
-	}
+//	public Sword() {
+//		super(DEFAULT_NAME, 50, 80, 100, 1);
+//		this.critChance = 0;
+//		this.maxCritChance = 0;
+//		setTexture(Weapons.Sword);
+//	}
 
 	public float getCritChance() {
 		return critChance;

@@ -241,7 +241,8 @@ public class SwordTest {
 	
 	@Test
 	public void hashCode_sameWeaponName_sameHashCode() {
-		assertEquals(new Sword().hashCode(), weapon.hashCode());
+		assertEquals(new Sword(WEAPON_SKIN, position, Sword.DEFAULT_NAME, WEAPON_DAMAGE, WEAPON_MAX_DAMAGE, WEAPON_RANGE, WEAPON_MIN_RANGE, WEAPON_MAX_RANGE, 
+				WEAPON_ATTACK_SPEED, WEAPON_MAX_ATTACK_SPEED, WEAPON_PENETRATION, WEAPON_CRIT_CHANCE, WEAPON_MAX_CRIT_CHANCE).hashCode(), weapon.hashCode());
 	}
 	
 	@Test
@@ -251,7 +252,8 @@ public class SwordTest {
 	
 	@Test
 	public void equals_sameWeaponName_true() {
-		assert(weapon.equals(new Sword()));
+		assert(weapon.equals(new Sword(WEAPON_SKIN, position, Sword.DEFAULT_NAME, WEAPON_DAMAGE, WEAPON_MAX_DAMAGE, WEAPON_RANGE, WEAPON_MIN_RANGE, WEAPON_MAX_RANGE, 
+				WEAPON_ATTACK_SPEED, WEAPON_MAX_ATTACK_SPEED, WEAPON_PENETRATION, WEAPON_CRIT_CHANCE, WEAPON_MAX_CRIT_CHANCE)));
 	}
 	
 	@SuppressWarnings("unlikely-arg-type")

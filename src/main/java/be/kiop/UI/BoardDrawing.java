@@ -4,6 +4,7 @@ import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -30,41 +31,35 @@ public class BoardDrawing extends JPanel {
 
 	private List<Drawable> textures;
 	private List<Drawable> obstacles;
-	private Set<Wall> walls;
-	private Set<Enemy> ennemies;
-	private Set<Fire> fires;
-//	private Set<Position> dynamicHitBoxes;
+
 	private Hero hero;
+	private Set<Enemy> ennemies;
+	private Set<Wall> walls;
+	private Set<Fire> fires;
+
 	private Size size;
 
-	public BoardDrawing(Size size, Hero hero, Set<Wall> walls, Set<Fire> fires, Set<Enemy> ennemies, Board board) { // , Set<Position>
-																									// fixedHitBoxes
+	public BoardDrawing(Size size, Hero hero, Set<Wall> walls, Set<Fire> fires, Set<Enemy> ennemies, Board board) { // ,
+																													// Set<Position>
+		// fixedHitBoxes
 		this.size = size;
 		this.walls = walls;
 		this.fires = fires;
-		setPreferredSize(size.toDimension());
+		this.ennemies = ennemies;
+		this.hero = hero;
+
 		textures = new ArrayList<>();
 		obstacles = new ArrayList<>();
-		this.ennemies = ennemies;
-//		dynamicHitBoxes = new LinkedHashSet<>();
-		this.hero = hero;
-//		this.fixedHitBoxes = fixedHitBoxes;
-//		placeHero();
-//		placeEnnemies();
+
 		placeWalls();
 		placeFirePits();
 		placeFloor();
+
 		new Keyboard(this, hero, board);
 
+		setPreferredSize(size.toDimension());
 	}
 
-//	private void placeEnnemies() {
-//		Set<Position> positions = Set.of(new Position(64, 64), new Position(544, 64), new Position(64, 512),
-//				new Position(544, 512));
-//		positions.stream().forEach(position -> ennemies.add(new Skeleton(Skeletons.Skeleton_SOUTH_2, position, "Skek",
-//				100, new Bone(), 5, 100, Set.of(new Sword()))));
-//	}
-//
 	private void placeFloor() {
 		try {
 			placeFixedTexture(Floors.Floor_Parquet_HORIZONTAL, textures, Floor.class, false, false);
@@ -77,12 +72,10 @@ public class BoardDrawing extends JPanel {
 	private void placeWalls() {
 		obstacles.addAll(walls);
 	}
-	
+
 	private void placeFirePits() {
 		obstacles.addAll(fires);
 	}
-
-
 
 	private void placeFixedTexture(Texture texture, List<Drawable> list, Class<?> clazz, boolean shouldBeDrawn,
 			boolean solid) throws NoSuchMethodException, SecurityException, InstantiationException,
@@ -122,28 +115,37 @@ public class BoardDrawing extends JPanel {
 		int x;
 		int y;
 		BufferedImage skin;
+		BufferedImage weaponImage;
 		for (Drawable drawable : getAllDrawables()) {
 			x = drawable.getPosition().getX();
 			y = drawable.getPosition().getY();
+
+			weaponImage = null;
 //			long startTime = System.nanoTime();
 			if (drawable instanceof Animation) {
 				((Animation) drawable).setNextTexture();
 			}
-
-			if (drawable instanceof GameCharacter) {
-				if (((GameCharacter) drawable).isTakingDamage()) {
+			if (!(drawable instanceof GameCharacter)) {
+				skin = drawable.getTexture().getSkin();
+				g.drawImage(skin, x, y, null);
+			} else {
+				GameCharacter gc = (GameCharacter) drawable;
+				weaponImage = gc.getWeapon().getTexture().getSkin();
+				if (gc.isTakingDamage()) {
 					skin = colorFilter(drawable.getTexture().getSkin(), Color.red);
-					((GameCharacter) drawable).reset();
+					weaponImage = colorFilter(weaponImage, Color.red);
+//					((GameCharacter) drawable).reset();
 				} else {
 					skin = drawable.getTexture().getSkin();
 				}
-
-			} else {
-				skin = drawable.getTexture().getSkin();
+				g.drawImage(skin, x, y, null);
+				Graphics2D g2d = (Graphics2D) g;
+				g2d.drawImage(weaponImage,weaponImageTransform(gc) , null);
+				gc.reset();
+				//drawable.getCenter().getX(), drawable.getCenter().getY()+5, 24, 24
 			}
 
-			g.drawImage(skin, x, y, null);
-
+			
 			/*
 			 * HITBOX OF CHARACTERS if (drawable instanceof GameCharacter) {
 			 * g.setColor(Color.RED);
@@ -171,6 +173,51 @@ public class BoardDrawing extends JPanel {
 //		long endTime = System.nanoTime();
 //		System.out.println("duration: " + (endTime - startTime)/1000000);
 	}
+	
+	private static AffineTransform weaponImageTransform(GameCharacter gc) {
+		AffineTransform at = new AffineTransform();
+		//at.translate(24, 24);
+		at.translate(gc.getCenter().getX(), gc.getCenter().getY());
+		at.scale(0.8, 0.8);
+		switch(gc.getDirection()) {
+		case EAST:
+			at.translate(2, 5);
+			at.rotate(Math.PI/2);
+			if(gc.isAttacking()) {
+				at.rotate(Math.PI*5/4);
+			}
+			break;
+		case NORTH:
+			at.translate(12, 2);
+			at.rotate(Math.PI/4);
+			if(gc.isAttacking()) {
+				at.rotate(Math.PI);
+			}
+			break;
+		case SOUTH:
+			at.translate(-10, 5);
+			at.rotate(Math.PI*5/4);
+			if(gc.isAttacking()) {
+				at.rotate(Math.PI);
+			} else {
+				at.scale(0, 0);
+			}
+			
+			break;
+		case WEST:
+			at.translate(-2, 5);
+			if(gc.isAttacking()) {
+				at.rotate(Math.PI*3/4);
+			}
+			break;
+		default:
+			break;
+		
+		}
+		
+		
+		return at;
+	}
 
 	private static BufferedImage colorFilter(BufferedImage skin, Color color) {
 		int w = skin.getWidth();
@@ -178,7 +225,7 @@ public class BoardDrawing extends JPanel {
 		BufferedImage filteredSkin = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
 		Graphics2D g = filteredSkin.createGraphics();
 		g.drawImage(skin, 0, 0, null);
-		g.setComposite(AlphaComposite.SrcAtop);
+		g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_ATOP, 0.5F));
 		g.setColor(color);
 		g.fillRect(0, 0, w, h);
 		g.dispose();

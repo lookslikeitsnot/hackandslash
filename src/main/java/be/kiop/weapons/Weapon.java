@@ -19,32 +19,6 @@ public abstract class Weapon extends Drawable implements Droppable {
 	private float penetration;
 	public static final float MAX_PENETRATION = 100.0F;
 
-	// protected Weapon(String name, float damage, float maxDamage, float range,
-	// float minRange, float maxRange, float attackSpeed, float maxAttackSpeed,
-	// float penetration) {
-	// setName(name);
-	// this.damage = damage;
-	// this.maxDamage = maxDamage;
-	// this.range = range;
-	// this.minRange = minRange;
-	// this.maxRange = maxRange;
-	// this.attackSpeed = attackSpeed;
-	// this.maxAttackSpeed = maxAttackSpeed;
-	// this.penetration = penetration;
-	// }
-	//
-	// protected Weapon(String name, float damage, float range, float attackSpeed) {
-	// setName(name);
-	// this.damage = damage;
-	// this.maxDamage = damage;
-	// this.range = range;
-	// this.minRange = range;
-	// this.maxRange = range;
-	// this.attackSpeed = attackSpeed;
-	// this.maxAttackSpeed = attackSpeed;
-	// this.penetration = 0;
-	// }
-
 	public Weapon(String name, float maxDamage, int minRange, int maxRange, float maxAttackSpeed) {
 		this.name = name;
 		this.maxDamage = maxDamage;
@@ -56,13 +30,6 @@ public abstract class Weapon extends Drawable implements Droppable {
 		this.attackSpeed = maxAttackSpeed;
 		this.penetration = 0;
 	}
-
-//	public void setName(String name) {
-//		if (name == null || name.trim().isEmpty()) {
-//			throw new IllegalArgumentException();
-//		}
-//		this.name = name;
-//	}
 
 	public String getName() {
 		return name;

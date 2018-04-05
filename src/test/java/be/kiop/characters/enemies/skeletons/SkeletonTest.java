@@ -13,8 +13,6 @@ import org.junit.Test;
 
 import be.kiop.UI.Board;
 import be.kiop.characters.GameCharacter;
-import be.kiop.characters.enemies.skeletons.Skeleton;
-import be.kiop.exceptions.CharacterDiedException;
 import be.kiop.exceptions.IllegalWeaponException;
 import be.kiop.exceptions.MaxLevelReachedException;
 import be.kiop.exceptions.MinLevelReachedException;
@@ -25,6 +23,7 @@ import be.kiop.textures.Floors;
 import be.kiop.textures.HitBoxTexture;
 import be.kiop.textures.Skeletons;
 import be.kiop.textures.Texture;
+import be.kiop.textures.Weapons;
 import be.kiop.valueobjects.Directions;
 import be.kiop.valueobjects.Position;
 import be.kiop.weapons.Bone;
@@ -47,12 +46,12 @@ public class SkeletonTest {
 	private final static float ENNEMY_HEALTH = 100;
 	private final static int ENNEMY_LEVEL = 10;
 	private final static float ENNEMY_ARMOR = 50;
-	private final static Set<Droppable> ENNEMY_DROPPABLES = Set.of(new Sword());
+	private final static Set<Droppable> ENNEMY_DROPPABLES = Set.of(new Sword(Weapons.Sword, new Position(48,48), "Heavy Sword", 50, 75, 40, 30, 100, 5, 10, 20, 50, 70));
 
 	@Before
 	public void before() {
-		weapon = new Bone();
 		position = new Position(Board.getSize(true).getWidth() / 2, Board.getSize(true).getHeight() / 2);
+		weapon = new Bone(Weapons.Bone, position, "Little Bone", 50, 75, 40, 30, 100, 5, 10, 20);
 		enemy = new Skeleton(ENNEMY_TEXTURE, position, ENNEMY_NAME, ENNEMY_HEALTH, weapon, ENNEMY_LEVEL, ENNEMY_ARMOR,
 				ENNEMY_DROPPABLES);
 	}
@@ -156,9 +155,10 @@ public class SkeletonTest {
 		assertEquals(ENNEMY_HEALTH, enemy.getHealth(), MARGIN);
 	}
 
-	@Test(expected = CharacterDiedException.class)
-	public void takeFlatDamage_moreThanHeroHealth_Exception() {
+	@Test
+	public void takeFlatDamage_moreThanHeroHealth_0Health() {
 		enemy.takeFlatDamage(ENNEMY_HEALTH + 1);
+		assertEquals(0, enemy.getHealth(), MARGIN);
 	}
 
 	@Test
@@ -172,9 +172,10 @@ public class SkeletonTest {
 		enemy.takeFlatDamage(-1);
 	}
 
-	@Test(expected = CharacterDiedException.class)
-	public void takeDamage_moreThanHeroHealth_Exception() {
+	@Test
+	public void takeDamage_moreThanHeroHealth_0Health() {
 		enemy.takeDamage(ENNEMY_HEALTH * 100 / ENNEMY_ARMOR + ENNEMY_HEALTH);
+		assertEquals(0, enemy.getHealth(),MARGIN);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
@@ -182,9 +183,10 @@ public class SkeletonTest {
 		enemy.takeDamage(-1);
 	}
 
-	@Test(expected = CharacterDiedException.class)
-	public void takeDamage_moreThanHeroLifeAndPenetration_Exception() {
+	@Test
+	public void takeDamage_moreThanHeroLifeAndPenetration_0Health() {
 		enemy.takeDamage(ENNEMY_HEALTH, ENNEMY_ARMOR + 1);
+		assertEquals(0, enemy.getHealth(),MARGIN);
 	}
 
 	@Test
@@ -233,7 +235,7 @@ public class SkeletonTest {
 
 	@Test(expected = IllegalWeaponException.class)
 	public void changeWeapon_invalidWeapon_exception() {
-		enemy.changeWeapon(new Sword());
+		enemy.changeWeapon(new Sword(Weapons.Sword, new Position(48,48), "Heavy Sword", 50, 75, 40, 30, 100, 5, 10, 20, 50, 70));
 	}
 
 	@Test(expected = IllegalArgumentException.class)
@@ -309,8 +311,9 @@ public class SkeletonTest {
 
 	@Test
 	public void attack_enemy_enemyTakesDamage() {
-		GameCharacter gc = new Skeleton(Skeletons.Skeleton_NORTH_2, position, "Skeleton", ENNEMY_HEALTH, new Bone(), 1,
-				0, Set.of(new Sword()));
+		GameCharacter gc = new Skeleton(Skeletons.Skeleton_NORTH_2, position, "Skeleton", ENNEMY_HEALTH,
+				new Bone(Weapons.Bone, position, "Little Bone", 50, 75, 40, 30, 100, 5, 10, 20), 1,
+				0, Set.of(new Sword(Weapons.Sword, new Position(48,48), "Heavy Sword", 50, 75, 40, 30, 100, 5, 10, 20, 50, 70)));
 		enemy.attack(gc);
 		assertEquals(ENNEMY_HEALTH - weapon.getDamage(), gc.getHealth(), MARGIN);
 	}
@@ -374,7 +377,7 @@ public class SkeletonTest {
 
 	@Test
 	public void getDrop_nA_optionalOfSword() {
-		Optional<Droppable> optionalWeapon = Optional.of(new Sword());
+		Optional<Droppable> optionalWeapon = Optional.of(new Sword(Weapons.Sword, new Position(48,48), "Heavy Sword", 50, 75, 40, 30, 100, 5, 10, 20, 50, 70));
 		assertEquals(optionalWeapon, enemy.getDrop());
 	}
 

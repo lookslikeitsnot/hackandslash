@@ -26,6 +26,7 @@ import be.kiop.textures.HitBoxTexture;
 import be.kiop.textures.Skeletons;
 import be.kiop.textures.Texture;
 import be.kiop.textures.Warriors;
+import be.kiop.textures.Weapons;
 import be.kiop.valueobjects.Directions;
 import be.kiop.valueobjects.Position;
 import be.kiop.weapons.Bone;
@@ -54,7 +55,7 @@ public class WarriorTest {
 
 	@Before
 	public void before() {
-		weapon = new Sword();
+		weapon = new Sword(Weapons.Sword, new Position(48, 48), "Heavy Sword", 50, 75, 40, 30, 100, 5, 10, 20, 50, 70);
 		position = new Position(Board.getSize(true).getWidth() / 2, Board.getSize(true).getHeight() / 2);
 		hero = new Warrior(HERO_TEXTURE, position, HERO_NAME, HERO_HEALTH, weapon, HERO_LEVEL, HERO_ARMOR, HERO_LIVES,
 				HERO_EXPERIENCE, HERO_SHIELD);
@@ -378,8 +379,10 @@ public class WarriorTest {
 
 	@Test
 	public void attack_enemy_enemyTakesDamage() {
-		GameCharacter gc = new Skeleton(Skeletons.Skeleton_SOUTH_2, position, "Skeleton", HERO_HEALTH, new Bone(), 1, 0,
-				Set.of(new Sword()));
+		GameCharacter gc = new Skeleton(Skeletons.Skeleton_SOUTH_2, position, "Skeleton", HERO_HEALTH,
+				new Bone(Weapons.Bone, position, "Little Bone", 50, 75, 40, 30, 100, 5, 10, 20), 1, 0,
+				Set.of(new Sword(Weapons.Sword, new Position(48, 48), "Heavy Sword", 50, 75, 40, 30, 100, 5, 10, 20, 50,
+						70)));
 		hero.attack(gc);
 		assertEquals(HERO_HEALTH - weapon.getDamage(), gc.getHealth(), MARGIN);
 	}

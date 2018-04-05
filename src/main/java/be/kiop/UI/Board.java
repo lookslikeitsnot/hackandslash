@@ -2,7 +2,6 @@ package be.kiop.UI;
 
 import java.awt.BorderLayout;
 import java.awt.Graphics;
-import java.lang.reflect.InvocationTargetException;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -27,6 +26,7 @@ import be.kiop.textures.Fires;
 import be.kiop.textures.Skeletons;
 import be.kiop.textures.Walls;
 import be.kiop.textures.Warriors;
+import be.kiop.textures.Weapons;
 import be.kiop.valueobjects.Position;
 import be.kiop.valueobjects.Size;
 import be.kiop.weapons.Bone;
@@ -82,13 +82,13 @@ public class Board extends JFrame {
 	private static Hero generateHero() {
 		Warriors HERO_SKIN = Warriors.Warrior_MALE_SOUTH_1;
 		String HERO_NAME = "Warrior";
-		float HERO_HEALTH = 100;
-		int HERO_LEVEL = 1;
-		int HERO_LIVES = 3;
+		float HERO_HEALTH = 1000;
+		int HERO_LEVEL = 10;
+		int HERO_LIVES = 5;
 		float HERO_ARMOR = 50;
 		float HERO_EXPERIENCE = 200;
 		float HERO_SHIELD = 10;
-		Weapon weapon = new Sword();
+		Weapon weapon = new Sword(Weapons.Sword, new Position(0,0), "Heavy Sword", 50, 75, 80, 70, 100, 5, 10, 20, 50, 70);
 		Position position = new Position(32, 32);
 		return new Warrior(HERO_SKIN, position, HERO_NAME, HERO_HEALTH, weapon, HERO_LEVEL, HERO_ARMOR, HERO_LIVES,
 				HERO_EXPERIENCE, HERO_SHIELD);
@@ -166,8 +166,9 @@ public class Board extends JFrame {
 				posY = randY * corridorSize.getHeight() + exteriorWallSize.getHeight();
 			}
 
-			enemies.add(new Skeleton(skel, new Position(posX - offsetX, posY - offsetY), "Skek", 100, new Bone(), 5,
-					50, Set.of(new Sword())));
+			enemies.add(new Skeleton(skel, new Position(posX - offsetX, posY - offsetY), "Skek", 100,
+					new Bone(Weapons.Bone, new Position(posX+skel.getSize().getWidth()/2,posY+skel.getSize().getHeight()/2), "Little Bone", 5, 10, 40, 30, 100, 5, 10, 20), 5,
+					50, Set.of(new Sword(Weapons.Sword, new Position(48,48), "Heavy Sword", 50, 75, 40, 30, 100, 5, 10, 20, 50, 70))));
 		}
 		return enemies;
 	}
