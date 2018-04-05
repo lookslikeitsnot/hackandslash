@@ -21,6 +21,7 @@ import be.kiop.items.Drop;
 import be.kiop.obstacles.fires.Fire;
 import be.kiop.obstacles.walls.Wall;
 import be.kiop.textures.Floors;
+import be.kiop.valueobjects.Directions;
 import be.kiop.valueobjects.Position;
 import be.kiop.valueobjects.Size;
 
@@ -37,8 +38,8 @@ public class BoardDrawing extends JPanel {
 
 	private Size size;
 
-	public BoardDrawing(Size size, Floors floor, Hero hero, Set<Wall> walls, Set<Fire> fires, Set<Enemy> enemies, List<Drop> drops,
-			Board board) {
+	public BoardDrawing(Size size, Floors floor, Hero hero, Set<Wall> walls, Set<Fire> fires, Set<Enemy> enemies,
+			List<Drop> drops, Board board) {
 		this.size = size;
 		this.enemies = enemies;
 		this.hero = hero;
@@ -47,7 +48,7 @@ public class BoardDrawing extends JPanel {
 		this.fires = fires;
 
 		floors = generateFloor(floor);
-		
+
 		new Keyboard(this, hero, board);
 
 		setPreferredSize(size.toDimension());
@@ -66,48 +67,23 @@ public class BoardDrawing extends JPanel {
 		return floors;
 	}
 
-//	private void placeFixedTexture(Texture texture, Set<Drawable> list, Class<?> clazz, boolean shouldBeDrawn,
-//			boolean solid) throws NoSuchMethodException, SecurityException, InstantiationException,
-//			IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-//		Constructor<?> ctor = clazz.getConstructor(Texture.class, Position.class);
-//		for (int x = 0; x < size.getWidth(); x += texture.getSize().getWidth()) {
-//			for (int y = 0; y < size.getHeight(); y += texture.getSize().getHeight()) {
-//				if ((x == 0 || y == 0 || x == size.getWidth() - texture.getSize().getWidth()
-//						|| y == size.getHeight() - texture.getSize().getHeight()) == shouldBeDrawn) {
-//					list.add(((Drawable) ctor.newInstance(texture, new Position(x, y))));
-//				}
-//			}
-//		}
-//	}
-//
-//	private void placeTexture(Texture texture, List<Drawable> list, Class<?> clazz, boolean solid,
-//			Set<Position> positions) throws NoSuchMethodException, SecurityException, InstantiationException,
-//			IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-//		Constructor<?> ctor = clazz.getConstructor(Texture.class, Position.class);
-//		for (Position position : positions) {
-//			list.add(((Drawable) ctor.newInstance(texture, position)));
-//		}
-//	}
-
-//	private List<Drawable> getAllDrawables() {
-//		List<Drawable> allDrawables = new ArrayList<>();
-//		allDrawables.addAll(ennemies);
-//		allDrawables.addAll(obstacles);
-//		allDrawables.add(hero);
-//		return allDrawables;
-//	}
-
 	@Override
 	public void paintComponent(Graphics g) {
 //		long startTime = System.nanoTime();
+		drawFloors(g);
+		drawWalls(g);
+		drawFires(g);
+		drawDrops(g);
+		drawEnemies(g);
+		drawHero(g);
+	}
+
+	private void drawFloors(Graphics g) {
 		int x;
 		int y;
 
 		BufferedImage skin;
-		BufferedImage weaponSkin;
-		
-		//drawing floor
-		for (Floor floor:floors) {
+		for (Floor floor : floors) {
 			x = floor.getPosition().getX();
 			y = floor.getPosition().getY();
 
@@ -115,8 +91,14 @@ public class BoardDrawing extends JPanel {
 
 			g.drawImage(skin, x, y, null);
 		}
+	}
 
-		// drawing all walls
+	private void drawWalls(Graphics g) {
+		int x;
+		int y;
+
+		BufferedImage skin;
+
 		for (Wall wall : walls) {
 			x = wall.getPosition().getX();
 			y = wall.getPosition().getY();
@@ -125,8 +107,14 @@ public class BoardDrawing extends JPanel {
 
 			g.drawImage(skin, x, y, null);
 		}
+	}
 
-		// drawing all firepits
+	private void drawFires(Graphics g) {
+		int x;
+		int y;
+
+		BufferedImage skin;
+
 		for (Fire fire : fires) {
 			fire.setNextTexture();
 			x = fire.getPosition().getX();
@@ -136,7 +124,13 @@ public class BoardDrawing extends JPanel {
 
 			g.drawImage(skin, x, y, null);
 		}
+	}
 
+	private void drawDrops(Graphics g) {
+		int x;
+		int y;
+
+		BufferedImage skin;
 		for (Drop drop : drops) {
 			x = drop.getPosition().getX();
 			y = drop.getPosition().getY();
@@ -145,6 +139,15 @@ public class BoardDrawing extends JPanel {
 
 			g.drawImage(skin, x, y, null);
 		}
+
+	}
+
+	private void drawEnemies(Graphics g) {
+		int x;
+		int y;
+
+		BufferedImage skin;
+		BufferedImage weaponSkin;
 
 		for (Enemy enemy : enemies) {
 			enemy.setNextTexture();
@@ -158,90 +161,51 @@ public class BoardDrawing extends JPanel {
 				skin = colorFilter(skin, Color.red);
 				weaponSkin = colorFilter(weaponSkin, Color.red);
 			}
+			
+			if(enemy.getDirection() == Directions.WEST ) {
+				g.drawImage(skin, x, y, null);
 
-			g.drawImage(skin, x, y, null);
+				Graphics2D g2d = (Graphics2D) g;
+				g2d.drawImage(weaponSkin, weaponImageTransform(enemy), null);
+			} else {
+				Graphics2D g2d = (Graphics2D) g;
+				g2d.drawImage(weaponSkin, weaponImageTransform(enemy), null);
+				
+				g.drawImage(skin, x, y, null);
+			}
 
-			Graphics2D g2d = (Graphics2D) g;
-			g2d.drawImage(weaponSkin, weaponImageTransform(enemy), null);
+			
 
 			enemy.reset();
 		}
+	}
 
+	private void drawHero(Graphics g) {
 		hero.setNextTexture();
-		x = hero.getPosition().getX();
-		y = hero.getPosition().getY();
+		int x = hero.getPosition().getX();
+		int y = hero.getPosition().getY();
 
-		skin = hero.getTexture().getSkin();
-		weaponSkin = hero.getWeapon().getTexture().getSkin();
+		BufferedImage skin = hero.getTexture().getSkin();
+		BufferedImage weaponSkin = hero.getWeapon().getTexture().getSkin();
 
 		if (hero.isTakingDamage()) {
 			skin = colorFilter(skin, Color.red);
 			weaponSkin = colorFilter(weaponSkin, Color.red);
 		}
 
-		g.drawImage(skin, x, y, null);
+		if(hero.getDirection() == Directions.WEST ) {
+			g.drawImage(skin, x, y, null);
 
-		Graphics2D g2d = (Graphics2D) g;
-		g2d.drawImage(weaponSkin, weaponImageTransform(hero), null);
+			Graphics2D g2d = (Graphics2D) g;
+			g2d.drawImage(weaponSkin, weaponImageTransform(hero), null);
+		} else {
+			Graphics2D g2d = (Graphics2D) g;
+			g2d.drawImage(weaponSkin, weaponImageTransform(hero), null);
+			
+			g.drawImage(skin, x, y, null);
+		}
 
 		hero.reset();
-
-//		for (Drawable drawable : getAllDrawables()) {
-//			x = drawable.getPosition().getX();
-//			y = drawable.getPosition().getY();
-//
-//			weaponImage = null;
-////			long startTime = System.nanoTime();
-//			if (drawable instanceof Animation) {
-//				((Animation) drawable).setNextTexture();
-//			}
-//			if (!(drawable instanceof GameCharacter)) {
-//				skin = drawable.getTexture().getSkin();
-//				g.drawImage(skin, x, y, null);
-//			} else {
-//				GameCharacter gc = (GameCharacter) drawable;
-//				weaponImage = gc.getWeapon().getTexture().getSkin();
-//				if (gc.isTakingDamage()) {
-//					skin = colorFilter(drawable.getTexture().getSkin(), Color.red);
-//					weaponImage = colorFilter(weaponImage, Color.red);
-////					((GameCharacter) drawable).reset();
-//				} else {
-//					skin = drawable.getTexture().getSkin();
-//				}
-//				g.drawImage(skin, x, y, null);
-//				Graphics2D g2d = (Graphics2D) g;
-//				g2d.drawImage(weaponImage,weaponImageTransform(gc) , null);
-//				gc.reset();
-//				//drawable.getCenter().getX(), drawable.getCenter().getY()+5, 24, 24
-//			}
-//
-//			
-//			/*
-//			 * HITBOX OF CHARACTERS if (drawable instanceof GameCharacter) {
-//			 * g.setColor(Color.RED);
-//			 * 
-//			 * int hitBoxWidth = ((HitBoxTexture)
-//			 * drawable.getTexture()).getHitBoxSize().getWidth(); int hitBoxHeight =
-//			 * ((HitBoxTexture) drawable.getTexture()).getHitBoxSize().getHeight();
-//			 * 
-//			 * int offSetX = (drawable.getTexture().getSize().getWidth() - hitBoxWidth) / 2;
-//			 * int offSetY = (drawable.getTexture().getSize().getHeight() - hitBoxHeight) /
-//			 * 2;
-//			 * 
-//			 * g.drawRect(x + offSetX, y + offSetY, hitBoxWidth, hitBoxHeight); }
-//			 */
-//
-////			long endTime = System.nanoTime();
-////			System.out.println("duration: " + (endTime - startTime)/1000000);
-//		}
-
-		/*
-		 * HITBOX OF OBSTACLES g.setColor(Color.green); for (Position position :
-		 * board.getFixedHitBoxes()) { g.drawLine(position.getX(), position.getY(),
-		 * position.getX(), position.getY()); }
-		 */
-//		long endTime = System.nanoTime();
-//		System.out.println("duration: " + (endTime - startTime)/1000000);
 	}
 
 	private static AffineTransform weaponImageTransform(GameCharacter gc) {
@@ -258,19 +222,19 @@ public class BoardDrawing extends JPanel {
 			}
 			break;
 		case NORTH:
-			at.translate(12, 2);
+			at.translate(-12, 2);
 			at.rotate(Math.PI / 4);
 			if (gc.isAttacking()) {
 				at.rotate(Math.PI);
 			}
 			break;
 		case SOUTH:
-			at.translate(-10, 5);
+			at.translate(12, 5);
 			at.rotate(Math.PI * 5 / 4);
 			if (gc.isAttacking()) {
 				at.rotate(Math.PI);
 			} else {
-				at.scale(0, 0);
+				//at.scale(0.5, 0.5);
 			}
 
 			break;

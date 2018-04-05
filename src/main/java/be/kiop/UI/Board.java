@@ -53,7 +53,7 @@ public class Board extends JFrame {
 
 	private static final Size exteriorWallSize = new Size(32, 32);
 
-	static int testWidth = 992;
+	static int testWidth = 1856;
 	static int testHeight = 1008;
 	private static Size size = new Size(2 * exteriorWallSize.getWidth() + testWidth,
 			2 * exteriorWallSize.getHeight() + testHeight);
@@ -67,7 +67,7 @@ public class Board extends JFrame {
 		fixedHitBoxes = calculateFixedHitBoxes();
 		fires = generateFirePits();
 
-		enemies = generateEnemies(32);
+		enemies = generateEnemies(128);
 
 		setLayout(new BorderLayout());
 		boardDrawing = new BoardDrawing(size, Floors.Floor_Stone_Dark_Putple_NONE, hero, walls, fires, enemies, drops, this);
