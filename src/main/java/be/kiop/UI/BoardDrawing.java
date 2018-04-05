@@ -161,8 +161,8 @@ public class BoardDrawing extends JPanel {
 				skin = colorFilter(skin, Color.red);
 				weaponSkin = colorFilter(weaponSkin, Color.red);
 			}
-			
-			if(enemy.getDirection() == Directions.WEST ) {
+
+			if (enemy.getDirection() == Directions.WEST) {
 				g.drawImage(skin, x, y, null);
 
 				Graphics2D g2d = (Graphics2D) g;
@@ -170,11 +170,9 @@ public class BoardDrawing extends JPanel {
 			} else {
 				Graphics2D g2d = (Graphics2D) g;
 				g2d.drawImage(weaponSkin, weaponImageTransform(enemy), null);
-				
+
 				g.drawImage(skin, x, y, null);
 			}
-
-			
 
 			enemy.reset();
 		}
@@ -193,7 +191,7 @@ public class BoardDrawing extends JPanel {
 			weaponSkin = colorFilter(weaponSkin, Color.red);
 		}
 
-		if(hero.getDirection() == Directions.WEST ) {
+		if (hero.getDirection() == Directions.WEST) {
 			g.drawImage(skin, x, y, null);
 
 			Graphics2D g2d = (Graphics2D) g;
@@ -201,7 +199,7 @@ public class BoardDrawing extends JPanel {
 		} else {
 			Graphics2D g2d = (Graphics2D) g;
 			g2d.drawImage(weaponSkin, weaponImageTransform(hero), null);
-			
+
 			g.drawImage(skin, x, y, null);
 		}
 
@@ -226,6 +224,8 @@ public class BoardDrawing extends JPanel {
 			at.rotate(Math.PI / 4);
 			if (gc.isAttacking()) {
 				at.rotate(Math.PI);
+			} else {
+				at.scale(0.8, 0.8);
 			}
 			break;
 		case SOUTH:
@@ -234,7 +234,7 @@ public class BoardDrawing extends JPanel {
 			if (gc.isAttacking()) {
 				at.rotate(Math.PI);
 			} else {
-				//at.scale(0.5, 0.5);
+				at.scale(0.8, 0.8);
 			}
 
 			break;
