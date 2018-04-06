@@ -13,7 +13,7 @@ import be.kiop.valueobjects.Genders;
 import be.kiop.valueobjects.Position;
 import be.kiop.valueobjects.Size;
 
-public enum Mages implements Texture, MoveAnimation, CharacterGender, HitBoxTexture {
+public enum MageTextures implements Texture, MoveAnimation, CharacterGender, HitBoxTexture {
 	Mage_FEMALE_SOUTH_1("mages", "Mage", new Position(0, 0), new Size(32, 32), new Size(20, 32), Genders.FEMALE, Directions.SOUTH, 1),
 	Mage_FEMALE_SOUTH_2("mages", "Mage", new Position(32, 0), new Size(32, 32), new Size(20, 32), Genders.FEMALE, Directions.SOUTH, 2),
 	Mage_FEMALE_SOUTH_3("mages", "Mage", new Position(64, 0), new Size(32, 32), new Size(20, 32), Genders.FEMALE, Directions.SOUTH, 3),
@@ -54,7 +54,7 @@ public enum Mages implements Texture, MoveAnimation, CharacterGender, HitBoxText
 	private int movementFrame;
 	private BufferedImage skin;
 
-	Mages(String path, String name, Position position, Size size, Size hitBoxSize, Genders gender, Directions direction, int frame) {
+	MageTextures(String path, String name, Position position, Size size, Size hitBoxSize, Genders gender, Directions direction, int frame) {
 		this.name = name;
 		this.size = size;
 		this.hitBoxSize = hitBoxSize;

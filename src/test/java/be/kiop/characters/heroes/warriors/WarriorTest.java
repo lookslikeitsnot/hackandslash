@@ -21,30 +21,33 @@ import be.kiop.exceptions.MinLevelReachedException;
 import be.kiop.exceptions.OutOfBoardException;
 import be.kiop.exceptions.OutOfLivesException;
 import be.kiop.exceptions.SkinNotFoundException;
-import be.kiop.textures.Floors;
+import be.kiop.textures.FloorTextures;
 import be.kiop.textures.HitBoxTexture;
-import be.kiop.textures.Skeletons;
+import be.kiop.textures.SkeletonTextures;
 import be.kiop.textures.Texture;
-import be.kiop.textures.Warriors;
-import be.kiop.textures.Weapons;
+import be.kiop.textures.WarriorTextures;
+import be.kiop.textures.WeaponTextures;
 import be.kiop.valueobjects.Directions;
 import be.kiop.valueobjects.Position;
+import be.kiop.valueobjects.Tile;
 import be.kiop.weapons.Bone;
 import be.kiop.weapons.Fist;
 import be.kiop.weapons.Staff;
+import be.kiop.weapons.Staffs;
 import be.kiop.weapons.Sword;
 
 public class WarriorTest {
 	private Warrior hero;
 	private Sword weapon;
 	private Position position;
+	private Tile tile;
 
 	private final static float MARGIN = 0.1F;
 
-	private final static Warriors HERO_TEXTURE = Warriors.Warrior_FEMALE_SOUTH_2;
-	private final static Warriors HERO_NEXT_TEXTURE = Warriors.Warrior_FEMALE_SOUTH_1;
-	private final static Warriors VALID_TEXTURE = Warriors.Warrior_MALE_SOUTH_2;
-	private final static Floors INVALID_TEXTURE = Floors.Floor_Parquet_HORIZONTAL;
+	private final static WarriorTextures HERO_TEXTURE = WarriorTextures.Warrior_FEMALE_SOUTH_2;
+	private final static WarriorTextures HERO_NEXT_TEXTURE = WarriorTextures.Warrior_FEMALE_SOUTH_1;
+	private final static WarriorTextures VALID_TEXTURE = WarriorTextures.Warrior_MALE_SOUTH_2;
+	private final static FloorTextures INVALID_TEXTURE = FloorTextures.Floor_Parquet_HORIZONTAL;
 	private final static String HERO_NAME = "Warrior";
 	private final static float HERO_HEALTH = 100;
 	private final static int HERO_LEVEL = 10;
@@ -55,21 +58,22 @@ public class WarriorTest {
 
 	@Before
 	public void before() {
-		weapon = new Sword(Weapons.Sword, new Position(48, 48), "Heavy Sword", 50, 75, 40, 30, 100, 5, 10, 20, 50, 70);
-		position = new Position(Board.getSize(true).getWidth() / 2, Board.getSize(true).getHeight() / 2);
-		hero = new Warrior(HERO_TEXTURE, position, HERO_NAME, HERO_HEALTH, weapon, HERO_LEVEL, HERO_ARMOR, HERO_LIVES,
+		weapon = new Sword(WeaponTextures.Sword, new Position(48, 48), "Heavy Sword", 50, 75, 40, 30, 100, 5, 10, 20, 50, 70);
+		position = new Position(Board.MAX_SIZE.getWidth() / 2, Board.MAX_SIZE.getHeight() / 2);
+		tile = new Tile(1,1);
+		hero = new Warrior(HERO_TEXTURE, position, tile, HERO_NAME, HERO_HEALTH, weapon, HERO_LEVEL, HERO_ARMOR, HERO_LIVES,
 				HERO_EXPERIENCE, HERO_SHIELD);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void setName_null_IllegalArgument() {
-		new Warrior(HERO_TEXTURE, position, null, HERO_HEALTH, weapon, HERO_LEVEL, HERO_ARMOR, HERO_LIVES,
+		new Warrior(HERO_TEXTURE, position, tile, null, HERO_HEALTH, weapon, HERO_LEVEL, HERO_ARMOR, HERO_LIVES,
 				HERO_EXPERIENCE, HERO_SHIELD);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void setName_invalid_IllegalArgument() {
-		new Warrior(HERO_TEXTURE, position, " ", HERO_HEALTH, weapon, HERO_LEVEL, HERO_ARMOR, HERO_LIVES,
+		new Warrior(HERO_TEXTURE, position, tile, " ", HERO_HEALTH, weapon, HERO_LEVEL, HERO_ARMOR, HERO_LIVES,
 				HERO_EXPERIENCE, HERO_SHIELD);
 	}
 
@@ -98,45 +102,45 @@ public class WarriorTest {
 	@Test
 	public void moveLeft_nA_gameCharacterPositionXMinus1() {
 		hero.moveLeft();
-		assertEquals(Board.getSize(true).getWidth() / 2 - 1, hero.getPosition().getX());
+		assertEquals(Board.MAX_SIZE.getWidth() / 2 - 1, hero.getPosition().getX());
 	}
 
 	@Test(expected = OutOfBoardException.class)
 	public void moveLeft_untilOOB_OutOfBoardException() {
-		IntStream.range(0, Board.getSize(true).getWidth() + 1).forEach(iteration -> hero.moveLeft());
+		IntStream.range(0, Board.MAX_SIZE.getWidth() + 1).forEach(iteration -> hero.moveLeft());
 	}
 
 	@Test
 	public void moveRight_nA_gameCharacterPositionXPlus1() {
 		hero.moveRight();
-		assertEquals(Board.getSize(true).getWidth() / 2 + 1, hero.getPosition().getX());
+		assertEquals(Board.MAX_SIZE.getWidth() / 2 + 1, hero.getPosition().getX());
 	}
 
 	@Test(expected = OutOfBoardException.class)
 	public void moveRight_untilOOB_OutOfBoardException() {
-		IntStream.range(0, Board.getSize(true).getWidth() + 1).forEach(iteration -> hero.moveRight());
+		IntStream.range(0, Board.MAX_SIZE.getWidth() + 1).forEach(iteration -> hero.moveRight());
 	}
 
 	@Test
 	public void moveUp_nA_gameCharacterPositionYMinus1() {
 		hero.moveUp();
-		assertEquals(Board.getSize(true).getHeight() / 2 - 1, hero.getPosition().getY());
+		assertEquals(Board.MAX_SIZE.getHeight() / 2 - 1, hero.getPosition().getY());
 	}
 
 	@Test(expected = OutOfBoardException.class)
 	public void moveUp_untilOOB_OutOfBoardException() {
-		IntStream.range(0, Board.getSize(true).getHeight() + 1).forEach(iteration -> hero.moveUp());
+		IntStream.range(0, Board.MAX_SIZE.getHeight() + 1).forEach(iteration -> hero.moveUp());
 	}
 
 	@Test
 	public void moveDown_nA_gameCharacterPositionYPlus1() {
 		hero.moveDown();
-		assertEquals(Board.getSize(true).getHeight() / 2 + 1, hero.getPosition().getY());
+		assertEquals(Board.MAX_SIZE.getHeight() / 2 + 1, hero.getPosition().getY());
 	}
 
 	@Test(expected = OutOfBoardException.class)
 	public void moveDown_untilOOB_OutOfBoardException() {
-		IntStream.range(0, Board.getSize(true).getWidth() + 1).forEach(iteration -> hero.moveDown());
+		IntStream.range(0, Board.MAX_SIZE.getWidth() + 1).forEach(iteration -> hero.moveDown());
 	}
 
 	@Test
@@ -253,7 +257,7 @@ public class WarriorTest {
 
 	@Test(expected = IllegalWeaponException.class)
 	public void changeWeapon_invalidWeapon_exception() {
-		hero.changeWeapon(new Staff());
+		hero.changeWeapon(Staffs.Staff_1.getWeapon());
 	}
 
 	@Test(expected = IllegalArgumentException.class)
@@ -379,9 +383,9 @@ public class WarriorTest {
 
 	@Test
 	public void attack_enemy_enemyTakesDamage() {
-		GameCharacter gc = new Skeleton(Skeletons.Skeleton_SOUTH_2, position, "Skeleton", HERO_HEALTH,
-				new Bone(Weapons.Bone, position, "Little Bone", 50, 75, 40, 30, 100, 5, 10, 20), 1, 0,
-				Set.of(new Sword(Weapons.Sword, new Position(48, 48), "Heavy Sword", 50, 75, 40, 30, 100, 5, 10, 20, 50,
+		GameCharacter gc = new Skeleton(SkeletonTextures.Skeleton_SOUTH_2, position, tile, "Skeleton", HERO_HEALTH,
+				new Bone(WeaponTextures.Bone, position, "Little Bone", 50, 75, 40, 30, 100, 5, 10, 20), 1, 0,
+				Set.of(new Sword(WeaponTextures.Sword, new Position(48, 48), "Heavy Sword", 50, 75, 40, 30, 100, 5, 10, 20, 50,
 						70)));
 		hero.attack(gc);
 		assertEquals(HERO_HEALTH - weapon.getDamage(), gc.getHealth(), MARGIN);

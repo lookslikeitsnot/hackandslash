@@ -7,7 +7,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import be.kiop.UI.Board;
-import be.kiop.textures.Walls;
+import be.kiop.textures.WallTextures;
 import be.kiop.valueobjects.Position;
 
 public class WallTest {
@@ -15,11 +15,11 @@ public class WallTest {
 	private Position position;
 	private Board board;
 	
-	private final static Walls OBSTACLE_PATH = Walls.Wall_Metallic;
+	private final static WallTextures OBSTACLE_PATH = WallTextures.Wall_Metallic;
 	
 	@Before
 	public void before() {
-		board = new Board();
+		board = new Board(15,15);
 		position = new Position(board.getWidth()/2, board.getHeight()/2);
 		wall = new Wall(OBSTACLE_PATH, position);
 	}

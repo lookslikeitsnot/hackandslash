@@ -11,7 +11,7 @@ import be.kiop.valueobjects.Orientations;
 import be.kiop.valueobjects.Position;
 import be.kiop.valueobjects.Size;
 
-public enum Floors implements Texture, OrientedTexture {
+public enum FloorTextures implements Texture, OrientedTexture {
 	Floor_Parquet_HORIZONTAL("floors", "Floor_Parquet", new Position(0,0), new Size(32, 32), Orientations.HORIZONTAL),
 	Floor_Parquet_VERTICAL("floors", "Floor_Parquet", new Position(32,0), new Size(32, 32), Orientations.VERTICAL),
 	Floor_Stone_Light_Brown_NONE("floors", "Floor_Stone_Light_Brown", new Position(0,64), new Size(32, 32), Orientations.NONE),
@@ -24,7 +24,7 @@ public enum Floors implements Texture, OrientedTexture {
 	private Orientations orientation;
 	private BufferedImage skin;
 
-	Floors(String path, String name, Position position, Size size, Orientations orientation) {
+	FloorTextures(String path, String name, Position position, Size size, Orientations orientation) {
 		this.name= name;
 		this.size = size;
 		this.orientation = orientation;

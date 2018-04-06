@@ -10,7 +10,7 @@ import be.kiop.exceptions.SkinNotFoundException;
 import be.kiop.valueobjects.Position;
 import be.kiop.valueobjects.Size;
 
-public enum Fires implements Texture, IdleAnimation, HitBoxTexture {
+public enum FireTextures implements Texture, IdleAnimation, HitBoxTexture {
 	Fire_1("fires", "Fire", new Position(0, 0), new Size(32, 55), new Size(20, 40), 1),
 	Fire_2("fires", "Fire", new Position(32, 0), new Size(32, 55), new Size(20, 40), 2),
 	Fire_3("fires", "Fire", new Position(64, 0), new Size(32, 55), new Size(20, 40), 3),
@@ -25,7 +25,7 @@ public enum Fires implements Texture, IdleAnimation, HitBoxTexture {
 	private int animationFrame;
 	private BufferedImage skin;
 
-	Fires(String path, String name, Position position, Size size, Size hitBoxSize, int animationFrame) {
+	FireTextures(String path, String name, Position position, Size size, Size hitBoxSize, int animationFrame) {
 		this.name = name;
 		this.size = size;
 		this.hitBoxSize = hitBoxSize;

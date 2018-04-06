@@ -11,7 +11,7 @@ import be.kiop.valueobjects.Directions;
 import be.kiop.valueobjects.Position;
 import be.kiop.valueobjects.Size;
 
-public enum Skeletons implements Texture, MoveAnimation, HitBoxTexture {
+public enum SkeletonTextures implements Texture, MoveAnimation, HitBoxTexture {
 	Skeleton_SOUTH_1("skeletons", "Skeleton", new Position(0, 0), new Size(48, 48), new Size(24, 42), Directions.SOUTH, 1),
 	Skeleton_SOUTH_2("skeletons", "Skeleton", new Position(48, 0), new Size(48, 48), new Size(24, 42), Directions.SOUTH, 2),
 	Skeleton_SOUTH_3("skeletons", "Skeleton", new Position(96, 0), new Size(48, 48), new Size(24, 42), Directions.SOUTH, 3),
@@ -51,7 +51,7 @@ public enum Skeletons implements Texture, MoveAnimation, HitBoxTexture {
 	private int movementFrame;
 	private BufferedImage skin;
 
-	Skeletons(String path, String name, Position position, Size size, Size hitBoxSize, Directions direction, int frame) {
+	SkeletonTextures(String path, String name, Position position, Size size, Size hitBoxSize, Directions direction, int frame) {
 		this.name= name;
 		this.size = size;
 		this.hitBoxSize = hitBoxSize;

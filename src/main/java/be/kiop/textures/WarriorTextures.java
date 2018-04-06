@@ -13,7 +13,7 @@ import be.kiop.valueobjects.Genders;
 import be.kiop.valueobjects.Position;
 import be.kiop.valueobjects.Size;
 
-public enum Warriors implements Texture, MoveAnimation, CharacterGender, HitBoxTexture {
+public enum WarriorTextures implements Texture, MoveAnimation, CharacterGender, HitBoxTexture {
 	Warrior_MALE_SOUTH_1("warriors", "Warrior", new Position(0, 0), new Size(32, 48), new Size(18, 36), Genders.MALE, Directions.SOUTH,
 			1),
 	Warrior_MALE_SOUTH_2("warriors", "Warrior", new Position(32, 0), new Size(32, 48), new Size(18, 36), Genders.MALE, Directions.SOUTH,
@@ -76,7 +76,7 @@ public enum Warriors implements Texture, MoveAnimation, CharacterGender, HitBoxT
 	private int movementFrame;
 	private BufferedImage skin;
 
-	Warriors(String path, String name, Position position, Size size, Size hitBoxSize, Genders gender, Directions direction, int frame) {
+	WarriorTextures(String path, String name, Position position, Size size, Size hitBoxSize, Genders gender, Directions direction, int frame) {
 		this.name = name;
 		this.size = size;
 		this.hitBoxSize = hitBoxSize;

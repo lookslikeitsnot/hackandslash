@@ -4,12 +4,12 @@ import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
 
-import be.kiop.textures.Weapons;
+import be.kiop.textures.WeaponTextures;
 
 public class WeaponsTest {
 	@Test
 	public void allValues_nA_exist() {
-		assertNotNull(Weapons.values());
-		assertNotNull(Weapons.valueOf("Bone"));
+		assertNotNull(WeaponTextures.values());
+		assertNotNull(WeaponTextures.valueOf("Bone"));
 	}
 }

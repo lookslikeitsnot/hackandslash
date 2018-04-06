@@ -10,7 +10,7 @@ public class BoardTest {
 	
 	@Before
 	public void before() {
-		board = new Board();
+		board = new Board(15,15);
 	}
 	
 	@Test

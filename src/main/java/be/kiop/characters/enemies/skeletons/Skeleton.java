@@ -4,23 +4,26 @@ import java.util.Arrays;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import be.kiop.UI.Drawable;
 import be.kiop.characters.enemies.Enemy;
 import be.kiop.items.Drop;
-import be.kiop.textures.Skeletons;
+import be.kiop.textures.SkeletonTextures;
 import be.kiop.textures.Texture;
-import be.kiop.textures.Weapons;
+import be.kiop.textures.WeaponTextures;
 import be.kiop.valueobjects.Position;
+import be.kiop.valueobjects.Tile;
 import be.kiop.weapons.Weapon;
 
 public class Skeleton extends Enemy {
-	private final static Set<Texture> AVAILABLE_TEXTURES = Arrays.stream(Skeletons.values()).collect(Collectors.toSet());
-	private final static Set<Weapons> availableWeapons = Set.of(Weapons.Bone);
+	private final static Set<Texture> AVAILABLE_TEXTURES = Arrays.stream(SkeletonTextures.values()).collect(Collectors.toSet());
+	private final static Set<WeaponTextures> availableWeapons = Set.of(WeaponTextures.Bone);
 
-	public Skeleton(Skeletons skeleton, Position position, String name, float health, Weapon weapon, int level, float armor,
+	public Skeleton(SkeletonTextures skeletonTexture, Position position, Tile tile, String name, float health, Weapon weapon, int level, float armor,
 			Set<Drop> droppables) {
 		super.setAvailableTextures(AVAILABLE_TEXTURES);
-		super.setTexture(skeleton);
+		super.setTexture(skeletonTexture);
 		super.setPosition(position);
+		super.setTile(tile);
 		super.setName(name);
 		super.setLevel(level);
 		super.setHealth(health);
@@ -29,5 +32,14 @@ public class Skeleton extends Enemy {
 		super.setArmor(armor);
 		super.setDroppables(droppables);
 		super.setId(Enemy.counter++);
+	}
+
+	@Override
+	public Drawable copy() {
+		try {
+			return (Skeleton) this.clone();
+		} catch (CloneNotSupportedException e) {
+			return null;
+		}
 	}
 }

@@ -10,7 +10,7 @@ import be.kiop.exceptions.SkinNotFoundException;
 import be.kiop.valueobjects.Position;
 import be.kiop.valueobjects.Size;
 
-public enum Hearts implements Texture{
+public enum HeartTextures implements Texture{
 	Heart_Full("hearts2", "Heart_Full", new Position(0,0), new Size(13,10)),
 	Heart_Empty("hearts2", "Heart_Full", new Position(14,0), new Size(13,10));
 	
@@ -18,7 +18,7 @@ public enum Hearts implements Texture{
 	private Size size;
 	private BufferedImage skin;
 	
-	Hearts(String path, String name, Position position, Size size) {
+	HeartTextures(String path, String name, Position position, Size size) {
 		this.name= name;
 		this.size = size;
 		try {

@@ -7,6 +7,8 @@ public class Position {
 	private int x;
 	private int y;
 	// private int z;
+	
+	public final static Position ORIGIN = new Position(0,0);
 
 	public Position(int x, int y) {
 		setX(x);
@@ -18,7 +20,7 @@ public class Position {
 	}
 
 	public void setX(int x) {
-		if (x < 0 || x > Board.getSize(true).getWidth()) {
+		if (x < 0 || x > Board.MAX_SIZE.getWidth()) {
 			throw new OutOfBoardException();
 		}
 		this.x = x;
@@ -29,7 +31,7 @@ public class Position {
 	}
 
 	public void setY(int y) {
-		if (y < 0 || y > Board.getSize(true).getHeight()) {
+		if (y < 0 || y > Board.MAX_SIZE.getHeight()) {
 			throw new OutOfBoardException();
 		}
 		this.y = y;
@@ -98,6 +100,9 @@ public class Position {
 	}
 
 	public void add(Position position) {
+		if(position == null) {
+			throw new IllegalArgumentException();
+		}
 		this.x += position.getX();
 		this.y += position.getY();
 	}
@@ -114,6 +119,9 @@ public class Position {
 	}
 
 	public void substract(Position position) {
+		if(position == null) {
+			throw new IllegalArgumentException();
+		}
 		this.x -= position.getX();
 		this.y -= position.getY();
 	}
@@ -124,8 +132,26 @@ public class Position {
 	}
 
 	public static Position difference(Position pos1, Position pos2) {
+		if(pos1 == null || pos2 == null) {
+			throw new IllegalArgumentException();
+		}
 		int difX = pos1.x - pos2.x;
 		int difY = pos1.y - pos2.y;
 		return new Position(difX, difY);
+	}
+
+	public static Position getAssociatedPosition(Tile tile, Size tileSize) {
+		if(tile == null || tileSize == null) {
+			throw new IllegalArgumentException();
+		}
+		return new Position(tile.getHorizontalPosition() * tileSize.getWidth(),
+				tile.getVerticalPosition() * tileSize.getHeight());
+	}
+	
+	public static Position getAssociatedPosition(Tile tile, Size tileSize, int offsetX, int offsetY) {
+		if(tile == null || tileSize == null) {
+			throw new IllegalArgumentException();
+		}
+		return sum(getAssociatedPosition(tile, tileSize), new Position(offsetX, offsetY));
 	}
 }

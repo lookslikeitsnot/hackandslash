@@ -4,24 +4,27 @@ import java.util.Arrays;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import be.kiop.UI.Drawable;
 import be.kiop.characters.heroes.Hero;
 import be.kiop.textures.Texture;
-import be.kiop.textures.Warriors;
-import be.kiop.textures.Weapons;
+import be.kiop.textures.WarriorTextures;
+import be.kiop.textures.WeaponTextures;
 import be.kiop.valueobjects.Position;
+import be.kiop.valueobjects.Tile;
 import be.kiop.weapons.Weapon;
 
 public class Warrior extends Hero {
 	private float shield;
 	public static final float MAX_SHIELD = 100;
-	private final static Set<Texture> AVAILABLE_TEXTURES = Arrays.stream(Warriors.values()).collect(Collectors.toSet());
-	private static Set<Weapons> availableWeapons = Set.of(Weapons.Sword);
+	private final static Set<Texture> AVAILABLE_TEXTURES = Arrays.stream(WarriorTextures.values()).collect(Collectors.toSet());
+	private static Set<WeaponTextures> availableWeapons = Set.of(WeaponTextures.Sword);
 
-	public Warrior(Warriors warrior, Position position, String name, float health, Weapon weapon, int level, float armor, int lives, float experience,
+	public Warrior(WarriorTextures warrior, Position position, Tile tile, String name, float health, Weapon weapon, int level, float armor, int lives, float experience,
 			float shield) {
 		super.setAvailableTextures(AVAILABLE_TEXTURES);
 		super.setTexture(warrior);
 		super.setPosition(position);
+		super.setTile(tile);
 		super.setName(name);
 		super.setLevel(level);
 		super.setHealth(health);
@@ -54,5 +57,14 @@ public class Warrior extends Hero {
 			}
 		}
 		super.takeDamage(damage);
+	}
+
+	@Override
+	public Drawable copy() {
+		try {
+			return (Warrior) this.clone();
+		} catch (CloneNotSupportedException e) {
+			return null;
+		}
 	}
 }

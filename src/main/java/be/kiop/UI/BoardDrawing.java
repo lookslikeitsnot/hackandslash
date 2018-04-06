@@ -20,7 +20,7 @@ import be.kiop.decorations.Floor;
 import be.kiop.items.Drop;
 import be.kiop.obstacles.fires.Fire;
 import be.kiop.obstacles.walls.Wall;
-import be.kiop.textures.Floors;
+import be.kiop.textures.FloorTextures;
 import be.kiop.valueobjects.Directions;
 import be.kiop.valueobjects.Position;
 import be.kiop.valueobjects.Size;
@@ -38,7 +38,7 @@ public class BoardDrawing extends JPanel {
 
 	private Size size;
 
-	public BoardDrawing(Size size, Floors floor, Hero hero, Set<Wall> walls, Set<Fire> fires, Set<Enemy> enemies,
+	public BoardDrawing(Size size, FloorTextures floor, Hero hero, Set<Wall> walls, Set<Fire> fires, Set<Enemy> enemies,
 			List<Drop> drops, Board board) {
 		this.size = size;
 		this.enemies = enemies;
@@ -54,7 +54,7 @@ public class BoardDrawing extends JPanel {
 		setPreferredSize(size.toDimension());
 	}
 
-	private Set<Floor> generateFloor(Floors floor) {
+	private Set<Floor> generateFloor(FloorTextures floor) {
 		Set<Floor> floors = new LinkedHashSet<>();
 		for (int x = 0; x < size.getWidth(); x += floor.getSize().getWidth()) {
 			for (int y = 0; y < size.getHeight(); y += floor.getSize().getHeight()) {
@@ -69,7 +69,6 @@ public class BoardDrawing extends JPanel {
 
 	@Override
 	public void paintComponent(Graphics g) {
-//		long startTime = System.nanoTime();
 		drawFloors(g);
 		drawWalls(g);
 		drawFires(g);

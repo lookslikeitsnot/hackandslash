@@ -9,7 +9,7 @@ import be.kiop.exceptions.SkinNotFoundException;
 import be.kiop.textures.Texture;
 import be.kiop.valueobjects.Position;
 
-public abstract class Drawable {
+public abstract class Drawable implements Cloneable{
 	public final static Path VALID_SKIN = Paths.get("src/main/resources/images/test.png");
 	
 	private Texture texture;
@@ -106,7 +106,7 @@ public abstract class Drawable {
 				position.getY() + texture.getSize().getHeight() / 2);
 	}
 
-	
+	public abstract Drawable copy();
 	
 //	public abstract void setNextTexture();
 	

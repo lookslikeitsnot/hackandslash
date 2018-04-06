@@ -19,13 +19,14 @@ import be.kiop.exceptions.MinLevelReachedException;
 import be.kiop.exceptions.OutOfBoardException;
 import be.kiop.exceptions.SkinNotFoundException;
 import be.kiop.items.Drop;
-import be.kiop.textures.Floors;
+import be.kiop.textures.FloorTextures;
 import be.kiop.textures.HitBoxTexture;
-import be.kiop.textures.Skeletons;
+import be.kiop.textures.SkeletonTextures;
 import be.kiop.textures.Texture;
-import be.kiop.textures.Weapons;
+import be.kiop.textures.WeaponTextures;
 import be.kiop.valueobjects.Directions;
 import be.kiop.valueobjects.Position;
+import be.kiop.valueobjects.Tile;
 import be.kiop.weapons.Bone;
 import be.kiop.weapons.Fist;
 import be.kiop.weapons.Sword;
@@ -35,42 +36,46 @@ public class SkeletonTest {
 	private Skeleton enemy;
 	private Weapon weapon;
 	private Position position;
+	private Tile tile;
 
 	private final static float MARGIN = 0.1F;
 
-	private final static Skeletons ENNEMY_TEXTURE = Skeletons.Skeleton_SOUTH_2;
-	private final static Skeletons ENNEMY_NEXT_TEXTURE = Skeletons.Skeleton_SOUTH_1;
-	private final static Skeletons VALID_TEXTURE = Skeletons.Skeleton_Dog_EAST_2;
-	private final static Floors INVALID_TEXTURE = Floors.Floor_Parquet_HORIZONTAL;
-	private final static String ENNEMY_NAME = "Skeleton";
-	private final static float ENNEMY_HEALTH = 100;
-	private final static int ENNEMY_LEVEL = 10;
-	private final static float ENNEMY_ARMOR = 50;
-	private final static Set<Drop> ENNEMY_DROPPABLES = Set.of(new Sword(Weapons.Sword, new Position(48,48), "Heavy Sword", 50, 75, 40, 30, 100, 5, 10, 20, 50, 70));
+	private final static SkeletonTextures ENEMY_TEXTURE = SkeletonTextures.Skeleton_SOUTH_2;
+	private final static SkeletonTextures ENEMY_NEXT_TEXTURE = SkeletonTextures.Skeleton_SOUTH_1;
+	private final static SkeletonTextures VALID_TEXTURE = SkeletonTextures.Skeleton_Dog_EAST_2;
+	private final static FloorTextures INVALID_TEXTURE = FloorTextures.Floor_Parquet_HORIZONTAL;
+	private final static String ENEMY_NAME = "Skeleton";
+	private final static float ENEMY_HEALTH = 100;
+	private final static int ENEMY_LEVEL = 10;
+	private final static float ENEMY_ARMOR = 50;
+	private final static int ENEMY_POSX = 32;
+	private final static int ENEMY_POSY = 32;
+	private final static Set<Drop> ENEMY_DROPPABLES = Set.of(new Sword(WeaponTextures.Sword, new Position(48,48), "Heavy Sword", 50, 75, 40, 30, 100, 5, 10, 20, 50, 70));
 
 	@Before
 	public void before() {
-		position = new Position(Board.getSize(true).getWidth() / 2, Board.getSize(true).getHeight() / 2);
-		weapon = new Bone(Weapons.Bone, position, "Little Bone", 50, 75, 40, 30, 100, 5, 10, 20);
-		enemy = new Skeleton(ENNEMY_TEXTURE, position, ENNEMY_NAME, ENNEMY_HEALTH, weapon, ENNEMY_LEVEL, ENNEMY_ARMOR,
-				ENNEMY_DROPPABLES);
+		position = new Position(ENEMY_POSX, ENEMY_POSY);
+		tile = new Tile(1,1);
+		weapon = new Bone(WeaponTextures.Bone, position, "Little Bone", 50, 75, 40, 30, 100, 5, 10, 20);
+		enemy = new Skeleton(ENEMY_TEXTURE, position, tile , ENEMY_NAME, ENEMY_HEALTH, weapon, ENEMY_LEVEL, ENEMY_ARMOR,
+				ENEMY_DROPPABLES);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void setName_null_IllegalArgument() {
-		new Skeleton(ENNEMY_TEXTURE, position, null, ENNEMY_HEALTH, weapon, ENNEMY_LEVEL, ENNEMY_ARMOR,
-				ENNEMY_DROPPABLES);
+		new Skeleton(ENEMY_TEXTURE, position, tile, null, ENEMY_HEALTH, weapon, ENEMY_LEVEL, ENEMY_ARMOR,
+				ENEMY_DROPPABLES);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void setName_invalid_IllegalArgument() {
-		new Skeleton(ENNEMY_TEXTURE, position, " ", ENNEMY_HEALTH, weapon, ENNEMY_LEVEL, ENNEMY_ARMOR,
-				ENNEMY_DROPPABLES);
+		new Skeleton(ENEMY_TEXTURE, position, tile, " ", ENEMY_HEALTH, weapon, ENEMY_LEVEL, ENEMY_ARMOR,
+				ENEMY_DROPPABLES);
 	}
 
 	@Test
 	public void getTexture_nA_gameCharacterSkin() {
-		assertEquals(ENNEMY_TEXTURE, enemy.getTexture());
+		assertEquals(ENEMY_TEXTURE, enemy.getTexture());
 	}
 
 	@Test
@@ -93,45 +98,45 @@ public class SkeletonTest {
 	@Test
 	public void moveLeft_nA_gameCharacterPositionXMinus1() {
 		enemy.moveLeft();
-		assertEquals(Board.getSize(true).getWidth() / 2 - 1, enemy.getPosition().getX());
+		assertEquals(ENEMY_POSX - 1, enemy.getPosition().getX());
 	}
 
 	@Test(expected = OutOfBoardException.class)
 	public void moveLeft_untilOOB_OutOfBoardException() {
-		IntStream.range(0, Board.getSize(true).getWidth() + 1).forEach(iteration -> enemy.moveLeft());
+		IntStream.range(0, Board.MAX_SIZE.getWidth() + 1).forEach(iteration -> enemy.moveLeft());
 	}
 
 	@Test
 	public void moveRight_nA_gameCharacterPositionXPlus1() {
 		enemy.moveRight();
-		assertEquals(Board.getSize(true).getWidth() / 2 + 1, enemy.getPosition().getX());
+		assertEquals(ENEMY_POSX + 1, enemy.getPosition().getX());
 	}
 
 	@Test(expected = OutOfBoardException.class)
 	public void moveRight_untilOOB_OutOfBoardException() {
-		IntStream.range(0, Board.getSize(true).getWidth() + 1).forEach(iteration -> enemy.moveRight());
+		IntStream.range(0, Board.MAX_SIZE.getWidth() + 1).forEach(iteration -> enemy.moveRight());
 	}
 
 	@Test
 	public void moveUp_nA_gameCharacterPositionYMinus1() {
 		enemy.moveUp();
-		assertEquals(Board.getSize(true).getHeight() / 2 -1, enemy.getPosition().getY());
+		assertEquals(ENEMY_POSY -1, enemy.getPosition().getY());
 	}
 
 	@Test(expected = OutOfBoardException.class)
 	public void moveUp_untilOOB_OutOfBoardException() {
-		IntStream.range(0, Board.getSize(true).getHeight() / 2 + 1).forEach(iteration -> enemy.moveUp());
+		IntStream.range(0, Board.MAX_SIZE.getHeight() / 2 + 1).forEach(iteration -> enemy.moveUp());
 	}
 
 	@Test
 	public void moveDown_nA_gameCharacterPositionYPlus1() {
 		enemy.moveDown();
-		assertEquals(Board.getSize(true).getHeight() / 2 + 1, enemy.getPosition().getY());
+		assertEquals(ENEMY_POSY + 1, enemy.getPosition().getY());
 	}
 
 	@Test(expected = OutOfBoardException.class)
 	public void moveDown_untilOOB_OutOfBoardException() {
-		IntStream.range(0, Board.getSize(true).getWidth() + 1).forEach(iteration -> enemy.moveDown());
+		IntStream.range(0, Board.MAX_SIZE.getWidth() + 1).forEach(iteration -> enemy.moveDown());
 	}
 
 	@Test
@@ -147,23 +152,23 @@ public class SkeletonTest {
 
 	@Test
 	public void getName_nA_heroName() {
-		assertTrue(enemy.getName().equals(ENNEMY_NAME));
+		assertTrue(enemy.getName().equals(ENEMY_NAME));
 	}
 
 	@Test
 	public void getHealth_nA_heroHealth() {
-		assertEquals(ENNEMY_HEALTH, enemy.getHealth(), MARGIN);
+		assertEquals(ENEMY_HEALTH, enemy.getHealth(), MARGIN);
 	}
 
 	@Test
 	public void takeFlatDamage_moreThanHeroHealth_0Health() {
-		enemy.takeFlatDamage(ENNEMY_HEALTH + 1);
+		enemy.takeFlatDamage(ENEMY_HEALTH + 1);
 		assertEquals(0, enemy.getHealth(), MARGIN);
 	}
 
 	@Test
 	public void takeFlatDamage_lessThanHeroHealth_remainingHealth() {
-		enemy.takeFlatDamage(ENNEMY_HEALTH - 1);
+		enemy.takeFlatDamage(ENEMY_HEALTH - 1);
 		assertEquals(1, enemy.getHealth(), MARGIN);
 	}
 
@@ -174,7 +179,7 @@ public class SkeletonTest {
 
 	@Test
 	public void takeDamage_moreThanHeroHealth_0Health() {
-		enemy.takeDamage(ENNEMY_HEALTH * 100 / ENNEMY_ARMOR + ENNEMY_HEALTH);
+		enemy.takeDamage(ENEMY_HEALTH * 100 / ENEMY_ARMOR + ENEMY_HEALTH);
 		assertEquals(0, enemy.getHealth(),MARGIN);
 	}
 
@@ -185,24 +190,24 @@ public class SkeletonTest {
 
 	@Test
 	public void takeDamage_moreThanHeroLifeAndPenetration_0Health() {
-		enemy.takeDamage(ENNEMY_HEALTH, ENNEMY_ARMOR + 1);
+		enemy.takeDamage(ENEMY_HEALTH, ENEMY_ARMOR + 1);
 		assertEquals(0, enemy.getHealth(),MARGIN);
 	}
 
 	@Test
 	public void takeDamage_lessThanHeroLifeAndPenetration_remainingHealth() {
-		enemy.takeDamage(ENNEMY_HEALTH - 1, ENNEMY_ARMOR);
+		enemy.takeDamage(ENEMY_HEALTH - 1, ENEMY_ARMOR);
 		assertEquals(1, enemy.getHealth(), MARGIN);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void takeDamage_negativeDamageAndPositivePenetration_Exception() {
-		enemy.takeDamage(-1, ENNEMY_HEALTH / 2);
+		enemy.takeDamage(-1, ENEMY_HEALTH / 2);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void takeDamage_positiveDamageAndNegativePenetration_Exception() {
-		enemy.takeDamage(1, -ENNEMY_HEALTH / 2);
+		enemy.takeDamage(1, -ENEMY_HEALTH / 2);
 	}
 
 	@Test
@@ -214,7 +219,7 @@ public class SkeletonTest {
 	@Test
 	public void heal_lessThanHeroLife_heroHealth() {
 		enemy.heal(1);
-		assertEquals(ENNEMY_HEALTH + 1, enemy.getHealth(), MARGIN);
+		assertEquals(ENEMY_HEALTH + 1, enemy.getHealth(), MARGIN);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
@@ -235,7 +240,7 @@ public class SkeletonTest {
 
 	@Test(expected = IllegalWeaponException.class)
 	public void changeWeapon_invalidWeapon_exception() {
-		enemy.changeWeapon(new Sword(Weapons.Sword, new Position(48,48), "Heavy Sword", 50, 75, 40, 30, 100, 5, 10, 20, 50, 70));
+		enemy.changeWeapon(new Sword(WeaponTextures.Sword, new Position(48,48), "Heavy Sword", 50, 75, 40, 30, 100, 5, 10, 20, 50, 70));
 	}
 
 	@Test(expected = IllegalArgumentException.class)
@@ -251,13 +256,13 @@ public class SkeletonTest {
 
 	@Test
 	public void getLevel_nA_heroLevel() {
-		assertEquals(ENNEMY_LEVEL, enemy.getLevel());
+		assertEquals(ENEMY_LEVEL, enemy.getLevel());
 	}
 
 	@Test
 	public void increaseLevel_nA_heroLevelIncreased() {
 		enemy.increaseLevel();
-		assertEquals(ENNEMY_LEVEL + 1, enemy.getLevel());
+		assertEquals(ENEMY_LEVEL + 1, enemy.getLevel());
 	}
 
 	@Test(expected = MaxLevelReachedException.class)
@@ -268,7 +273,7 @@ public class SkeletonTest {
 	@Test
 	public void decreaseLevel_nA_heroLevelDecreased() {
 		enemy.decreaseLevel();
-		assertEquals(ENNEMY_LEVEL - 1, enemy.getLevel());
+		assertEquals(ENEMY_LEVEL - 1, enemy.getLevel());
 	}
 
 	@Test(expected = MinLevelReachedException.class)
@@ -294,7 +299,7 @@ public class SkeletonTest {
 
 	@Test
 	public void getArmor_nA_heroArmor() {
-		assertEquals(ENNEMY_ARMOR, enemy.getArmor(), MARGIN);
+		assertEquals(ENEMY_ARMOR, enemy.getArmor(), MARGIN);
 	}
 
 	@Test
@@ -305,17 +310,17 @@ public class SkeletonTest {
 
 	@Test
 	public void setArmor_allIsWell_heroArmorIncreased() {
-		enemy.setArmor(ENNEMY_ARMOR + 1);
-		assertEquals(ENNEMY_ARMOR + 1, enemy.getArmor(), MARGIN);
+		enemy.setArmor(ENEMY_ARMOR + 1);
+		assertEquals(ENEMY_ARMOR + 1, enemy.getArmor(), MARGIN);
 	}
 
 	@Test
 	public void attack_enemy_enemyTakesDamage() {
-		GameCharacter gc = new Skeleton(Skeletons.Skeleton_NORTH_2, position, "Skeleton", ENNEMY_HEALTH,
-				new Bone(Weapons.Bone, position, "Little Bone", 50, 75, 40, 30, 100, 5, 10, 20), 1,
-				0, Set.of(new Sword(Weapons.Sword, new Position(48,48), "Heavy Sword", 50, 75, 40, 30, 100, 5, 10, 20, 50, 70)));
+		GameCharacter gc = new Skeleton(SkeletonTextures.Skeleton_NORTH_2, position, tile, "Skeleton", ENEMY_HEALTH,
+				new Bone(WeaponTextures.Bone, position, "Little Bone", 50, 75, 40, 30, 100, 5, 10, 20), 1,
+				0, Set.of(new Sword(WeaponTextures.Sword, new Position(48,48), "Heavy Sword", 50, 75, 40, 30, 100, 5, 10, 20, 50, 70)));
 		enemy.attack(gc);
-		assertEquals(ENNEMY_HEALTH - weapon.getDamage(), gc.getHealth(), MARGIN);
+		assertEquals(ENEMY_HEALTH - weapon.getDamage(), gc.getHealth(), MARGIN);
 	}
 	
 	@Test(expected=IllegalArgumentException.class)
@@ -372,12 +377,12 @@ public class SkeletonTest {
 	public void setNextTexture_nA_GameCharacterHasNextTexture() {
 		enemy.move(Directions.SOUTH, new LinkedHashSet<>());
 		enemy.setNextTexture();
-		assertEquals(ENNEMY_NEXT_TEXTURE, enemy.getTexture());
+		assertEquals(ENEMY_NEXT_TEXTURE, enemy.getTexture());
 	}
 
 	@Test
 	public void getDrop_nA_optionalOfSword() {
-		Optional<Drop> optionalWeapon = Optional.of(new Sword(Weapons.Sword, new Position(48,48), "Heavy Sword", 50, 75, 40, 30, 100, 5, 10, 20, 50, 70));
+		Optional<Drop> optionalWeapon = Optional.of(new Sword(WeaponTextures.Sword, new Position(48,48), "Heavy Sword", 50, 75, 40, 30, 100, 5, 10, 20, 50, 70));
 		assertEquals(optionalWeapon, enemy.getDrop());
 	}
 

@@ -46,7 +46,7 @@ public abstract class Enemy extends GameCharacter implements Dropper{
 
 	@Override
 	public boolean equals(Object obj) {
-		System.out.println("testing");
+//		System.out.println("testing");
 		if (this == obj)
 			return true;
 		if (!super.equals(obj))

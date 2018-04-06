@@ -4,17 +4,18 @@ import java.util.Arrays;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import be.kiop.UI.Drawable;
 import be.kiop.textures.Texture;
-import be.kiop.textures.Weapons;
+import be.kiop.textures.WeaponTextures;
 import be.kiop.valueobjects.Position;
 
 public class Sword extends Weapon {
-	private final static Set<Texture> AVAILABLE_TEXTURES = Arrays.stream(Weapons.values()).collect(Collectors.toSet());
+	private final static Set<Texture> AVAILABLE_TEXTURES = Arrays.stream(WeaponTextures.values()).collect(Collectors.toSet());
 	private float critChance;
 	private final float maxCritChance;
 	public static final String DEFAULT_NAME = "Sword";
 
-	public Sword(Weapons weapon, Position position, String name, float damage, float maxDamage, int range, int minRange,
+	public Sword(WeaponTextures weapon, Position position, String name, float damage, float maxDamage, int range, int minRange,
 			int maxRange, float attackSpeed, float maxAttackSpeed, float penetration, float critChance,
 			float maxCritChance) {
 		super(name, maxDamage, minRange, maxRange, maxAttackSpeed);
@@ -61,6 +62,15 @@ public class Sword extends Weapon {
 			this.critChance = this.maxCritChance;
 		} else {
 			this.critChance = critChance;
+		}
+	}
+
+	@Override
+	public Drawable copy() {
+		try {
+			return (Sword) this.clone();
+		} catch (CloneNotSupportedException e) {
+			return null;
 		}
 	}
 }

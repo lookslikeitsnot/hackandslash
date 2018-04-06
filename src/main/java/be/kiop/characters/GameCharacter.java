@@ -20,7 +20,7 @@ import be.kiop.textures.HitBoxTexture;
 import be.kiop.textures.MoveAnimation;
 import be.kiop.textures.Texture;
 import be.kiop.textures.TextureBuilder;
-import be.kiop.textures.Weapons;
+import be.kiop.textures.WeaponTextures;
 import be.kiop.utils.StringUtils;
 import be.kiop.valueobjects.Directions;
 import be.kiop.valueobjects.Genders;
@@ -28,6 +28,7 @@ import be.kiop.valueobjects.HitBox;
 import be.kiop.valueobjects.NextDirection;
 import be.kiop.valueobjects.Position;
 import be.kiop.valueobjects.Size;
+import be.kiop.valueobjects.Tile;
 import be.kiop.weapons.Fist;
 import be.kiop.weapons.Weapon;
 
@@ -35,7 +36,7 @@ public abstract class GameCharacter extends Drawable implements Animated, HitBox
 	private String name;
 	private float health;
 	private Weapon weapon;
-	private Set<Weapons> availableWeapons;
+	private Set<WeaponTextures> availableWeapons;
 	private int level;
 	public final static int MAX_LEVEL = 100;
 	public final static int MAX_ARMOR = 100;
@@ -46,6 +47,7 @@ public abstract class GameCharacter extends Drawable implements Animated, HitBox
 	private Directions direction = Directions.SOUTH;
 	private boolean attacking;
 	private boolean takingDamage;
+	private Tile tile;
 
 	public void reset() {
 		attacking = false;
@@ -232,7 +234,7 @@ public abstract class GameCharacter extends Drawable implements Animated, HitBox
 //		return availableWeapons;
 //	}
 
-	public void setAvailableWeapons(Set<Weapons> availableWeapons) {
+	public void setAvailableWeapons(Set<WeaponTextures> availableWeapons) {
 		if (availableWeapons == null || availableWeapons.isEmpty()) {
 			throw new IllegalArgumentException();
 		}
@@ -497,5 +499,13 @@ public abstract class GameCharacter extends Drawable implements Animated, HitBox
 
 	public Directions getDirection() {
 		return direction;
+	}
+
+	public Tile getTile() {
+		return tile;
+	}
+
+	public void setTile(Tile tile) {
+		this.tile = tile;
 	}
 }
