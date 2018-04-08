@@ -3,38 +3,30 @@ package be.kiop.UI;
 import java.awt.BorderLayout;
 import java.awt.Graphics;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import javax.swing.JFrame;
 
 import be.kiop.characters.enemies.Enemy;
 import be.kiop.characters.enemies.skeletons.Skeletons;
 import be.kiop.characters.heroes.Hero;
-import be.kiop.characters.heroes.warriors.Warrior;
 import be.kiop.characters.heroes.warriors.Warriors;
 import be.kiop.items.Drop;
 import be.kiop.listeners.RepaintTimer;
 import be.kiop.maze.Maze;
-import be.kiop.obstacles.Obstacle;
 import be.kiop.obstacles.fires.Fire;
 import be.kiop.obstacles.walls.Wall;
-import be.kiop.textures.FireTextures;
 import be.kiop.textures.FloorTextures;
 import be.kiop.textures.WallTextures;
-import be.kiop.textures.WarriorTextures;
-import be.kiop.textures.WeaponTextures;
+import be.kiop.utils.SetUtils;
 import be.kiop.valueobjects.Position;
 import be.kiop.valueobjects.Size;
 import be.kiop.valueobjects.Tile;
-import be.kiop.weapons.Sword;
-import be.kiop.weapons.Weapon;
 
 public class Board extends JFrame {
 	private static final long serialVersionUID = 1L;
@@ -43,7 +35,7 @@ public class Board extends JFrame {
 	private HUD hud;
 
 	private final int horizontalTiles;
-	private final int vertictalTiles;
+	private final int verticalTiles;
 
 	private Set<Tile> occupiedTiles = new LinkedHashSet<>();
 	private Set<Tile> availableTiles = new LinkedHashSet<>();
@@ -54,9 +46,9 @@ public class Board extends JFrame {
 	private Set<Wall> walls = new LinkedHashSet<>();
 	private Set<Fire> fires = new LinkedHashSet<>();
 	private List<Drop> drops = new ArrayList<>();
-	private final Set<Position> fixedHitBoxes;
+//	private final Set<Position> fixedHitBoxes;
 
-	private static final Size exteriorWallSize = new Size(32, 32);
+	public static final Size exteriorWallSize = new Size(32, 32);
 
 //	static int testWidth = 1888;
 //	static int testHeight = 1008;
@@ -69,7 +61,7 @@ public class Board extends JFrame {
 
 	public Board(int horizontalTiles, int verticalTiles) {
 		this.horizontalTiles = horizontalTiles;
-		this.vertictalTiles = verticalTiles;
+		this.verticalTiles = verticalTiles;
 
 		Set<Tile> unavailableTiles = new Maze(horizontalTiles, verticalTiles).generateMaze();
 		availableTiles = findAvailableTiles(horizontalTiles, verticalTiles, unavailableTiles);
@@ -80,14 +72,15 @@ public class Board extends JFrame {
 		hero = generateHero((Hero) Warriors.Warrior_1_F.getGameCharacter());
 
 		walls = generateAllWalls(unavailableTiles);
-		fixedHitBoxes = calculateFixedHitBoxes();
-		fires = generateFirePits();
+//		fixedHitBoxes = calculateFixedHitBoxes();
+//		fires = generateFirePits();
 
-		enemies = generateEnemies(128, (Enemy) Skeletons.Skeleton_1.getGameCharacter());
+		enemies = generateEnemies(4, (Enemy) Skeletons.Skeleton_1.getGameCharacter());
+		enemies.addAll(generateEnemies(4, (Enemy) Skeletons.Skeleton_Dog_1.getGameCharacter()));
 
 		setLayout(new BorderLayout());
-		boardDrawing = new BoardDrawing(size, FloorTextures.Floor_Stone_Light_Grey_NONE, hero, walls, fires, enemies, drops,
-				this);
+		boardDrawing = new BoardDrawing(size, FloorTextures.Floor_Stone_Light_Grey_NONE,
+				WallTextures.Wall_Mettalic_Dark, hero, walls, fires, enemies, drops, this);
 		hud = new HUD(hero, null);
 //		map.setBorder(BorderFactory.createLineBorder(Color.red));
 		add(hud, BorderLayout.NORTH);
@@ -123,9 +116,9 @@ public class Board extends JFrame {
 //		float HERO_SHIELD = 10;
 //		Weapon weapon = new Sword(WeaponTextures.Sword, new Position(0, 0), "Heavy Sword", 50, 75, 80, 70, 100, 5, 10, 20, 50,
 //				70);
-		Position position = new Position(32, 32);
-		Tile tile = new Tile(1,1);
-		hero.setPosition(position);
+//		Position position = new Position(32, 32);
+		Tile tile = Tile.ORIGIN;
+//		hero.setPosition(position);
 		hero.setTile(tile);
 		return hero;
 //		return new Warrior(HERO_SKIN, position, tile, HERO_NAME, HERO_HEALTH, weapon, HERO_LEVEL, HERO_ARMOR, HERO_LIVES,
@@ -133,96 +126,99 @@ public class Board extends JFrame {
 	}
 
 	private Set<Wall> generateAllWalls(Set<Tile> unavailableTiles) {
-		Set<Wall> allWalls = new LinkedHashSet<>();
-		allWalls.addAll(generateInteriorWalls(WallTextures.Wall_Stone, unavailableTiles));
-		allWalls.addAll(generateExteriorWalls(WallTextures.Wall_Metallic));
-		return allWalls;
+//		Set<Wall> allWalls = new LinkedHashSet<>();
+//		allWalls.addAll(generateInteriorWalls(WallTextures.Wall_Stone, unavailableTiles));
+//		allWalls.addAll(generateExteriorWalls(WallTextures.Wall_Metallic));
+		return generateInteriorWalls(WallTextures.Wall_Stone, unavailableTiles);
 	}
 
-	private Set<Wall> generateExteriorWalls(WallTextures wall) {
-		Set<Wall> walls = new LinkedHashSet<>();
-		for (int x = 0; x <= size.getWidth(); x += wall.getSize().getWidth()) {
-			for (int y = 0; y <= size.getHeight(); y += wall.getSize().getHeight()) {
-				if (x >= size.getWidth() - wall.getSize().getWidth()
-						&& y < size.getHeight() - wall.getSize().getHeight()) {
-					walls.add(new Wall(wall, new Position(size.getWidth() - wall.getSize().getWidth(), y)));
-				} else if (y >= size.getHeight() - wall.getSize().getHeight()
-						&& x < size.getWidth() - wall.getSize().getWidth()) {
-					walls.add(new Wall(wall, new Position(x, size.getHeight() - wall.getSize().getHeight())));
-				} else if (y >= size.getHeight() - wall.getSize().getHeight()
-						&& x >= size.getWidth() - wall.getSize().getWidth()) {
-
-				} else if (x == 0 || y == 0) {
-					walls.add(new Wall(wall, new Position(x, y)));
-				}
-			}
-		}
-		walls.add(new Wall(wall, new Position(size.getWidth() - wall.getSize().getWidth(),
-				size.getHeight() - wall.getSize().getHeight())));
-		return walls;
-	}
+//	private Set<Wall> generateExteriorWalls(WallTextures wall) {
+//		Set<Wall> walls = new LinkedHashSet<>();
+//		for (int x = 0; x <= size.getWidth(); x += wall.getSize().getWidth()) {
+//			for (int y = 0; y <= size.getHeight(); y += wall.getSize().getHeight()) {
+//				if (x >= size.getWidth() - wall.getSize().getWidth()
+//						&& y < size.getHeight() - wall.getSize().getHeight()) {
+//					walls.add(new Wall(wall, new Position(size.getWidth() - wall.getSize().getWidth(), y)));
+//				} else if (y >= size.getHeight() - wall.getSize().getHeight()
+//						&& x < size.getWidth() - wall.getSize().getWidth()) {
+//					walls.add(new Wall(wall, new Position(x, size.getHeight() - wall.getSize().getHeight())));
+//				} else if (y >= size.getHeight() - wall.getSize().getHeight()
+//						&& x >= size.getWidth() - wall.getSize().getWidth()) {
+//
+//				} else if (x == 0 || y == 0) {
+//					walls.add(new Wall(wall, new Position(x, y)));
+//				}
+//			}
+//		}
+//		walls.add(new Wall(wall, new Position(size.getWidth() - wall.getSize().getWidth(),
+//				size.getHeight() - wall.getSize().getHeight())));
+//		return walls;
+//	}
 
 	private Set<Wall> generateInteriorWalls(WallTextures wall, Set<Tile> unavailableTiles) {
 //		Set<Position> maze = generateMaze();
 		Set<Wall> walls = new LinkedHashSet<>();
-		Position tilePosition;
+//		Position tilePosition;
 
 		for (Tile tile : unavailableTiles) {
-			tilePosition = new Position(tile.getHorizontalPosition() * TILE_SIZE.getWidth(),
-					tile.getVerticalPosition() * TILE_SIZE.getHeight());
-			tilePosition.add(exteriorWallSize.getWidth(), exteriorWallSize.getHeight());
-			walls.add(new Wall(wall, tilePosition));
+//			tilePosition = new Position(tile.getHorizontalPosition() * TILE_SIZE.getWidth(),
+//					tile.getVerticalPosition() * TILE_SIZE.getHeight());
+//			tilePosition.add(exteriorWallSize.getWidth(), exteriorWallSize.getHeight());
+			walls.add(new Wall(wall, tile, false));
 		}
 		return walls;
 //		return maze.stream().map(position -> new Wall(wall, position)).collect(Collectors.toSet());
 	}
 
-	private Set<Fire> generateFirePits() {
-		FireTextures fire = FireTextures.Fire_2;
-		Set<Position> positions = Set.of(new Position(0, 0),
-				new Position(0, size.getHeight() - fire.getSize().getHeight()),
-				new Position(size.getWidth() - fire.getSize().getWidth(), 0), new Position(
-						size.getWidth() - fire.getSize().getWidth(), size.getHeight() - fire.getSize().getHeight()));
-		return positions.stream().map(pos -> new Fire(fire, pos)).collect(Collectors.toSet());
-	}
+//	private Set<Fire> generateFirePits() {
+//		FireTextures fire = FireTextures.Fire_2;
+//		Set<Position> positions = Set.of(new Position(0, 0),
+//				new Position(0, size.getHeight() - fire.getSize().getHeight()),
+//				new Position(size.getWidth() - fire.getSize().getWidth(), 0), new Position(
+//						size.getWidth() - fire.getSize().getWidth(), size.getHeight() - fire.getSize().getHeight()));
+//		return positions.stream().map(pos -> new Fire(fire, pos)).collect(Collectors.toSet());
+//	}
 
 	private Set<Enemy> generateEnemies(int amount, Enemy enemy) {
 		Set<Enemy> enemies = new LinkedHashSet<>();
 //		Skeletons skel = Skeletons.Skeleton_SOUTH_2;
 		Enemy addedEnemy;
-		
+
 		List<Tile> availableTilesList = new ArrayList<>();
 		availableTilesList.addAll(availableTiles);
-		
+
 		Random random = new Random();
 		Tile randomTile;
-		
-				
-		for(int i = 0; i < amount; i++) {
+
+		for (int i = 0; i < amount; i++) {
 			addedEnemy = (Enemy) enemy.copy();
 //			System.out.println("added enemy: " + addedEnemy);
-			int textureWidth = enemy.getTexture().getSkin().getWidth();
-			int textureHeight = enemy.getTexture().getSkin().getHeight();
-			
-			int widthDiff = textureWidth > TILE_SIZE.getWidth() ? TILE_SIZE.getWidth()-enemy.getTexture().getSkin().getWidth()  :enemy.getTexture().getSkin().getWidth() - TILE_SIZE.getWidth();
-			int heightDiff = textureHeight > TILE_SIZE.getHeight() ?  TILE_SIZE.getHeight() - enemy.getTexture().getSkin().getHeight() : enemy.getTexture().getSkin().getHeight() - TILE_SIZE.getHeight();
-			
-			int offsetX = (widthDiff) / 2 + exteriorWallSize.getWidth();
-			int offsetY = (heightDiff) / 2 + exteriorWallSize.getHeight();
-			
+//			int textureWidth = enemy.getTexture().getSkin().getWidth();
+//			int textureHeight = enemy.getTexture().getSkin().getHeight();
+
+//			int widthDiff = textureWidth > TILE_SIZE.getWidth()
+//					? TILE_SIZE.getWidth() - enemy.getTexture().getSkin().getWidth()
+//					: enemy.getTexture().getSkin().getWidth() - TILE_SIZE.getWidth();
+//			int heightDiff = textureHeight > TILE_SIZE.getHeight()
+//					? TILE_SIZE.getHeight() - enemy.getTexture().getSkin().getHeight()
+//					: enemy.getTexture().getSkin().getHeight() - TILE_SIZE.getHeight();
+
+//			int offsetX = (widthDiff) / 2 + exteriorWallSize.getWidth();
+//			int offsetY = (heightDiff) / 2 + exteriorWallSize.getHeight();
+
 			randomTile = availableTilesList.get(random.nextInt(availableTilesList.size()));
-			
+
 			addedEnemy.setTile(randomTile);
-			addedEnemy.setPosition(Position.getAssociatedPosition(randomTile, TILE_SIZE, offsetX, offsetY));
-			
+//			addedEnemy.setPosition(Position.getAssociatedPosition(randomTile, TILE_SIZE, offsetX, offsetY));
+
 			availableTiles.remove(randomTile);
 			occupiedTiles.add(randomTile);
 //			System.out.println("random tile: " + randomTile);
 //			System.out.println("offset x: " + offsetX);
 //			System.out.println("offset y: " + offsetY);
-			
+
 			enemies.add(addedEnemy);
-			
+
 //		for (int i = 0; i < amount; i++) {
 //			Random random = new Random();
 //			int offsetX = (skel.getSkin().getWidth() - corridorSize.getWidth()) / 2;
@@ -258,13 +254,6 @@ public class Board extends JFrame {
 		return size;
 	}
 
-//	public void setSize(Size size) {
-//		if (size == null) {
-//			throw new IllegalArgumentException();
-//		}
-//		Board.size = size;
-//	}
-
 	@Override
 	public void paint(Graphics g) {
 		hud.repaint();
@@ -272,22 +261,26 @@ public class Board extends JFrame {
 		handleTheDeads();
 		findActiveEnemy();
 		moveEnemies();
+		//getAllHitBoxes(0);
 
 		boardDrawing.repaint();
 	}
 
 	private void moveEnemies() {
-		Set<Position> allHitBoxes = getAllHitBoxes(0);
+//		Set<Position> allHitBoxes = getAllHitBoxes(0);
+//		for (Enemy enemy : enemies) {
+//			enemy.move(allHitBoxes);
+//			if (enemy.isActive()) {
+////				System.out.println("I can see you");
+//				if (collision(enemy.getHitBox(2), hero.getHitBox(2))) {
+//					hero.takeDamage(enemy.getWeapon().getDamage() * 10);
+//				}
+//				enemy.setActive(false);
+//			}
+//
+//		}
 		for (Enemy enemy : enemies) {
-			enemy.move(allHitBoxes);
-			if (enemy.isActive()) {
-//				System.out.println("I can see you");
-				if (collision(enemy.getHitBox(2), hero.getHitBox(2))) {
-					hero.takeDamage(enemy.getWeapon().getDamage() * 10);
-				}
-				enemy.setActive(false);
-			}
-
+			availableTiles = enemy.move(availableTiles);
 		}
 	}
 
@@ -297,7 +290,7 @@ public class Board extends JFrame {
 			if (enemy.getHealth() == 0) {
 				Drop drop = enemy.getDrop().get();
 				if (drop != null) {
-					drop.setPosition(Position.difference(enemy.getCenter(), drop.getTextureCenter()));
+					drop.setTile(enemy.getTile());
 					drops.add(drop);
 				}
 				iterator.remove();
@@ -305,88 +298,12 @@ public class Board extends JFrame {
 		}
 	}
 
-//	private Set<Position> generateMaze() {
-//		int tries = 15000;
-//
-//		Map<Position, Boolean> tested = new LinkedHashMap<>();
-//
-//		final int exteriorWidth = exteriorWallSize.getWidth();
-//		final int exteriorHeight = exteriorWallSize.getHeight();
-//
-//		for (int x = exteriorWidth; x < size.getWidth() - exteriorWidth; x += corridorSize.getWidth()) {
-//			for (int y = exteriorHeight; y < size.getHeight() - exteriorWidth; y += corridorSize.getHeight()) {
-//				tested.put(new Position(x, y), false);
-//			}
-//		}
-//
-//		int x = exteriorWidth;
-//		int y = exteriorHeight;
-//
-//		Random random = new Random();
-//
-//		for (int i = 0; i < tries; i++) {
-//			tested.put(new Position(x, y), true);
-//			int randInt = random.nextInt(4);
-//			switch (randInt) {
-//			case 0:
-//				if (x + 2 * corridorSize.getWidth() >= size.getWidth() - exteriorWidth) {
-//					break;
-//				} else if (tested.get(new Position(x + 2 * corridorSize.getWidth(), y)) == true) {
-//					x += 2 * corridorSize.getWidth();
-//					break;
-//				} else {
-//					tested.put(new Position(x + corridorSize.getWidth(), y), true);
-//					x += 2 * corridorSize.getWidth();
-//					break;
-//				}
-//
-//			case 1:
-//				if (y + 2 * corridorSize.getHeight() >= size.getHeight() - exteriorHeight) {
-//					break;
-//				} else if (tested.get(new Position(x, y + 2 * corridorSize.getHeight())) == true) {
-//					y += 2 * corridorSize.getHeight();
-//					break;
-//				} else {
-//					tested.put(new Position(x, y + corridorSize.getHeight()), true);
-//					y += 2 * corridorSize.getHeight();
-//					break;
-//				}
-//			case 2:
-//				if (x - 2 * corridorSize.getWidth() < exteriorWidth) {
-//					break;
-//				} else if (tested.get(new Position(x - 2 * corridorSize.getWidth(), y)) == true) {
-//					x -= 2 * corridorSize.getWidth();
-//					break;
-//				} else {
-//					tested.put(new Position(x - corridorSize.getWidth(), y), true);
-//					x -= 2 * corridorSize.getWidth();
-//					break;
-//				}
-//
-//			case 3:
-//				if (y - 2 * corridorSize.getHeight() < exteriorHeight) {
-//					break;
-//				} else if (tested.get(new Position(x, y - 2 * corridorSize.getHeight())) == true) {
-//					y -= 2 * corridorSize.getHeight();
-//					break;
-//				} else {
-//					tested.put(new Position(x, y - corridorSize.getHeight()), true);
-//					y -= 2 * corridorSize.getHeight();
-//					break;
-//				}
-//			}
-//		}
-//
-//		return tested.entrySet().stream().filter(a -> a.getValue() == false).map(Map.Entry::getKey)
-//				.collect(Collectors.toSet());
+//	private boolean collision(Set<Position> hitBox1, Set<Position> hitBox2) {
+//		return !Collections.disjoint(hitBox1, hitBox2);
 //	}
 
-	private boolean collision(Set<Position> hitBox1, Set<Position> hitBox2) {
-		return !Collections.disjoint(hitBox1, hitBox2);
-	}
-
 	public Set<Position> getAllHitBoxes(int range) {
-		Set<Position> allHitBoxes = new LinkedHashSet<>(fixedHitBoxes);
+		Set<Position> allHitBoxes = new LinkedHashSet<>(); // fixedHitBoxes
 		for (Enemy enemy : enemies) {
 			allHitBoxes.addAll(enemy.getHitBox(range));
 		}
@@ -396,36 +313,36 @@ public class Board extends JFrame {
 		return allHitBoxes;
 	}
 
-	private Set<Position> calculateFixedHitBoxes() {
-		Set<Position> fixedHitBoxes = new LinkedHashSet<>();
+//	private Set<Position> calculateFixedHitBoxes() {
+//		Set<Position> fixedHitBoxes = new LinkedHashSet<>();
+//
+//		for (Obstacle obstacle : getAllObstacles()) {
+//			for (Position pos : obstacle.getHitBox(0)) {
+//				if (pos.getX() >= exteriorWallSize.getWidth() - 1
+//						&& pos.getX() <= size.getWidth() - exteriorWallSize.getWidth()) {
+//					if (pos.getY() >= exteriorWallSize.getHeight() - 1
+//							&& pos.getY() <= size.getHeight() - exteriorWallSize.getHeight()) {
+//
+//						if (!(fixedHitBoxes.contains(pos.right()) || fixedHitBoxes.contains(pos.down())
+//								|| fixedHitBoxes.contains(pos.left()) || fixedHitBoxes.contains(pos.up()))) {
+//							fixedHitBoxes.add(pos);
+//						}
+//					}
+//				}
+//			}
+//		}
+//		System.out.println("hitbox size= " + fixedHitBoxes.size());
+//		return fixedHitBoxes;
+//	}
+//
+//	public Set<Position> getFixedHitBoxes() {
+//		return fixedHitBoxes;
+//	}
 
-		for (Obstacle obstacle : getAllObstacles()) {
-			for (Position pos : obstacle.getHitBox(0)) {
-				if (pos.getX() >= exteriorWallSize.getWidth() - 1
-						&& pos.getX() <= size.getWidth() - exteriorWallSize.getWidth()) {
-					if (pos.getY() >= exteriorWallSize.getHeight() - 1
-							&& pos.getY() <= size.getHeight() - exteriorWallSize.getHeight()) {
-
-						if (!(fixedHitBoxes.contains(pos.right()) || fixedHitBoxes.contains(pos.down())
-								|| fixedHitBoxes.contains(pos.left()) || fixedHitBoxes.contains(pos.up()))) {
-							fixedHitBoxes.add(pos);
-						}
-					}
-				}
-			}
-		}
-		System.out.println("hitbox size= " + fixedHitBoxes.size());
-		return fixedHitBoxes;
-	}
-
-	public Set<Position> getFixedHitBoxes() {
-		return fixedHitBoxes;
-	}
-
-	public Set<Obstacle> getAllObstacles() {
-		Set<Obstacle> allObstacles = new LinkedHashSet<>(walls);
-		return allObstacles;
-	}
+//	public Set<Obstacle> getAllObstacles() {
+//		Set<Obstacle> allObstacles = new LinkedHashSet<>(walls);
+//		return allObstacles;
+//	}
 
 	public Enemy getActiveEnemy() {
 		return activeEnemy;
@@ -434,8 +351,7 @@ public class Board extends JFrame {
 	public Optional<Enemy> enemyInRange() {
 //		System.out.println("range: " + hero.getWeapon().getRange());
 		for (Enemy enemy : enemies) {
-			if (hero.inFrontOf(hero.getWeapon().getRange(), hero.getWeapon().getRange(), enemy.getCenter(),
-					fixedHitBoxes)) {
+			if (hero.inFrontOf(1, 1, enemy.getTile(), SetUtils.merge(availableTiles, occupiedTiles))) {
 //				System.out.println("ennemy in range");
 				return Optional.ofNullable(enemy);
 			}
@@ -445,9 +361,17 @@ public class Board extends JFrame {
 
 	private void findActiveEnemy() {
 		for (Enemy enemy : enemies) {
-			if (enemy.inFrontOf(64, 96, hero.getCenter(), fixedHitBoxes)) {
+			if (enemy.inFrontOf(2, 2, hero.getTile(), availableTiles)) {
 				enemy.setActive(true);
 			}
 		}
+	}
+
+	public int getHorizontalTiles() {
+		return horizontalTiles;
+	}
+
+	public int getVerticalTiles() {
+		return verticalTiles;
 	}
 }

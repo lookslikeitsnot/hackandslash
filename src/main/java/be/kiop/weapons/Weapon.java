@@ -1,8 +1,18 @@
 package be.kiop.weapons;
 
+import java.util.Set;
+
 import be.kiop.UI.Drawable;
+import be.kiop.exceptions.IllegalMaximumException;
+import be.kiop.exceptions.IllegalNameException;
+import be.kiop.exceptions.NegativeAttackSpeedException;
+import be.kiop.exceptions.NegativeDamageException;
+import be.kiop.exceptions.NegativeRangeException;
 import be.kiop.items.Drop;
+import be.kiop.textures.Texture;
+import be.kiop.utils.StringUtils;
 import be.kiop.valueobjects.Position;
+import be.kiop.valueobjects.Tile;
 
 public abstract class Weapon extends Drawable implements Drop {
 	private final String name;
@@ -20,16 +30,49 @@ public abstract class Weapon extends Drawable implements Drop {
 	private float penetration;
 	public static final float MAX_PENETRATION = 100.0F;
 
-	public Weapon(String name, float maxDamage, int minRange, int maxRange, float maxAttackSpeed) {
+	public Weapon(Set<Texture> availableTextures, Texture texture, Tile tile, String name, float damage,
+			float maxDamage, int range, int minRange, int maxRange, float attackSpeed, float maxAttackSpeed,
+			float penetration) {
+		super(availableTextures, texture, tile);
+		if (!StringUtils.isValidString(name)) {
+			throw new IllegalNameException();
+		}
 		this.name = name;
+		if (maxDamage < damage) {
+			throw new IllegalMaximumException();
+		}
 		this.maxDamage = maxDamage;
-		this.damage = maxDamage;
+		if(minRange < 0) {
+			throw new NegativeRangeException();
+		}
 		this.minRange = minRange;
+		if (maxRange < range) {
+			throw new IllegalMaximumException();
+		}
 		this.maxRange = maxRange;
-		this.range = minRange;
+		if (maxAttackSpeed < attackSpeed) {
+			throw new IllegalMaximumException();
+		}
 		this.maxAttackSpeed = maxAttackSpeed;
-		this.attackSpeed = maxAttackSpeed;
-		this.penetration = 0;
+
+		setDamage(damage);
+		setRange(range);
+		setAttackSpeed(attackSpeed);
+		setPenetration(penetration);
+	}
+
+	public Weapon(Set<Texture> availableTextures, Texture texture, Tile tile, String name, float damage, int range,
+			float attackSpeed, float penetration) {
+		super(availableTextures, texture, tile);
+		this.name = name;
+		this.damage = damage;
+		this.maxDamage = damage;
+		this.range = range;
+		this.minRange = range;
+		this.maxRange = range;
+		this.attackSpeed = attackSpeed;
+		this.maxAttackSpeed = attackSpeed;
+		this.penetration = penetration;
 	}
 
 	public String getName() {
@@ -40,21 +83,7 @@ public abstract class Weapon extends Drawable implements Drop {
 		return damage;
 	}
 
-	public void increaseDamage(float increment) {
-		if (increment < 0) {
-			throw new IllegalArgumentException();
-		}
-		setDamage(this.damage + increment);
-	}
-
-	public void decreaseDamage(float decrement) {
-		if (decrement < 0) {
-			throw new IllegalArgumentException();
-		}
-		setDamage(this.damage - decrement);
-	}
-
-	public void setDamage(float damage) {
+	private void setDamage(float damage) {
 		if (damage < 0) {
 			this.damage = 0;
 		} else if (damage > this.maxDamage) {
@@ -68,21 +97,7 @@ public abstract class Weapon extends Drawable implements Drop {
 		return range;
 	}
 
-	public void increaseRange(int increment) {
-		if (increment < 0) {
-			throw new IllegalArgumentException();
-		}
-		setRange(this.range + increment);
-	}
-
-	public void decreaseRange(int decrement) {
-		if (decrement < 0) {
-			throw new IllegalArgumentException();
-		}
-		setRange(this.range - decrement);
-	}
-
-	public void setRange(int range) {
+	private void setRange(int range) {
 		if (range < this.minRange) {
 			this.range = this.minRange;
 		} else if (range > this.maxRange) {
@@ -96,21 +111,7 @@ public abstract class Weapon extends Drawable implements Drop {
 		return attackSpeed;
 	}
 
-	public void increaseAttackSpeed(float increment) {
-		if (increment < 0) {
-			throw new IllegalArgumentException();
-		}
-		setAttackSpeed(this.attackSpeed + increment);
-	}
-
-	public void decreaseAttackSpeed(float decrement) {
-		if (decrement < 0) {
-			throw new IllegalArgumentException();
-		}
-		setAttackSpeed(this.attackSpeed - decrement);
-	}
-
-	public void setAttackSpeed(float attackSpeed) {
+	private void setAttackSpeed(float attackSpeed) {
 		if (attackSpeed < 0) {
 			this.attackSpeed = 0;
 		} else if (attackSpeed > this.maxAttackSpeed) {
@@ -132,6 +133,48 @@ public abstract class Weapon extends Drawable implements Drop {
 		} else {
 			this.penetration = penetration;
 		}
+	}
+
+	public void increaseDamage(float increment) {
+		if (increment < 0) {
+			throw new NegativeDamageException();
+		}
+		setDamage(this.damage + increment);
+	}
+
+	public void decreaseDamage(float decrement) {
+		if (decrement < 0) {
+			throw new NegativeDamageException();
+		}
+		setDamage(this.damage - decrement);
+	}
+
+	public void increaseRange(int increment) {
+		if (increment < 0) {
+			throw new NegativeRangeException();
+		}
+		setRange(this.range + increment);
+	}
+
+	public void decreaseRange(int decrement) {
+		if (decrement < 0) {
+			throw new NegativeRangeException();
+		}
+		setRange(this.range - decrement);
+	}
+
+	public void increaseAttackSpeed(float increment) {
+		if (increment < 0) {
+			throw new NegativeAttackSpeedException();
+		}
+		setAttackSpeed(this.attackSpeed + increment);
+	}
+
+	public void decreaseAttackSpeed(float decrement) {
+		if (decrement < 0) {
+			throw new NegativeAttackSpeedException();
+		}
+		setAttackSpeed(this.attackSpeed - decrement);
 	}
 
 	@Override
@@ -160,6 +203,6 @@ public abstract class Weapon extends Drawable implements Drop {
 	public Position getTextureCenter() {
 		int textureWidth = getTexture().getSize().getWidth();
 		int textureHeight = getTexture().getSize().getHeight();
-		return new Position(textureWidth/2, textureHeight/2);
+		return new Position(textureWidth / 2, textureHeight / 2);
 	}
 }

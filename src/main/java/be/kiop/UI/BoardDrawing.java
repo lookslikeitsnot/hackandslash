@@ -16,11 +16,11 @@ import be.kiop.characters.GameCharacter;
 import be.kiop.characters.enemies.Enemy;
 import be.kiop.characters.heroes.Hero;
 import be.kiop.controllers.Keyboard;
-import be.kiop.decorations.Floor;
 import be.kiop.items.Drop;
 import be.kiop.obstacles.fires.Fire;
 import be.kiop.obstacles.walls.Wall;
 import be.kiop.textures.FloorTextures;
+import be.kiop.textures.WallTextures;
 import be.kiop.valueobjects.Directions;
 import be.kiop.valueobjects.Position;
 import be.kiop.valueobjects.Size;
@@ -28,7 +28,11 @@ import be.kiop.valueobjects.Size;
 public class BoardDrawing extends JPanel {
 	private static final long serialVersionUID = 1L;
 
-	private final Set<Floor> floors;
+	private final Set<Position> floorPositions;
+	private final Set<Position> exteriorWallsPositions;
+
+	private FloorTextures floorTexture;
+	private WallTextures exteriorWallsTexture;
 
 	private Hero hero;
 	private Set<Enemy> enemies;
@@ -38,29 +42,69 @@ public class BoardDrawing extends JPanel {
 
 	private Size size;
 
-	public BoardDrawing(Size size, FloorTextures floor, Hero hero, Set<Wall> walls, Set<Fire> fires, Set<Enemy> enemies,
-			List<Drop> drops, Board board) {
+	private int horizontalTiles;
+	private int verticalTiles;
+
+	public BoardDrawing(Size size, FloorTextures floorTexture, WallTextures exteriorWallsTexture, Hero hero,
+			Set<Wall> walls, Set<Fire> fires, Set<Enemy> enemies, List<Drop> drops, Board board) {
 		this.size = size;
 		this.enemies = enemies;
 		this.hero = hero;
 		this.drops = drops;
 		this.walls = walls;
 		this.fires = fires;
+		this.horizontalTiles = board.getHorizontalTiles();
+		this.verticalTiles = board.getVerticalTiles();
+		this.floorTexture = floorTexture;
+		this.exteriorWallsTexture = exteriorWallsTexture;
 
-		floors = generateFloor(floor);
+		floorPositions = generateFloorPositions(floorTexture);
+		exteriorWallsPositions = generateExteriorWallsPositions(exteriorWallsTexture);
 
 		new Keyboard(this, hero, board);
 
 		setPreferredSize(size.toDimension());
 	}
 
-	private Set<Floor> generateFloor(FloorTextures floor) {
-		Set<Floor> floors = new LinkedHashSet<>();
-		for (int x = 0; x < size.getWidth(); x += floor.getSize().getWidth()) {
-			for (int y = 0; y < size.getHeight(); y += floor.getSize().getHeight()) {
-				if ((x == 0 || y == 0 || x == size.getWidth() - floor.getSize().getWidth()
-						|| y == size.getHeight() - floor.getSize().getHeight()) == false) {
-					floors.add(new Floor(floor, new Position(x, y)));
+	private Set<Position> generateExteriorWallsPositions(WallTextures exteriorWallsTexture) {
+
+		int width = exteriorWallsTexture.getSize().getWidth();
+		int height = exteriorWallsTexture.getSize().getHeight();
+
+		int maxX = size.getWidth();
+		int maxY = size.getHeight();
+
+		Set<Position> exteriorWallsPositions = new LinkedHashSet<>();
+		for (int x = maxX; x > width; x -= width) {
+			for (int y = maxY; y > height; y -= height) {
+				if (x == maxX || y == maxY) {
+					exteriorWallsPositions.add(new Position(x - width, y - height));
+				}
+			}
+		}
+		for (int x = 0; x < maxX; x += width) {
+			for (int y = 0; y < maxY; y += height) {
+				if (x == 0 || y == 0) {
+					exteriorWallsPositions.add(new Position(x, y));
+				}
+			}
+		}
+		return exteriorWallsPositions;
+	}
+
+	private Set<Position> generateFloorPositions(FloorTextures floorTexture) {
+		int minX = Board.exteriorWallSize.getWidth();
+		int minY = Board.exteriorWallSize.getHeight();
+		int maxX = Board.TILE_SIZE.getWidth() * horizontalTiles + Board.exteriorWallSize.getWidth();
+		int maxY = Board.TILE_SIZE.getHeight() * verticalTiles + Board.exteriorWallSize.getHeight();
+		int stepX = floorTexture.getSize().getWidth();
+		int stepY = floorTexture.getSize().getHeight();
+
+		Set<Position> floors = new LinkedHashSet<>();
+		for (int x = minX; x < maxX; x += stepX) {
+			for (int y = minY; y < maxY; y += stepY) {
+				if (x >= minX && y >= minY && x <= maxX && y <= maxY) {
+					floors.add(new Position(x, y));
 				}
 			}
 		}
@@ -70,11 +114,13 @@ public class BoardDrawing extends JPanel {
 	@Override
 	public void paintComponent(Graphics g) {
 		drawFloors(g);
+
 		drawWalls(g);
 		drawFires(g);
 		drawDrops(g);
 		drawEnemies(g);
 		drawHero(g);
+		drawExteriorWalls(g);
 	}
 
 	private void drawFloors(Graphics g) {
@@ -82,11 +128,26 @@ public class BoardDrawing extends JPanel {
 		int y;
 
 		BufferedImage skin;
-		for (Floor floor : floors) {
-			x = floor.getPosition().getX();
-			y = floor.getPosition().getY();
+		for (Position floorPosition : floorPositions) {
+			x = floorPosition.getX();
+			y = floorPosition.getY();
 
-			skin = floor.getTexture().getSkin();
+			skin = this.floorTexture.getSkin();
+
+			g.drawImage(skin, x, y, null);
+		}
+	}
+
+	private void drawExteriorWalls(Graphics g) {
+		int x;
+		int y;
+
+		BufferedImage skin;
+		for (Position exteriorWallPosition : exteriorWallsPositions) {
+			x = exteriorWallPosition.getX();
+			y = exteriorWallPosition.getY();
+
+			skin = this.exteriorWallsTexture.getSkin();
 
 			g.drawImage(skin, x, y, null);
 		}
@@ -99,8 +160,8 @@ public class BoardDrawing extends JPanel {
 		BufferedImage skin;
 
 		for (Wall wall : walls) {
-			x = wall.getPosition().getX();
-			y = wall.getPosition().getY();
+			x = wall.getAbsolutePosition().getX();
+			y = wall.getAbsolutePosition().getY();
 
 			skin = wall.getTexture().getSkin();
 
@@ -116,8 +177,8 @@ public class BoardDrawing extends JPanel {
 
 		for (Fire fire : fires) {
 			fire.setNextTexture();
-			x = fire.getPosition().getX();
-			y = fire.getPosition().getY();
+			x = fire.getAbsolutePosition().getX();
+			y = fire.getAbsolutePosition().getY();
 
 			skin = fire.getTexture().getSkin();
 
@@ -131,8 +192,8 @@ public class BoardDrawing extends JPanel {
 
 		BufferedImage skin;
 		for (Drop drop : drops) {
-			x = drop.getPosition().getX();
-			y = drop.getPosition().getY();
+			x = drop.getAbsolutePosition().getX();
+			y = drop.getAbsolutePosition().getY();
 
 			skin = drop.getTexture().getSkin();
 
@@ -150,8 +211,8 @@ public class BoardDrawing extends JPanel {
 
 		for (Enemy enemy : enemies) {
 			enemy.setNextTexture();
-			x = enemy.getPosition().getX();
-			y = enemy.getPosition().getY();
+			x = enemy.getAbsolutePosition().getX();
+			y = enemy.getAbsolutePosition().getY();
 
 			skin = enemy.getTexture().getSkin();
 			weaponSkin = enemy.getWeapon().getTexture().getSkin();
@@ -179,8 +240,8 @@ public class BoardDrawing extends JPanel {
 
 	private void drawHero(Graphics g) {
 		hero.setNextTexture();
-		int x = hero.getPosition().getX();
-		int y = hero.getPosition().getY();
+		int x = hero.getAbsolutePosition().getX();
+		int y = hero.getAbsolutePosition().getY();
 
 		BufferedImage skin = hero.getTexture().getSkin();
 		BufferedImage weaponSkin = hero.getWeapon().getTexture().getSkin();
@@ -208,7 +269,7 @@ public class BoardDrawing extends JPanel {
 	private static AffineTransform weaponImageTransform(GameCharacter gc) {
 		AffineTransform at = new AffineTransform();
 		// at.translate(24, 24);
-		at.translate(gc.getCenter().getX(), gc.getCenter().getY());
+		at.translate(gc.getAbsoluteCenterPosition().getX(), gc.getAbsoluteCenterPosition().getY());
 		at.scale(0.8, 0.8);
 		switch (gc.getDirection()) {
 		case EAST:

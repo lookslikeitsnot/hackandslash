@@ -6,35 +6,39 @@ import java.util.Set;
 import be.kiop.characters.GameCharacter;
 import be.kiop.events.LifeEvent;
 import be.kiop.exceptions.CharacterDiedException;
+import be.kiop.exceptions.LessThanCurrentExperienceException;
 import be.kiop.exceptions.LostALifeException;
+import be.kiop.exceptions.NegativeExperienceException;
+import be.kiop.exceptions.NegativeLifeException;
 import be.kiop.exceptions.OutOfLivesException;
 import be.kiop.listeners.LifeListener;
+import be.kiop.textures.Texture;
+import be.kiop.textures.WeaponTextures;
+import be.kiop.valueobjects.Tile;
+import be.kiop.weapons.Weapon;
 
 public abstract class Hero extends GameCharacter {
+	private final Set<LifeListener> lifeListeners = new HashSet<>();
+	
 	private int lives;
 	private float experience;
+	
 	public static final int MAX_LIVES = 5;
-	private final Set<LifeListener> lifeListeners = new HashSet<>();
-
-	public void decreaseLives() {
-		lives--;
-		if (lives <= 0) {
-			lives = 0;
-			throw new OutOfLivesException();
-		}
+	
+	public Hero(Set<Texture> availableTextures, Texture texture, Tile tile, String name,
+			Set<WeaponTextures> availableWeapons, float health, Weapon weapon, int level, float armor, int lives) {
+		super(availableTextures, texture, tile, name, availableWeapons, health, weapon, level, armor);
+		setLives(lives);
+		setExperience(0);
 	}
-
-	public void increaseLives() {
-		lives++;
-	}
-
+	
 	public int getLives() {
 		synchronized (lifeListeners) {
 			return lives;
 		}
 	}
 
-	public void setLives(int lives) {
+	private void setLives(int lives) {
 		LifeEvent lifeEvent;
 		synchronized (lifeListeners) {
 			lifeEvent = new LifeEvent(this.lives, lives);
@@ -50,31 +54,16 @@ public abstract class Hero extends GameCharacter {
 			broadcast(lifeEvent);
 		}
 	}
-
-	private void broadcast(LifeEvent lifeEvent) {
-		Set<LifeListener> snapshot;
-		synchronized (lifeListeners) {
-			snapshot = new HashSet<>(lifeListeners);
-		}
-		for (LifeListener listener : snapshot) {
-			listener.lifeChanged(lifeEvent);
-		}
-	}
-
+	
 	public float getExperience() {
 		return experience;
 	}
-
-	public void increaseExperience(float increment) {
-		if (increment < 0) {
-			throw new IllegalArgumentException();
-		}
-		setExperience(this.experience + increment);
-	}
-
-	public void setExperience(float experience) {
+	
+	private void setExperience(float experience) {
 		if (experience < 0) {
-			throw new IllegalArgumentException();
+			throw new NegativeExperienceException();
+		} else if(experience < this.experience) {
+			throw new LessThanCurrentExperienceException();
 		}
 		this.experience = experience;
 		while (this.experience >= getRequiredExpForNextLevel()) {
@@ -82,7 +71,22 @@ public abstract class Hero extends GameCharacter {
 			increaseLevel();
 		}
 	}
+	
+	public void decreaseLives() {
+		setLives(getLives()-1);
+	}
 
+	public void increaseLives(int lives) {
+		if(lives < 0) {
+			throw new NegativeLifeException();
+		}
+		setLives(getLives()+lives);
+	}
+
+	public void increaseExperience(float increment) {
+		setExperience(this.experience + increment);
+	}
+	
 	private float getRequiredExpForNextLevel() {
 		return getLevel() * 100;
 	}
@@ -111,6 +115,16 @@ public abstract class Hero extends GameCharacter {
 	public void removeLifeListener(LifeListener listener) {
 		synchronized (lifeListeners) {
 			lifeListeners.remove(listener);
+		}
+	}
+	
+	private void broadcast(LifeEvent lifeEvent) {
+		Set<LifeListener> snapshot;
+		synchronized (lifeListeners) {
+			snapshot = new HashSet<>(lifeListeners);
+		}
+		for (LifeListener listener : snapshot) {
+			listener.lifeChanged(lifeEvent);
 		}
 	}
 }

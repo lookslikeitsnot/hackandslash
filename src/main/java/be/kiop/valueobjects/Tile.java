@@ -1,10 +1,16 @@
 package be.kiop.valueobjects;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Set;
+
 public class Tile {
 	private final int horizontalPosition;
 	private final int verticalPosition;
-	
-	public static final Tile ORIGIN = new Tile(0,0); 
+
+	public static final Tile ORIGIN = new Tile(0, 0);
 
 	public Tile(int horizontalPosition, int verticalPosition) {
 		this.horizontalPosition = horizontalPosition;
@@ -18,21 +24,42 @@ public class Tile {
 	public int getVerticalPosition() {
 		return verticalPosition;
 	}
-	
-	public Tile getEastwardTile() {
+
+	public Tile getEASTwardTile() {
 		return new Tile(horizontalPosition + 1, verticalPosition);
 	}
 
-	public Tile getSouthwardTile() {
+	public Tile getSOUTHwardTile() {
 		return new Tile(horizontalPosition, verticalPosition + 1);
 	}
-	
-	public Tile getWestwardTile() {
-		return new Tile(horizontalPosition + 1, verticalPosition);
+
+	public Tile getWESTwardTile() {
+		return new Tile(horizontalPosition - 1, verticalPosition);
 	}
-	
-	public Tile getNorthwardTile() {
-		return new Tile(horizontalPosition, verticalPosition + 1);
+
+	public Tile getNORTHwardTile() {
+		return new Tile(horizontalPosition, verticalPosition - 1);
+	}
+
+	public Set<Tile> getAdjacentTiles() {
+		return Set.of(getEASTwardTile(), getSOUTHwardTile(), getWESTwardTile(), getNORTHwardTile());
+	}
+
+	public Map<Directions, Tile> getAvailableAdjacentTiles(Set<Tile> availableTiles) throws NoSuchMethodException,
+			SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+		Map<Directions, Tile> map = new LinkedHashMap<>();
+		Method getTileMethod;
+		Tile tile;
+
+		for (Directions direction : Directions.values()) {
+			getTileMethod = this.getClass().getMethod("get" + direction.name() + "wardTile");
+			tile = (Tile) getTileMethod.invoke(this);
+			if(availableTiles.contains(tile)) {
+				map.put(direction, tile);
+			}
+		}
+
+		return map;
 	}
 
 	@Override
@@ -65,5 +92,4 @@ public class Tile {
 		return "Tile [horizontalPosition=" + horizontalPosition + ", verticalPosition=" + verticalPosition + "]";
 	}
 
-	
 }

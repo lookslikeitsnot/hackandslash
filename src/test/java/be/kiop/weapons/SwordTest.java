@@ -9,6 +9,7 @@ import org.junit.Test;
 import be.kiop.UI.Board;
 import be.kiop.textures.WeaponTextures;
 import be.kiop.valueobjects.Position;
+import be.kiop.valueobjects.Tile;
 
 public class SwordTest {
 	private Sword weapon;
@@ -16,6 +17,7 @@ public class SwordTest {
 	private Board board;
 	
 	private static final WeaponTextures WEAPON_SKIN = WeaponTextures.Sword;
+	private static final String WEAPON_NAME = "name";
 	private static final float WEAPON_DAMAGE = 8;
 	private static final float WEAPON_MAX_DAMAGE = 14;
 	private static final int WEAPON_RANGE = 5;
@@ -32,13 +34,13 @@ public class SwordTest {
 	public void before() {
 		board = new Board(15,15);
 		position = new Position(board.getWidth()/2, board.getHeight()/2);
-		weapon = new Sword(WEAPON_SKIN, position, Sword.DEFAULT_NAME, WEAPON_DAMAGE, WEAPON_MAX_DAMAGE, WEAPON_RANGE, WEAPON_MIN_RANGE, WEAPON_MAX_RANGE, 
+		weapon = new Sword(WEAPON_SKIN, new Tile(1,1), WEAPON_NAME, WEAPON_DAMAGE, WEAPON_MAX_DAMAGE, WEAPON_RANGE, WEAPON_MIN_RANGE, WEAPON_MAX_RANGE, 
 				WEAPON_ATTACK_SPEED, WEAPON_MAX_ATTACK_SPEED, WEAPON_PENETRATION, WEAPON_CRIT_CHANCE, WEAPON_MAX_CRIT_CHANCE);
 	}
 
 	@Test
 	public void getName_allIsWell_swordName() {
-		assert (weapon.getName().equals(Sword.DEFAULT_NAME));
+		assert (weapon.getName().equals(WEAPON_NAME));
 	}
 	
 //	@Test
@@ -241,7 +243,7 @@ public class SwordTest {
 	
 	@Test
 	public void hashCode_sameWeaponName_sameHashCode() {
-		assertEquals(new Sword(WEAPON_SKIN, position, Sword.DEFAULT_NAME, WEAPON_DAMAGE, WEAPON_MAX_DAMAGE, WEAPON_RANGE, WEAPON_MIN_RANGE, WEAPON_MAX_RANGE, 
+		assertEquals(new Sword(WEAPON_SKIN, new Tile(1,1), WEAPON_NAME, WEAPON_DAMAGE, WEAPON_MAX_DAMAGE, WEAPON_RANGE, WEAPON_MIN_RANGE, WEAPON_MAX_RANGE, 
 				WEAPON_ATTACK_SPEED, WEAPON_MAX_ATTACK_SPEED, WEAPON_PENETRATION, WEAPON_CRIT_CHANCE, WEAPON_MAX_CRIT_CHANCE).hashCode(), weapon.hashCode());
 	}
 	
@@ -252,7 +254,7 @@ public class SwordTest {
 	
 	@Test
 	public void equals_sameWeaponName_true() {
-		assert(weapon.equals(new Sword(WEAPON_SKIN, position, Sword.DEFAULT_NAME, WEAPON_DAMAGE, WEAPON_MAX_DAMAGE, WEAPON_RANGE, WEAPON_MIN_RANGE, WEAPON_MAX_RANGE, 
+		assert(weapon.equals(new Sword(WEAPON_SKIN, new Tile(1,1), WEAPON_NAME, WEAPON_DAMAGE, WEAPON_MAX_DAMAGE, WEAPON_RANGE, WEAPON_MIN_RANGE, WEAPON_MAX_RANGE, 
 				WEAPON_ATTACK_SPEED, WEAPON_MAX_ATTACK_SPEED, WEAPON_PENETRATION, WEAPON_CRIT_CHANCE, WEAPON_MAX_CRIT_CHANCE)));
 	}
 	

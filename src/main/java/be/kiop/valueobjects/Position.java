@@ -67,7 +67,7 @@ public class Position {
 		return "Position [x=" + x + ", y=" + y + "]";
 	}
 
-	public Position right() {
+	public Position east() {
 		try {
 			return new Position(x + 1, y);
 		} catch (OutOfBoardException ex) {
@@ -75,7 +75,7 @@ public class Position {
 		}
 	}
 
-	public Position down() {
+	public Position south() {
 		try {
 			return new Position(x, y + 1);
 		} catch (OutOfBoardException ex) {
@@ -83,7 +83,7 @@ public class Position {
 		}
 	}
 
-	public Position left() {
+	public Position west() {
 		try {
 			return new Position(x - 1, y);
 		} catch (OutOfBoardException ex) {
@@ -91,7 +91,7 @@ public class Position {
 		}
 	}
 
-	public Position up() {
+	public Position north() {
 		try {
 			return new Position(x, y - 1);
 		} catch (OutOfBoardException ex) {
@@ -110,6 +110,11 @@ public class Position {
 	public void add(int x, int y) {
 		this.x += x;
 		this.y += y;
+	}
+	
+	public void add(Offset offset) {
+		this.x -= offset.offsetX;
+		this.y -= offset.offsetY;
 	}
 
 	public static Position sum(Position pos1, Position pos2) {
@@ -153,5 +158,16 @@ public class Position {
 			throw new IllegalArgumentException();
 		}
 		return sum(getAssociatedPosition(tile, tileSize), new Position(offsetX, offsetY));
+	}
+	
+	public static Position getAbsolutePosition(Position position, Tile tile) {
+		return getAbsolutePosition(position, tile, new Offset(0,0));
+	}
+	public static Position getAbsolutePosition(Position position, Tile tile, Offset offset) {
+		int posX = tile.getHorizontalPosition()*Board.TILE_SIZE.getWidth()+position.x+Board.exteriorWallSize.getWidth();
+		int posY = tile.getVerticalPosition()*Board.TILE_SIZE.getHeight()+position.y+Board.exteriorWallSize.getHeight();
+		Position absolutePosition =  new Position(posX, posY);
+		absolutePosition.add(offset);
+		return absolutePosition;
 	}
 }

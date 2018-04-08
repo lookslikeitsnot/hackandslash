@@ -3,6 +3,9 @@ package be.kiop.valueobjects;
 import java.awt.Dimension;
 
 public class Size {
+	private int width;
+	private int height;
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -28,9 +31,6 @@ public class Size {
 		return true;
 	}
 
-	private int width;
-	private int height;
-
 	public Size(int width, int height) {
 		this.width = width;
 		this.height = height;
@@ -50,6 +50,10 @@ public class Size {
 	
 	public static Size product(Size size, int widthFactor, int heightFactor) {
 		return new Size(size.width*widthFactor, size.height*heightFactor);
+	}
+	
+	public Position getCenter() {
+		return new Position(width/2, height/2);
 	}
 
 	public Dimension toDimension() {

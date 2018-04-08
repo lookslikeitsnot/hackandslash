@@ -96,10 +96,10 @@ public class PositionTest {
 		assertEquals("Position [x=" + Board.MAX_SIZE.getWidth()/2 + ", y=" + Board.MAX_SIZE.getHeight()/2 + "]", position.toString());
 	}
 	
-	@Test(expected = IllegalArgumentException.class)
-	public void add_null_Exception() {
-		position.add(null);
-	}
+//	@Test(expected = IllegalArgumentException.class)
+//	public void add_null_Exception() {
+//		position.add(null);
+//	}
 	
 	@Test
 	public void add_validPosition_PositionIncremented() {
@@ -159,8 +159,4 @@ public class PositionTest {
 		Position dif = Position.getAssociatedPosition(tile, size, offsetX, offsetY);
 		assertEquals(new Position(33,34), dif);
 	}
-	
-	
-	
-	
 }

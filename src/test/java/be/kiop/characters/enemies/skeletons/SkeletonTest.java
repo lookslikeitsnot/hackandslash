@@ -28,8 +28,9 @@ import be.kiop.valueobjects.Directions;
 import be.kiop.valueobjects.Position;
 import be.kiop.valueobjects.Tile;
 import be.kiop.weapons.Bone;
+import be.kiop.weapons.Bones;
 import be.kiop.weapons.Fist;
-import be.kiop.weapons.Sword;
+import be.kiop.weapons.Swords;
 import be.kiop.weapons.Weapon;
 
 public class SkeletonTest {
@@ -50,27 +51,25 @@ public class SkeletonTest {
 	private final static float ENEMY_ARMOR = 50;
 	private final static int ENEMY_POSX = 32;
 	private final static int ENEMY_POSY = 32;
-	private final static Set<Drop> ENEMY_DROPPABLES = Set.of(new Sword(WeaponTextures.Sword, new Position(48,48), "Heavy Sword", 50, 75, 40, 30, 100, 5, 10, 20, 50, 70));
+	private final static Set<Drop> ENEMY_DROPPABLES = Set.of(Swords.Sword_1.getWeapon());
 
 	@Before
 	public void before() {
 		position = new Position(ENEMY_POSX, ENEMY_POSY);
-		tile = new Tile(1,1);
-		weapon = new Bone(WeaponTextures.Bone, position, "Little Bone", 50, 75, 40, 30, 100, 5, 10, 20);
-		enemy = new Skeleton(ENEMY_TEXTURE, position, tile , ENEMY_NAME, ENEMY_HEALTH, weapon, ENEMY_LEVEL, ENEMY_ARMOR,
+		tile = new Tile(1, 1);
+		weapon = new Bone(WeaponTextures.Bone, tile, "Little Bone", 50, 75, 40, 30, 100, 5, 10, 20);
+		enemy = new Skeleton(ENEMY_TEXTURE, tile, ENEMY_NAME, ENEMY_HEALTH, weapon, ENEMY_LEVEL, ENEMY_ARMOR,
 				ENEMY_DROPPABLES);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void setName_null_IllegalArgument() {
-		new Skeleton(ENEMY_TEXTURE, position, tile, null, ENEMY_HEALTH, weapon, ENEMY_LEVEL, ENEMY_ARMOR,
-				ENEMY_DROPPABLES);
+		new Skeleton(ENEMY_TEXTURE, tile, null, ENEMY_HEALTH, weapon, ENEMY_LEVEL, ENEMY_ARMOR, ENEMY_DROPPABLES);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void setName_invalid_IllegalArgument() {
-		new Skeleton(ENEMY_TEXTURE, position, tile, " ", ENEMY_HEALTH, weapon, ENEMY_LEVEL, ENEMY_ARMOR,
-				ENEMY_DROPPABLES);
+		new Skeleton(ENEMY_TEXTURE, tile, " ", ENEMY_HEALTH, weapon, ENEMY_LEVEL, ENEMY_ARMOR, ENEMY_DROPPABLES);
 	}
 
 	@Test
@@ -97,58 +96,58 @@ public class SkeletonTest {
 
 	@Test
 	public void moveLeft_nA_gameCharacterPositionXMinus1() {
-		enemy.moveLeft();
-		assertEquals(ENEMY_POSX - 1, enemy.getPosition().getX());
+		enemy.moveWEST();
+		assertEquals(ENEMY_POSX - 1, enemy.getAbsolutePosition().getX());
 	}
 
 	@Test(expected = OutOfBoardException.class)
 	public void moveLeft_untilOOB_OutOfBoardException() {
-		IntStream.range(0, Board.MAX_SIZE.getWidth() + 1).forEach(iteration -> enemy.moveLeft());
+		IntStream.range(0, Board.MAX_SIZE.getWidth() + 1).forEach(iteration -> enemy.moveWEST());
 	}
 
 	@Test
 	public void moveRight_nA_gameCharacterPositionXPlus1() {
-		enemy.moveRight();
-		assertEquals(ENEMY_POSX + 1, enemy.getPosition().getX());
+		enemy.moveEAST();
+		assertEquals(ENEMY_POSX + 1, enemy.getAbsolutePosition().getX());
 	}
 
 	@Test(expected = OutOfBoardException.class)
 	public void moveRight_untilOOB_OutOfBoardException() {
-		IntStream.range(0, Board.MAX_SIZE.getWidth() + 1).forEach(iteration -> enemy.moveRight());
+		IntStream.range(0, Board.MAX_SIZE.getWidth() + 1).forEach(iteration -> enemy.moveEAST());
 	}
 
 	@Test
 	public void moveUp_nA_gameCharacterPositionYMinus1() {
-		enemy.moveUp();
-		assertEquals(ENEMY_POSY -1, enemy.getPosition().getY());
+		enemy.moveNORTH();
+		assertEquals(ENEMY_POSY - 1, enemy.getAbsolutePosition().getY());
 	}
 
 	@Test(expected = OutOfBoardException.class)
 	public void moveUp_untilOOB_OutOfBoardException() {
-		IntStream.range(0, Board.MAX_SIZE.getHeight() / 2 + 1).forEach(iteration -> enemy.moveUp());
+		IntStream.range(0, Board.MAX_SIZE.getHeight() / 2 + 1).forEach(iteration -> enemy.moveNORTH());
 	}
 
 	@Test
 	public void moveDown_nA_gameCharacterPositionYPlus1() {
-		enemy.moveDown();
-		assertEquals(ENEMY_POSY + 1, enemy.getPosition().getY());
+		enemy.moveSOUTH();
+		assertEquals(ENEMY_POSY + 1, enemy.getAbsolutePosition().getY());
 	}
 
 	@Test(expected = OutOfBoardException.class)
 	public void moveDown_untilOOB_OutOfBoardException() {
-		IntStream.range(0, Board.MAX_SIZE.getWidth() + 1).forEach(iteration -> enemy.moveDown());
+		IntStream.range(0, Board.MAX_SIZE.getWidth() + 1).forEach(iteration -> enemy.moveSOUTH());
 	}
 
-	@Test
-	public void teleport_validPosition_gameCharacterPositionChanged() {
-		enemy.teleport(1, 1);
-		assertEquals(new Position(1, 1), enemy.getPosition());
-	}
-
-	@Test(expected = OutOfBoardException.class)
-	public void teleport_invalidPosition_OutOfBoardException() {
-		enemy.teleport(-1, -1);
-	}
+//	@Test
+//	public void teleport_validPosition_gameCharacterPositionChanged() {
+//		enemy.teleport(1, 1);
+//		assertEquals(new Position(1, 1), enemy.getAbsolutePosition());
+//	}
+//
+//	@Test(expected = OutOfBoardException.class)
+//	public void teleport_invalidPosition_OutOfBoardException() {
+//		enemy.teleport(-1, -1);
+//	}
 
 	@Test
 	public void getName_nA_heroName() {
@@ -180,7 +179,7 @@ public class SkeletonTest {
 	@Test
 	public void takeDamage_moreThanHeroHealth_0Health() {
 		enemy.takeDamage(ENEMY_HEALTH * 100 / ENEMY_ARMOR + ENEMY_HEALTH);
-		assertEquals(0, enemy.getHealth(),MARGIN);
+		assertEquals(0, enemy.getHealth(), MARGIN);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
@@ -191,7 +190,7 @@ public class SkeletonTest {
 	@Test
 	public void takeDamage_moreThanHeroLifeAndPenetration_0Health() {
 		enemy.takeDamage(ENEMY_HEALTH, ENEMY_ARMOR + 1);
-		assertEquals(0, enemy.getHealth(),MARGIN);
+		assertEquals(0, enemy.getHealth(), MARGIN);
 	}
 
 	@Test
@@ -240,7 +239,7 @@ public class SkeletonTest {
 
 	@Test(expected = IllegalWeaponException.class)
 	public void changeWeapon_invalidWeapon_exception() {
-		enemy.changeWeapon(new Sword(WeaponTextures.Sword, new Position(48,48), "Heavy Sword", 50, 75, 40, 30, 100, 5, 10, 20, 50, 70));
+		enemy.changeWeapon(Swords.Sword_1.getWeapon());
 	}
 
 	@Test(expected = IllegalArgumentException.class)
@@ -316,63 +315,67 @@ public class SkeletonTest {
 
 	@Test
 	public void attack_enemy_enemyTakesDamage() {
-		GameCharacter gc = new Skeleton(SkeletonTextures.Skeleton_NORTH_2, position, tile, "Skeleton", ENEMY_HEALTH,
-				new Bone(WeaponTextures.Bone, position, "Little Bone", 50, 75, 40, 30, 100, 5, 10, 20), 1,
-				0, Set.of(new Sword(WeaponTextures.Sword, new Position(48,48), "Heavy Sword", 50, 75, 40, 30, 100, 5, 10, 20, 50, 70)));
+		GameCharacter gc = new Skeleton(SkeletonTextures.Skeleton_NORTH_2, tile, "Skeleton", ENEMY_HEALTH,
+				Bones.Bone_1.getWeapon(), 1, 0, Set.of(Swords.Sword_1.getWeapon()));
 		enemy.attack(gc);
 		assertEquals(ENEMY_HEALTH - weapon.getDamage(), gc.getHealth(), MARGIN);
 	}
-	
-	@Test(expected=IllegalArgumentException.class)
-	public void setAvailableWeapons_null_IllegalArgument() {
-		enemy.setAvailableWeapons(null);
-	}
-	
-	@Test(expected=IllegalArgumentException.class)
-	public void setAvailableWeapons_emptySet_IllegalArgument() {
-		enemy.setAvailableWeapons(new LinkedHashSet<>());
-	}
-	
+
+//	@Test(expected = IllegalArgumentException.class)
+//	public void setAvailableWeapons_null_IllegalArgument() {
+//		enemy.setAvailableWeapons(null);
+//	}
+//
+//	@Test(expected = IllegalArgumentException.class)
+//	public void setAvailableWeapons_emptySet_IllegalArgument() {
+//		enemy.setAvailableWeapons(new LinkedHashSet<>());
+//	}
+
 	@Test
 	public void move_validMoveEast_GameCharacterMoved() {
 		Position pos = new Position(position.getX(), position.getY());
 		enemy.move(Directions.EAST, new LinkedHashSet<>());
-		assertEquals(pos.getX()+GameCharacter.SPEED, enemy.getPosition().getX());
-		assertEquals(pos.getY(), enemy.getPosition().getY());
+		assertEquals(pos.getX() + GameCharacter.SPEED, enemy.getAbsolutePosition().getX());
+		assertEquals(pos.getY(), enemy.getAbsolutePosition().getY());
 	}
+
 	@Test
 	public void move_validMoveSouth_GameCharacterMoved() {
 		Position pos = new Position(position.getX(), position.getY());
 		enemy.move(Directions.SOUTH, new LinkedHashSet<>());
-		assertEquals(pos.getX(), enemy.getPosition().getX());
-		assertEquals(pos.getY()+GameCharacter.SPEED, enemy.getPosition().getY());
+		assertEquals(pos.getX(), enemy.getAbsolutePosition().getX());
+		assertEquals(pos.getY() + GameCharacter.SPEED, enemy.getAbsolutePosition().getY());
 	}
+
 	@Test
 	public void move_validMoveWest_GameCharacterMoved() {
 		Position pos = new Position(position.getX(), position.getY());
 		enemy.move(Directions.WEST, new LinkedHashSet<>());
-		assertEquals(pos.getX()-GameCharacter.SPEED, enemy.getPosition().getX());
-		assertEquals(pos.getY(), enemy.getPosition().getY());
+		assertEquals(pos.getX() - GameCharacter.SPEED, enemy.getAbsolutePosition().getX());
+		assertEquals(pos.getY(), enemy.getAbsolutePosition().getY());
 	}
+
 	@Test
 	public void move_validMoveNorth_GameCharacterMoved() {
 		Position pos = new Position(position.getX(), position.getY());
 		enemy.move(Directions.NORTH, new LinkedHashSet<>());
-		assertEquals(pos.getX(), enemy.getPosition().getX());
-		assertEquals(pos.getY()-GameCharacter.SPEED, enemy.getPosition().getY());
+		assertEquals(pos.getX(), enemy.getAbsolutePosition().getX());
+		assertEquals(pos.getY() - GameCharacter.SPEED, enemy.getAbsolutePosition().getY());
 	}
-	
+
 	@Test
 	public void move_cannotMoveNorth_GameCharacterNotMoved() {
-		int deltaX = ((enemy.getTexture().getSize().getWidth() - ((HitBoxTexture) enemy.getTexture()).getHitBoxSize().getWidth())/2);
-		int deltaY = ((enemy.getTexture().getSize().getHeight() - ((HitBoxTexture) enemy.getTexture()).getHitBoxSize().getHeight())/2);
+		int deltaX = ((enemy.getTexture().getSize().getWidth()
+				- ((HitBoxTexture) enemy.getTexture()).getHitBoxSize().getWidth()) / 2);
+		int deltaY = ((enemy.getTexture().getSize().getHeight()
+				- ((HitBoxTexture) enemy.getTexture()).getHitBoxSize().getHeight()) / 2);
 		Position pos = new Position(position.getX(), position.getY());
-		Position posNorth = new Position(position.getX()+deltaX, position.getY() + deltaY - 1);
+		Position posNorth = new Position(position.getX() + deltaX, position.getY() + deltaY - 1);
 		enemy.move(Directions.NORTH, Set.of(posNorth));
-		assertEquals(pos.getX(), enemy.getPosition().getX());
-		assertEquals(pos.getY(), enemy.getPosition().getY());
+		assertEquals(pos.getX(), enemy.getAbsolutePosition().getX());
+		assertEquals(pos.getY(), enemy.getAbsolutePosition().getY());
 	}
-	
+
 	@Test
 	public void setNextTexture_nA_GameCharacterHasNextTexture() {
 		enemy.move(Directions.SOUTH, new LinkedHashSet<>());
@@ -382,12 +385,12 @@ public class SkeletonTest {
 
 	@Test
 	public void getDrop_nA_optionalOfSword() {
-		Optional<Drop> optionalWeapon = Optional.of(new Sword(WeaponTextures.Sword, new Position(48,48), "Heavy Sword", 50, 75, 40, 30, 100, 5, 10, 20, 50, 70));
+		Optional<Drop> optionalWeapon = Optional.of(Swords.Sword_1.getWeapon());
 		assertEquals(optionalWeapon, enemy.getDrop());
 	}
 
-	@Test(expected = IllegalArgumentException.class)
-	public void setDroppables_null_IllegalArgument() {
-		enemy.setDroppables(null);
-	}
+//	@Test(expected = IllegalArgumentException.class)
+//	public void setDroppables_null_IllegalArgument() {
+//		enemy.setDroppables(null);
+//	}
 }

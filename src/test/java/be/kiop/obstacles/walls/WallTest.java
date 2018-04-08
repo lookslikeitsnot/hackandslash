@@ -9,6 +9,7 @@ import org.junit.Test;
 import be.kiop.UI.Board;
 import be.kiop.textures.WallTextures;
 import be.kiop.valueobjects.Position;
+import be.kiop.valueobjects.Tile;
 
 public class WallTest {
 	private Wall wall;
@@ -20,8 +21,9 @@ public class WallTest {
 	@Before
 	public void before() {
 		board = new Board(15,15);
-		position = new Position(board.getWidth()/2, board.getHeight()/2);
-		wall = new Wall(OBSTACLE_PATH, position);
+//		position = new Position(board.getWidth()/2, board.getHeight()/2);
+		
+		wall = new Wall(OBSTACLE_PATH, new Tile(1,1), false);
 	}
 	
 	@Test
@@ -29,10 +31,10 @@ public class WallTest {
 		assertFalse(wall.isDestructible());
 	}
 	
-	@Test
-	public void setDestructible_true_obstacleIsDestructible() {
-		wall.setDestructible(true);
-		assertTrue(wall.isDestructible());
-	}
+//	@Test
+//	public void setDestructible_true_obstacleIsDestructible() {
+//		wall.setDestructible(true);
+//		assertTrue(wall.isDestructible());
+//	}
 	
 }

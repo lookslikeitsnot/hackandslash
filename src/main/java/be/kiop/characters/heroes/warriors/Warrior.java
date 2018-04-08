@@ -6,44 +6,54 @@ import java.util.stream.Collectors;
 
 import be.kiop.UI.Drawable;
 import be.kiop.characters.heroes.Hero;
+import be.kiop.exceptions.NegativeDamageException;
+import be.kiop.exceptions.NegativeShieldException;
 import be.kiop.textures.Texture;
 import be.kiop.textures.WarriorTextures;
 import be.kiop.textures.WeaponTextures;
-import be.kiop.valueobjects.Position;
 import be.kiop.valueobjects.Tile;
 import be.kiop.weapons.Weapon;
 
 public class Warrior extends Hero {
-	private float shield;
 	public static final float MAX_SHIELD = 100;
-	private final static Set<Texture> AVAILABLE_TEXTURES = Arrays.stream(WarriorTextures.values()).collect(Collectors.toSet());
-	private static Set<WeaponTextures> availableWeapons = Set.of(WeaponTextures.Sword);
+	private final static Set<Texture> AVAILABLE_TEXTURES = Arrays.stream(WarriorTextures.values())
+			.collect(Collectors.toSet());
+	private static Set<WeaponTextures> AVAILABLE_WEAPONS = Set.of(WeaponTextures.Sword);
 
-	public Warrior(WarriorTextures warrior, Position position, Tile tile, String name, float health, Weapon weapon, int level, float armor, int lives, float experience,
-			float shield) {
-		super.setAvailableTextures(AVAILABLE_TEXTURES);
-		super.setTexture(warrior);
-		super.setPosition(position);
-		super.setTile(tile);
-		super.setName(name);
-		super.setLevel(level);
-		super.setHealth(health);
-		super.setAvailableWeapons(availableWeapons);
-		super.setWeapon(weapon);
-		super.setArmor(armor);
-		super.setLives(lives);
-		super.setExperience(experience);
-		this.shield = shield;
+	private float shield;
+
+	public Warrior(Texture texture, Tile tile, String name, float health, Weapon weapon, int level, float armor,
+			int lives, float shield) {
+		super(AVAILABLE_TEXTURES, texture, tile, name, AVAILABLE_WEAPONS, health, weapon, level, armor, lives);
+		setShield(shield);
 	}
 
 	public float getShield() {
 		return shield;
 	}
 
+	private void setShield(float shield) {
+		if(shield < 0) {
+			throw new NegativeShieldException();
+		}
+		if(shield>MAX_SHIELD) {
+			this.shield = MAX_SHIELD;
+		} else {
+			this.shield = shield;
+		}
+	}
+	
+	public void increaseShield(float shield) {
+		if(shield<0) {
+			throw new NegativeShieldException();
+		}
+		setShield(shield+this.shield);
+	}
+
 	@Override
 	public void takeDamage(float damage) {
-		if(damage < 0) {
-			throw new IllegalArgumentException();
+		if (damage < 0) {
+			throw new NegativeDamageException();
 		}
 		if (shield > 0) {
 			float remainingShield = shield;
