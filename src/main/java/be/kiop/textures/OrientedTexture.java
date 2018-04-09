@@ -2,6 +2,6 @@ package be.kiop.textures;
 
 import be.kiop.valueobjects.Orientations;
 
-public interface OrientedTexture {
+interface OrientedTexture {
 	public Orientations getOrientation();
 }

@@ -13,7 +13,7 @@ import be.kiop.characters.heroes.Hero;
 import be.kiop.events.HealthEvent;
 import be.kiop.listeners.HealthListener;
 
-public class StatPanel extends JPanel implements HealthListener{
+class StatPanel extends JPanel implements HealthListener{
 	private static final long serialVersionUID = 1L;
 	
 	private JProgressBar healthBar;
@@ -22,7 +22,7 @@ public class StatPanel extends JPanel implements HealthListener{
 	
 	private GameCharacter gc;
 	
-	public StatPanel(GameCharacter gc) {
+	StatPanel(GameCharacter gc) {
 		//setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
 		
 		UIManager.put("ProgressBar.background", Color.RED);

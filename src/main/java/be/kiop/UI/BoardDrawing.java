@@ -45,7 +45,7 @@ public class BoardDrawing extends JPanel {
 	private int horizontalTiles;
 	private int verticalTiles;
 
-	public BoardDrawing(Size size, FloorTextures floorTexture, WallTextures exteriorWallsTexture, Hero hero,
+	BoardDrawing(Size size, FloorTextures floorTexture, WallTextures exteriorWallsTexture, Hero hero,
 			Set<Wall> walls, Set<Fire> fires, Set<Enemy> enemies, List<Drop> drops, Board board) {
 		this.size = size;
 		this.enemies = enemies;

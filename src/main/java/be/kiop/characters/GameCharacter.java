@@ -1,11 +1,8 @@
 package be.kiop.characters;
 
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 import be.kiop.UI.Animated;
 import be.kiop.UI.Board;

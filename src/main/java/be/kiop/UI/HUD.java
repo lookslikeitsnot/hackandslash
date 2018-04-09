@@ -13,11 +13,11 @@ import be.kiop.characters.enemies.Enemy;
 import be.kiop.characters.heroes.Hero;
 import be.kiop.exceptions.SkinNotFoundException;
 
-public class HUD extends JPanel{
+class HUD extends JPanel{
 	private static final long serialVersionUID = 1L;
 	private BufferedImage backgroundImage;
 
-	public HUD(Hero hero, Enemy ennemy) {
+	HUD(Hero hero, Enemy ennemy) {
 		try {
 			backgroundImage = ImageIO.read(new File("src/main/resources/images/backgrounds/dark-background.jpg"));
 		} catch (IOException e) {

@@ -8,8 +8,8 @@ import javax.swing.Timer;
 import be.kiop.UI.Board;
 
 public class RepaintTimer implements ActionListener {
-	Timer timer;
-	Board board;
+	private Timer timer;
+	private Board board;
 
 	public RepaintTimer(Board board) {
 		this.board = board;

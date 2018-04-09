@@ -10,13 +10,13 @@ import be.kiop.events.LifeEvent;
 import be.kiop.listeners.LifeListener;
 import be.kiop.textures.HeartTextures;
 
-public class LifeBar extends JPanel implements LifeListener{
+class LifeBar extends JPanel implements LifeListener{
 	private static final long serialVersionUID = 1L;
 	private final int heartWidth = 15;
 	
 	private Hero hero;
 
-	public LifeBar(Hero hero) {
+	LifeBar(Hero hero) {
 		setPreferredSize(new Dimension(heartWidth*Hero.MAX_LIVES, heartWidth));
 		this.hero = hero;
 		this.hero.addLifeListener(this);

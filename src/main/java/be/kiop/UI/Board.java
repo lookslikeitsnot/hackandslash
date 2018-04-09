@@ -165,10 +165,6 @@ public class Board extends JFrame implements TileListener{
 		return enemies;
 	}
 
-	public Size getSize(boolean i) {
-		return size;
-	}
-
 	@Override
 	public void paint(Graphics g) {
 		hud.repaint();
@@ -221,7 +217,7 @@ public class Board extends JFrame implements TileListener{
 		return allHitBoxes;
 	}
 
-	public Set<Position> getTileHitBox(Tile tile) {
+	private Set<Position> getTileHitBox(Tile tile) {
 		Set<Position> tileHitBox = new LinkedHashSet<>();
 		int minX = exteriorWallSize.getWidth() + tile.getHorizontalPosition() * TILE_SIZE.getWidth();
 		int minY = exteriorWallSize.getHeight() + tile.getVerticalPosition() * TILE_SIZE.getHeight();

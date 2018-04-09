@@ -15,7 +15,7 @@ import be.kiop.valueobjects.Tile;
 import be.kiop.weapons.Weapon;
 
 public class Mage extends Hero {
-	public static final float MAX_MANA = 100;
+	static final float MAX_MANA = 100;
 	private final static Set<Texture> AVAILABLE_TEXTURES = Arrays.stream(MageTextures.values())
 			.collect(Collectors.toSet());
 	private final static Set<WeaponTextures> AVAILABLE_WEAPONS = Set.of(WeaponTextures.Staff);
