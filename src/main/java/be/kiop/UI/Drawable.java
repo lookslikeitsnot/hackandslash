@@ -9,7 +9,6 @@ import be.kiop.exceptions.IllegalPositionException;
 import be.kiop.exceptions.IllegalTextureSetException;
 import be.kiop.exceptions.IllegalTileException;
 import be.kiop.exceptions.InvalidTextureException;
-import be.kiop.exceptions.NoMoveAnimationException;
 import be.kiop.exceptions.OutOfTileException;
 import be.kiop.listeners.TileListener;
 import be.kiop.textures.Texture;
@@ -126,10 +125,6 @@ public abstract class Drawable implements Cloneable {
 		for (TileListener listener : snapshot) {
 			listener.tileChanged(tileEvent);
 		}
-	}
-
-	public Offset getOffsetFromPosition() {
-		return offsetFromPosition;
 	}
 
 	public Position getAbsolutePosition() {

@@ -4,7 +4,6 @@ import java.util.Arrays;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import be.kiop.UI.Drawable;
 import be.kiop.characters.heroes.Hero;
 import be.kiop.exceptions.NegativeDamageException;
 import be.kiop.exceptions.NegativeShieldException;
@@ -51,7 +50,7 @@ public class Warrior extends Hero {
 	}
 
 	@Override
-	public void takeDamage(float damage) {
+	protected void takeDamage(float damage, float penetration) {
 		if (damage < 0) {
 			throw new NegativeDamageException();
 		}
@@ -60,12 +59,11 @@ public class Warrior extends Hero {
 			remainingShield -= damage;
 			if (remainingShield < 0) {
 				damage -= shield;
-				shield = 0;
+				setShield(0);
+				super.takeDamage(damage, penetration);
 			} else {
-				shield = remainingShield;
-				damage = 0;
+				setShield(remainingShield);
 			}
 		}
-		super.takeDamage(damage);
 	}
 }

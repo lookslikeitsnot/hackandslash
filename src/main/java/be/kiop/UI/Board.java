@@ -13,7 +13,6 @@ import java.util.Set;
 import javax.swing.JFrame;
 
 import be.kiop.characters.enemies.Enemy;
-import be.kiop.characters.enemies.skeletons.Skeleton;
 import be.kiop.characters.enemies.skeletons.Skeletons;
 import be.kiop.characters.heroes.Hero;
 import be.kiop.characters.heroes.warriors.Warriors;
@@ -73,7 +72,7 @@ public class Board extends JFrame implements TileListener{
 		walls = generateAllWalls(wallTiles);
 //		fires = generateFirePits();
 
-		enemies = generateEnemies(8, (Enemy) Skeletons.Skeleton_1.getGameCharacter());
+		enemies = generateEnemies(16, (Enemy) Skeletons.Skeleton_1.getGameCharacter());
 		//enemies.addAll(generateEnemies(4, (Enemy) Skeletons.Skeleton_Dog_1.getGameCharacter()));
 
 		setLayout(new BorderLayout());
@@ -198,7 +197,7 @@ public class Board extends JFrame implements TileListener{
 					drops.add(drop);
 				}
 				occupiedTiles.remove(enemy.getTile());
-				occupiedTiles.remove(enemy.getNextTile());
+//				occupiedTiles.remove(enemy.getNextTile());
 				iterator.remove();
 			}
 		}

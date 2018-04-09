@@ -5,7 +5,6 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 import be.kiop.UI.Animated;
-import be.kiop.UI.Board;
 import be.kiop.UI.Drawable;
 import be.kiop.events.HealthEvent;
 import be.kiop.exceptions.IllegalLevelException;
@@ -13,8 +12,10 @@ import be.kiop.exceptions.IllegalNameException;
 import be.kiop.exceptions.IllegalWeaponException;
 import be.kiop.exceptions.IllegalWeaponSetException;
 import be.kiop.exceptions.MaxLevelReachedException;
-import be.kiop.exceptions.MinLevelReachedException;
+import be.kiop.exceptions.NegativeArmorException;
+import be.kiop.exceptions.NegativeDamageException;
 import be.kiop.exceptions.NegativeHealthException;
+import be.kiop.exceptions.NegativePenetrationException;
 import be.kiop.exceptions.NoMoveAnimationException;
 import be.kiop.listeners.HealthListener;
 import be.kiop.textures.HitBoxTexture;
@@ -76,6 +77,29 @@ public abstract class GameCharacter extends Drawable implements Animated, HitBox
 	public String getName() {
 		return name;
 	}
+	
+	public int getLevel() {
+		return level;
+	}
+
+	private void setLevel(int level) {
+		if (level < 0) {
+			throw new IllegalLevelException();
+		}
+		if(level > MAX_LEVEL) {
+			this.level = MAX_LEVEL;
+			throw new MaxLevelReachedException();
+		}
+		this.level = level;
+	}
+	
+	public void increaseLevel() {
+		setLevel(this.level + 1);
+	}
+
+	public void decreaseLevel() {
+		setLevel(this.level - 1);
+	}
 
 	public float getHealth() {
 		synchronized (healthListeners) {
@@ -88,9 +112,10 @@ public abstract class GameCharacter extends Drawable implements Animated, HitBox
 		synchronized (healthListeners) {
 			event = new HealthEvent(this.health, health);
 			this.health = health;
-			if (this.health <= 0) {
+			if (this.health < 0) {
 				this.health = 0;
-			} else if (this.health >= getMaxHealth()) {
+				throw new NegativeHealthException();
+			} else if (this.health > getMaxHealth()) {
 				this.health = getMaxHealth();
 			} else {
 				this.health = health;
@@ -99,6 +124,47 @@ public abstract class GameCharacter extends Drawable implements Animated, HitBox
 		}
 		if (event.oldHealth != event.newHealth) {
 			broadcast(event);
+		}
+	}
+	
+	private void increaseHealth(float increment) {
+		setHealth(this.health + increment);
+	}
+
+	public void heal(float health) {
+		if (health < 0) {
+			throw new NegativeHealthException();
+		}
+		increaseHealth(health);
+	}
+
+	private void decreaseHealth(float decrement) {
+		if (decrement < 0) {
+			throw new NegativeHealthException();
+		}
+		takingDamage = true;
+		setHealth(this.health - decrement);
+	}
+	
+	protected void takeDamage(float damage, float penetration) {
+		if (damage < 0) {
+			throw new NegativeDamageException();
+		}
+		if(penetration < 0) {
+			throw new NegativePenetrationException();
+		}
+
+		float damageFactor = armor - penetration;
+		if (damageFactor < 0) {
+			damageFactor = 0;
+		}
+		decreaseHealth(damage - damageFactor * damage / 100);
+	}
+	
+	public void attack(GameCharacter gc) {
+		attacking = true;
+		if (gc != null) {
+			gc.takeDamage(this.weapon.getDamage(), this.weapon.getPenetration());
 		}
 	}
 
@@ -113,25 +179,23 @@ public abstract class GameCharacter extends Drawable implements Animated, HitBox
 		}
 		this.weapon = weapon;
 	}
-
-	public int getLevel() {
-		return level;
+	
+	public void changeWeapon(Weapon weapon) {
+		setWeapon(weapon);
 	}
 
-	public void setLevel(int level) {
-		if (level < 0 || level > MAX_LEVEL) {
-			throw new IllegalLevelException();
-		}
-		this.level = level;
+	public void dropWeapon() {
+		setWeapon(new Fist());
 	}
 
 	public float getArmor() {
 		return armor;
 	}
 
-	public void setArmor(float armor) {
+	private void setArmor(float armor) {
 		if (armor < 0) {
 			this.armor = 0;
+			throw new NegativeArmorException();
 		} else if (armor > MAX_ARMOR) {
 			this.armor = MAX_ARMOR;
 		} else {
@@ -208,81 +272,8 @@ public abstract class GameCharacter extends Drawable implements Animated, HitBox
 		}
 	}
 
-	private void decreaseHealth(float decrement) {
-		if (decrement < 0) {
-			throw new NegativeHealthException();
-		}
-		takingDamage = true;
-		setHealth(this.health - decrement);
-	}
-
-	private void increaseHealth(float increment) {
-		if (increment < 0) {
-			throw new NegativeHealthException();
-		}
-		setHealth(this.health + increment);
-	}
-
-	public void takeFlatDamage(float damage) {
-		decreaseHealth(damage);
-	}
-
-	public void takeDamage(float damage) {
-		decreaseHealth(damage - armor * damage / 100);
-	}
-
-	public void takeDamage(float damage, float penetration) {
-		if (penetration < 0) {
-			throw new IllegalArgumentException();
-		}
-
-		float damageFactor = armor - penetration;
-		if (damageFactor < 0) {
-			damageFactor = 0;
-		}
-		decreaseHealth(damage - damageFactor * damage / 100);
-	}
-
-	public void heal(float health) {
-		increaseHealth(health);
-	}
-
 	public float getMaxHealth() {
 		return this.level * 100;
-	}
-
-	public void changeWeapon(Weapon weapon) {
-		if (weapon == null) {
-			throw new IllegalWeaponException();
-		}
-		setWeapon(weapon);
-	}
-
-	public void dropWeapon() {
-		setWeapon(new Fist());
-	}
-
-	public void increaseLevel() {
-		this.level++;
-		if (level >= MAX_LEVEL) {
-			level = MAX_LEVEL;
-			throw new MaxLevelReachedException();
-		}
-	}
-
-	public void decreaseLevel() {
-		this.level--;
-		if (level <= 1) {
-			level = 1;
-			throw new MinLevelReachedException();
-		}
-	}
-
-	public void attack(GameCharacter gc) {
-		attacking = true;
-		if (gc != null) {
-			gc.takeDamage(this.weapon.getDamage(), this.weapon.getPenetration());
-		}
 	}
 
 	public void moveEAST() {

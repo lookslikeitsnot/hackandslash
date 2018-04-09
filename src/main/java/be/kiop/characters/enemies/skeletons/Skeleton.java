@@ -4,7 +4,6 @@ import java.util.Arrays;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import be.kiop.UI.Drawable;
 import be.kiop.characters.enemies.Enemy;
 import be.kiop.items.Drop;
 import be.kiop.textures.SkeletonTextures;

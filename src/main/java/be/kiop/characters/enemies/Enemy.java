@@ -8,8 +8,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
+import java.util.stream.IntStream;
 
-import be.kiop.UI.Board;
 import be.kiop.characters.GameCharacter;
 import be.kiop.exceptions.IllegalDropSetException;
 import be.kiop.items.Drop;
@@ -28,7 +28,7 @@ public abstract class Enemy extends GameCharacter implements Dropper {
 	private final Random random = new Random();
 
 	private boolean active;
-	private Tile nextTile;
+//	private Tile nextTile;
 
 	private static int counter = 0;
 
@@ -43,7 +43,7 @@ public abstract class Enemy extends GameCharacter implements Dropper {
 		this.droppables = droppables;
 		this.active = false;
 	}
-	
+
 	public int getId() {
 		return id;
 	}
@@ -55,7 +55,7 @@ public abstract class Enemy extends GameCharacter implements Dropper {
 	public void setActive(boolean active) {
 		this.active = active;
 	}
-	
+
 	@Override
 	public Optional<Drop> getDrop() {
 		return droppables.stream().skip(new Random().nextInt(droppables.size())).findFirst();
@@ -83,7 +83,7 @@ public abstract class Enemy extends GameCharacter implements Dropper {
 			return false;
 		return true;
 	}
-	
+
 	private void move() {
 		if (!isMoving()) {
 			throw new UnsupportedOperationException();
@@ -91,8 +91,20 @@ public abstract class Enemy extends GameCharacter implements Dropper {
 		try {
 			Method moveMethod = this.getClass().getMethod("move" + getDirection().name());
 			try {
-				moveMethod.invoke(this);
-			} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+//				IntStream.range(0, SPEED).forEach(i->{
+//					try {
+//						moveMethod.invoke(this);
+//					} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+//						// TODO Auto-generated catch block
+//						e.printStackTrace();
+//					}
+//				});
+				try {
+					moveMethod.invoke(this);
+				} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+					throw new UnsupportedOperationException();
+				}
+			} catch (IllegalArgumentException e) {
 				throw new UnsupportedOperationException();
 			}
 		} catch (NoSuchMethodException | SecurityException e) {
@@ -101,37 +113,39 @@ public abstract class Enemy extends GameCharacter implements Dropper {
 //		System.out.println("position of current center:" + getPositionOfTextureCenterInTile());
 //		System.out.println("position of center:" + Board.TILE_SIZE.getCenter());
 		if (getPositionOfTextureCenterInTile().equals(getTile().getSize().getCenter())) {
-			nextTile = null;
+//			nextTile = null;
 			setMoving(false);
 		}
 	}
-	
-	public Set<Tile> move(Set<Tile> availableTiles) {
-		if (isMoving()) {
-			move();
-		} else {
-			setMovementFrame(1);
-			Map<Directions, Tile> possibleTiles = null;
-			try {
-				possibleTiles = getTile().getAvailableAdjacentTiles(availableTiles);
-			} catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException
-					| InvocationTargetException e) {
-			}
-			if (MapUtils.isValidMap(possibleTiles)) {
-				List<Directions> keys = new ArrayList<>(possibleTiles.keySet());
-				Directions direction = keys.get(random.nextInt(keys.size()));
-				setMoving(true);
-				setDirection(direction);
-				availableTiles.add(getTile());
-				nextTile = possibleTiles.get(direction);
-				availableTiles.remove(nextTile);
 
+	public void move(Set<Tile> availableTiles) {
+		IntStream.range(0, SPEED).forEach(i -> {
+			if (isMoving()) {
+				move();
+			} else {
+				setMovementFrame(1);
+				Map<Directions, Tile> possibleTiles = null;
+				try {
+					possibleTiles = getTile().getAvailableAdjacentTiles(availableTiles);
+				} catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException
+						| InvocationTargetException e) {
+				}
+				if (MapUtils.isValidMap(possibleTiles)) {
+					List<Directions> keys = new ArrayList<>(possibleTiles.keySet());
+					Directions direction = keys.get(random.nextInt(keys.size()));
+					setMoving(true);
+					setDirection(direction);
+					availableTiles.add(getTile());
+//				nextTile = possibleTiles.get(direction);
+//				availableTiles.remove(nextTile);
+
+				}
 			}
-		}
-		return availableTiles;
+		});
+//		return availableTiles;
 	}
 
-	public Tile getNextTile() {
-		return nextTile;
-	}
+//	public Tile getNextTile() {
+//		return nextTile;
+//	}
 }
