@@ -6,15 +6,11 @@ import static org.junit.Assert.assertFalse;
 import org.junit.Before;
 import org.junit.Test;
 
-import be.kiop.UI.Board;
 import be.kiop.textures.WeaponTextures;
-import be.kiop.valueobjects.Position;
 import be.kiop.valueobjects.Tile;
 
 public class SwordTest {
 	private Sword weapon;
-	private Position position;
-	private Board board;
 	
 	private static final WeaponTextures WEAPON_SKIN = WeaponTextures.Sword;
 	private static final String WEAPON_NAME = "name";
@@ -32,8 +28,6 @@ public class SwordTest {
 
 	@Before
 	public void before() {
-		board = new Board(15,15);
-		position = new Position(board.getWidth()/2, board.getHeight()/2);
 		weapon = new Sword(WEAPON_SKIN, new Tile(1,1), WEAPON_NAME, WEAPON_DAMAGE, WEAPON_MAX_DAMAGE, WEAPON_RANGE, WEAPON_MIN_RANGE, WEAPON_MAX_RANGE, 
 				WEAPON_ATTACK_SPEED, WEAPON_MAX_ATTACK_SPEED, WEAPON_PENETRATION, WEAPON_CRIT_CHANCE, WEAPON_MAX_CRIT_CHANCE);
 	}
@@ -42,25 +36,6 @@ public class SwordTest {
 	public void getName_allIsWell_swordName() {
 		assert (weapon.getName().equals(WEAPON_NAME));
 	}
-	
-//	@Test
-//	public void setName_validName_swordName() {
-//		String newName = "Weapon";
-//		weapon.setName(newName);
-//		assert(newName.equals(weapon.getName()));
-//	}
-//	
-//	@Test(expected = IllegalArgumentException.class)
-//	public void setName_blankName_exception() {
-//		String newName = " ";
-//		weapon.setName(newName);
-//	}
-//	
-//	@Test(expected = IllegalArgumentException.class)
-//	public void setName_nullName_exception() {
-//		String newName = null;
-//		weapon.setName(newName);
-//	}
 
 	@Test
 	public void getDamage_allIsWell_swordDamage() {

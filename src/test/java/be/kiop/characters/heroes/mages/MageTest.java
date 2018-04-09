@@ -9,7 +9,6 @@ import java.util.stream.IntStream;
 import org.junit.Before;
 import org.junit.Test;
 
-import be.kiop.UI.Board;
 import be.kiop.characters.GameCharacter;
 import be.kiop.characters.enemies.skeletons.Skeletons;
 import be.kiop.characters.heroes.Hero;
@@ -18,9 +17,8 @@ import be.kiop.exceptions.IllegalWeaponException;
 import be.kiop.exceptions.LostALifeException;
 import be.kiop.exceptions.MaxLevelReachedException;
 import be.kiop.exceptions.MinLevelReachedException;
-import be.kiop.exceptions.OutOfBoardException;
+import be.kiop.exceptions.NegativeManaException;
 import be.kiop.exceptions.OutOfLivesException;
-import be.kiop.exceptions.OutOfManaException;
 import be.kiop.exceptions.SkinNotFoundException;
 import be.kiop.textures.FloorTextures;
 import be.kiop.textures.HitBoxTexture;
@@ -37,7 +35,6 @@ import be.kiop.weapons.Swords;
 public class MageTest {
 	private Mage hero;
 	private Staff weapon;
-	private Position position;
 	private Tile tile;
 
 	private final static float MARGIN = 0.1F;
@@ -49,15 +46,14 @@ public class MageTest {
 	private final static String HERO_NAME = "Mage";
 	private final static float HERO_HEALTH = 100;
 	private final static int HERO_LEVEL = 10;
-	private final static int HERO_LIVES = 5;
+	private final static int HERO_LIVES = 4;
 	private final static float HERO_ARMOR = 50;
-	//private final static float HERO_EXPERIENCE = 200;
+	// private final static float HERO_EXPERIENCE = 200;
 	private final static float HERO_MANA = 10;
 
 	@Before
 	public void before() {
 		weapon = (Staff) Staffs.Staff_1.getWeapon();
-		position = new Position(Board.MAX_SIZE.getWidth() / 2, Board.MAX_SIZE.getHeight() / 2);
 		tile = new Tile(1, 1);
 		hero = new Mage(HERO_TEXTURE, tile, HERO_NAME, HERO_HEALTH, weapon, HERO_LEVEL, HERO_ARMOR, HERO_LIVES,
 				HERO_MANA);
@@ -65,14 +61,12 @@ public class MageTest {
 
 	@Test(expected = IllegalArgumentException.class)
 	public void setName_null_IllegalArgument() {
-		new Mage(HERO_TEXTURE, tile, null, HERO_HEALTH, weapon, HERO_LEVEL, HERO_ARMOR, HERO_LIVES, 
-				HERO_MANA);
+		new Mage(HERO_TEXTURE, tile, null, HERO_HEALTH, weapon, HERO_LEVEL, HERO_ARMOR, HERO_LIVES, HERO_MANA);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void setName_invalid_IllegalArgument() {
-		new Mage(HERO_TEXTURE, tile, " ", HERO_HEALTH, weapon, HERO_LEVEL, HERO_ARMOR, HERO_LIVES, 
-				HERO_MANA);
+		new Mage(HERO_TEXTURE, tile, " ", HERO_HEALTH, weapon, HERO_LEVEL, HERO_ARMOR, HERO_LIVES, HERO_MANA);
 	}
 
 	@Test
@@ -97,49 +91,49 @@ public class MageTest {
 		hero.setTexture(newTexture);
 	}
 
-	@Test
-	public void moveLeft_nA_gameCharacterPositionXMinus1() {
-		hero.moveWEST();
-		assertEquals(Board.MAX_SIZE.getWidth() / 2 - 1, hero.getAbsolutePosition().getX());
-	}
-
-	@Test(expected = OutOfBoardException.class)
-	public void moveLeft_untilOOB_OutOfBoardException() {
-		IntStream.range(0, Board.MAX_SIZE.getWidth() + 1).forEach(iteration -> hero.moveWEST());
-	}
-
-	@Test
-	public void moveRight_nA_gameCharacterPositionXPlus1() {
-		hero.moveEAST();
-		assertEquals(Board.MAX_SIZE.getWidth() / 2 + 1, hero.getAbsolutePosition().getX());
-	}
-
-	@Test(expected = OutOfBoardException.class)
-	public void moveRight_untilOOB_OutOfBoardException() {
-		IntStream.range(0, Board.MAX_SIZE.getWidth() + 1).forEach(iteration -> hero.moveEAST());
-	}
-
-	@Test
-	public void moveUp_nA_gameCharacterPositionYMinus1() {
-		hero.moveNORTH();
-		assertEquals(Board.MAX_SIZE.getHeight() / 2 - 1, hero.getAbsolutePosition().getY());
-	}
-
-	@Test(expected = OutOfBoardException.class)
-	public void moveUp_untilOOB_OutOfBoardException() {
-		IntStream.range(0, Board.MAX_SIZE.getHeight() / 2 + 1).forEach(iteration -> hero.moveNORTH());
-	}
-
-	@Test
-	public void moveDown_nA_gameCharacterPositionYPlus1() {
-		hero.moveSOUTH();
-		assertEquals(Board.MAX_SIZE.getHeight() / 2 + 1, hero.getAbsolutePosition().getY());
-	}
-
-	@Test(expected = OutOfBoardException.class)
-	public void moveDown_untilOOB_OutOfBoardException() {
-		IntStream.range(0, Board.MAX_SIZE.getWidth() + 1).forEach(iteration -> hero.moveSOUTH());
-	}
+//	@Test
+//	public void moveLeft_nA_gameCharacterPositionXMinus1() {
+//		hero.moveWEST();
+//		assertEquals(Board.MAX_SIZE.getWidth() / 2 - 1, hero.getAbsolutePosition().getX());
+//	}
+//
+//	@Test(expected = OutOfBoardException.class)
+//	public void moveLeft_untilOOB_OutOfBoardException() {
+//		IntStream.range(0, Board.MAX_SIZE.getWidth() + 1).forEach(iteration -> hero.moveWEST());
+//	}
+//
+//	@Test
+//	public void moveRight_nA_gameCharacterPositionXPlus1() {
+//		hero.moveEAST();
+//		assertEquals(Board.MAX_SIZE.getWidth() / 2 + 1, hero.getAbsolutePosition().getX());
+//	}
+//
+//	@Test(expected = OutOfBoardException.class)
+//	public void moveRight_untilOOB_OutOfBoardException() {
+//		IntStream.range(0, Board.MAX_SIZE.getWidth() + 1).forEach(iteration -> hero.moveEAST());
+//	}
+//
+//	@Test
+//	public void moveUp_nA_gameCharacterPositionYMinus1() {
+//		hero.moveNORTH();
+//		assertEquals(Board.MAX_SIZE.getHeight() / 2 - 1, hero.getAbsolutePosition().getY());
+//	}
+//
+//	@Test(expected = OutOfBoardException.class)
+//	public void moveUp_untilOOB_OutOfBoardException() {
+//		IntStream.range(0, Board.MAX_SIZE.getHeight() / 2 + 1).forEach(iteration -> hero.moveNORTH());
+//	}
+//
+//	@Test
+//	public void moveDown_nA_gameCharacterPositionYPlus1() {
+//		hero.moveSOUTH();
+//		assertEquals(Board.MAX_SIZE.getHeight() / 2 + 1, hero.getAbsolutePosition().getY());
+//	}
+//
+//	@Test(expected = OutOfBoardException.class)
+//	public void moveDown_untilOOB_OutOfBoardException() {
+//		IntStream.range(0, Board.MAX_SIZE.getWidth() + 1).forEach(iteration -> hero.moveSOUTH());
+//	}
 
 //	@Test
 //	public void teleport_validPosition_gameCharacterPositionChanged() {
@@ -242,7 +236,7 @@ public class MageTest {
 		hero.changeWeapon(Swords.Sword_1.getWeapon());
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test(expected = IllegalWeaponException.class)
 	public void changeWeapon_nullWeapon_exception() {
 		hero.changeWeapon(null);
 	}
@@ -368,7 +362,7 @@ public class MageTest {
 		assertEquals(HERO_MANA - 1, hero.getMana(), MARGIN);
 	}
 
-	@Test(expected = OutOfManaException.class)
+	@Test(expected = NegativeManaException.class)
 	public void decreaseMana_moreThanMax_exception() {
 		hero.decreaseMana(HERO_MANA + 1);
 	}
@@ -415,47 +409,44 @@ public class MageTest {
 
 	@Test
 	public void move_validMoveEast_GameCharacterMoved() {
-		Position pos = new Position(position.getX(), position.getY());
+		Position pos = new Position(hero.getAbsoluteCenterPosition().getX(), hero.getAbsoluteCenterPosition().getY());
 		hero.move(Directions.EAST, new LinkedHashSet<>());
-		assertEquals(pos.getX() + GameCharacter.SPEED, hero.getAbsolutePosition().getX());
-		assertEquals(pos.getY(), hero.getAbsolutePosition().getY());
+		assertEquals(pos.getX() + GameCharacter.SPEED, hero.getAbsoluteCenterPosition().getX());
+		assertEquals(pos.getY(), hero.getAbsoluteCenterPosition().getY());
 	}
 
 	@Test
 	public void move_validMoveSouth_GameCharacterMoved() {
-		Position pos = new Position(position.getX(), position.getY());
+		Position pos = new Position(hero.getAbsoluteCenterPosition().getX(), hero.getAbsoluteCenterPosition().getY());
 		hero.move(Directions.SOUTH, new LinkedHashSet<>());
-		assertEquals(pos.getX(), hero.getAbsolutePosition().getX());
-		assertEquals(pos.getY() + GameCharacter.SPEED, hero.getAbsolutePosition().getY());
+		assertEquals(pos.getX(), hero.getAbsoluteCenterPosition().getX());
+		assertEquals(pos.getY() + GameCharacter.SPEED, hero.getAbsoluteCenterPosition().getY());
 	}
 
 	@Test
 	public void move_validMoveWest_GameCharacterMoved() {
-		Position pos = new Position(position.getX(), position.getY());
+		Position pos = new Position(hero.getAbsoluteCenterPosition().getX(), hero.getAbsoluteCenterPosition().getY());
 		hero.move(Directions.WEST, new LinkedHashSet<>());
-		assertEquals(pos.getX() - GameCharacter.SPEED, hero.getAbsolutePosition().getX());
-		assertEquals(pos.getY(), hero.getAbsolutePosition().getY());
+		assertEquals(pos.getX() - GameCharacter.SPEED, hero.getAbsoluteCenterPosition().getX());
+		assertEquals(pos.getY(), hero.getAbsoluteCenterPosition().getY());
 	}
 
 	@Test
 	public void move_validMoveNorth_GameCharacterMoved() {
-		Position pos = new Position(position.getX(), position.getY());
+		Position pos = new Position(hero.getAbsoluteCenterPosition().getX(), hero.getAbsoluteCenterPosition().getY());
 		hero.move(Directions.NORTH, new LinkedHashSet<>());
-		assertEquals(pos.getX(), hero.getAbsolutePosition().getX());
-		assertEquals(pos.getY() - GameCharacter.SPEED, hero.getAbsolutePosition().getY());
+		assertEquals(pos.getX(), hero.getAbsoluteCenterPosition().getX());
+		assertEquals(pos.getY() - GameCharacter.SPEED, hero.getAbsoluteCenterPosition().getY());
 	}
 
 	@Test
 	public void move_cannotMoveNorth_GameCharacterNotMoved() {
-		int deltaX = ((hero.getTexture().getSize().getWidth()
-				- ((HitBoxTexture) hero.getTexture()).getHitBoxSize().getWidth()) / 2);
-		int deltaY = ((hero.getTexture().getSize().getHeight()
-				- ((HitBoxTexture) hero.getTexture()).getHitBoxSize().getHeight()) / 2);
-		Position pos = new Position(position.getX(), position.getY());
-		Position posNorth = new Position(position.getX() + deltaX, position.getY() + deltaY - 1);
+		int deltaY = ((HitBoxTexture) hero.getTexture()).getHitBoxSize().getHeight() / 2;
+		Position pos = new Position(hero.getAbsoluteCenterPosition().getX(), hero.getAbsoluteCenterPosition().getY());
+		Position posNorth = new Position(pos.getX(), pos.getY() -deltaY - 1);
 		hero.move(Directions.NORTH, Set.of(posNorth));
-		assertEquals(pos.getX(), hero.getAbsolutePosition().getX());
-		assertEquals(pos.getY(), hero.getAbsolutePosition().getY());
+		assertEquals(pos.getX(), hero.getAbsoluteCenterPosition().getX());
+		assertEquals(pos.getY(), hero.getAbsoluteCenterPosition().getY());
 	}
 
 	@Test
@@ -483,7 +474,8 @@ public class MageTest {
 
 	@Test(expected = CharacterDiedException.class)
 	public void setHealth_0andNoLivesLeft_CharacterDied() {
-		hero.decreaseLives();
+		IntStream.range(0, HERO_LIVES-1).forEach(i -> hero.decreaseLives());
+
 		hero.setHealth(0);
 	}
 }

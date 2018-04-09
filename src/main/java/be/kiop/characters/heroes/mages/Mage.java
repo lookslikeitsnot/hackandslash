@@ -38,7 +38,7 @@ public class Mage extends Hero {
 		} else if (mana == 0) {
 			throw new OutOfManaException();
 		}
-		this.mana = mana;
+		this.mana = mana>MAX_MANA?MAX_MANA:mana;
 	}
 
 	public void decreaseMana(float decrement) {

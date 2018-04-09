@@ -399,82 +399,82 @@ public abstract class GameCharacter extends Drawable implements Animated, HitBox
 //		return availableTiles;
 //	}
 
-	public void move(Directions direction, Set<Position> unavailablePositions) {
+//	public void move(Directions direction, Set<Position> unavailablePositions) {
+//
+//		this.moving = true;
+//		if (this.direction != direction) {
+//			movementFrame = 1;
+//		}
+//		this.direction = direction;
+//
+//		switch (direction) {
+//		case SOUTH:
+//			for (int i = 0; i < SPEED; i++) {
+//				if (canMove(Directions.SOUTH, unavailablePositions)) {
+//					moveSOUTH();
+//				} else {
+//					break;
+//				}
+//			}
+//			break;
+//		case WEST:
+//			for (int i = 0; i < SPEED; i++) {
+//				if (canMove(Directions.WEST, unavailablePositions)) {
+//					moveWEST();
+//				} else {
+//					break;
+//				}
+//			}
+//			break;
+//		case EAST:
+//			for (int i = 0; i < SPEED; i++) {
+//				if (canMove(Directions.EAST, unavailablePositions)) {
+//					moveEAST();
+//				} else {
+//					break;
+//				}
+//			}
+//			break;
+//		case NORTH:
+//			for (int i = 0; i < SPEED; i++) {
+//				if (canMove(Directions.NORTH, unavailablePositions)) {
+//					moveNORTH();
+//				} else {
+//					break;
+//				}
+//			}
+//			break;
+//		}
+//	}
 
-		this.moving = true;
-		if (this.direction != direction) {
-			movementFrame = 1;
-		}
-		this.direction = direction;
-
-		switch (direction) {
-		case SOUTH:
-			for (int i = 0; i < SPEED; i++) {
-				if (canMove(Directions.SOUTH, unavailablePositions)) {
-					moveSOUTH();
-				} else {
-					break;
-				}
-			}
-			break;
-		case WEST:
-			for (int i = 0; i < SPEED; i++) {
-				if (canMove(Directions.WEST, unavailablePositions)) {
-					moveWEST();
-				} else {
-					break;
-				}
-			}
-			break;
-		case EAST:
-			for (int i = 0; i < SPEED; i++) {
-				if (canMove(Directions.EAST, unavailablePositions)) {
-					moveEAST();
-				} else {
-					break;
-				}
-			}
-			break;
-		case NORTH:
-			for (int i = 0; i < SPEED; i++) {
-				if (canMove(Directions.NORTH, unavailablePositions)) {
-					moveNORTH();
-				} else {
-					break;
-				}
-			}
-			break;
-		}
-	}
-
-	private boolean canMove(Directions direction, Set<Position> unavailablePositions) {
-		int textureCenterX = getAbsolutePosition().getX() + getTexture().getSize().getWidth() / 2;
-		int textureCenterY = getAbsolutePosition().getY() + getTexture().getSize().getHeight() / 2;
-		int minHitBoxX = textureCenterX - ((HitBoxTexture) getTexture()).getHitBoxSize().getWidth() / 2;
-		int minHitBoxY = textureCenterY - ((HitBoxTexture) getTexture()).getHitBoxSize().getHeight() / 2;
-		int maxHitBoxX = textureCenterX + ((HitBoxTexture) getTexture()).getHitBoxSize().getWidth() / 2;
-		int maxHitBoxY = textureCenterY + ((HitBoxTexture) getTexture()).getHitBoxSize().getHeight() / 2;
-		Set<Position> toCheck = new LinkedHashSet<>();
-		switch (direction) {
-		case SOUTH:
-			toCheck = IntStream.range(minHitBoxX, maxHitBoxX).mapToObj(posX -> new Position(posX, maxHitBoxY + 1))
-					.collect(Collectors.toSet());
-			break;
-		case WEST:
-			toCheck = IntStream.range(minHitBoxY, maxHitBoxY).mapToObj(posY -> new Position(minHitBoxX - 1, posY))
-					.collect(Collectors.toSet());
-			break;
-		case EAST:
-			toCheck = IntStream.range(minHitBoxY, maxHitBoxY).mapToObj(posY -> new Position(maxHitBoxX + 1, posY))
-					.collect(Collectors.toSet());
-			break;
-		case NORTH:
-			toCheck = IntStream.range(minHitBoxX, maxHitBoxX).mapToObj(posX -> new Position(posX, minHitBoxY - 1))
-					.collect(Collectors.toSet());
-			break;
-		}
-		return (Collections.disjoint(unavailablePositions, toCheck));
-	}
+//	private boolean canMove(Directions direction, Set<Position> unavailablePositions) {
+//		int textureCenterX = getAbsolutePosition().getX() + getTexture().getSize().getWidth() / 2;
+//		int textureCenterY = getAbsolutePosition().getY() + getTexture().getSize().getHeight() / 2;
+//		int minHitBoxX = textureCenterX - ((HitBoxTexture) getTexture()).getHitBoxSize().getWidth() / 2;
+//		int minHitBoxY = textureCenterY - ((HitBoxTexture) getTexture()).getHitBoxSize().getHeight() / 2;
+//		int maxHitBoxX = textureCenterX + ((HitBoxTexture) getTexture()).getHitBoxSize().getWidth() / 2;
+//		int maxHitBoxY = textureCenterY + ((HitBoxTexture) getTexture()).getHitBoxSize().getHeight() / 2;
+//		Set<Position> toCheck = new LinkedHashSet<>();
+//		switch (direction) {
+//		case SOUTH:
+//			toCheck = IntStream.range(minHitBoxX, maxHitBoxX).mapToObj(posX -> new Position(posX, maxHitBoxY + 1))
+//					.collect(Collectors.toSet());
+//			break;
+//		case WEST:
+//			toCheck = IntStream.range(minHitBoxY, maxHitBoxY).mapToObj(posY -> new Position(minHitBoxX - 1, posY))
+//					.collect(Collectors.toSet());
+//			break;
+//		case EAST:
+//			toCheck = IntStream.range(minHitBoxY, maxHitBoxY).mapToObj(posY -> new Position(maxHitBoxX + 1, posY))
+//					.collect(Collectors.toSet());
+//			break;
+//		case NORTH:
+//			toCheck = IntStream.range(minHitBoxX, maxHitBoxX).mapToObj(posX -> new Position(posX, minHitBoxY - 1))
+//					.collect(Collectors.toSet());
+//			break;
+//		}
+//		return (Collections.disjoint(unavailablePositions, toCheck));
+//	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override

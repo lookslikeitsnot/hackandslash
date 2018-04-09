@@ -12,17 +12,18 @@ import be.kiop.textures.WeaponTextures;
 import be.kiop.valueobjects.Tile;
 
 public class Sword extends Weapon {
-	private final static Set<Texture> AVAILABLE_TEXTURES = Arrays.stream(WeaponTextures.values()).collect(Collectors.toSet());
+	private final static Set<Texture> AVAILABLE_TEXTURES = Arrays.stream(WeaponTextures.values())
+			.collect(Collectors.toSet());
 	private final float maxCritChance;
-	
+
 	private float critChance;
-	
-	public Sword(Texture texture, Tile tile, String name, float damage, float maxDamage,
-			int range, int minRange, int maxRange, float attackSpeed, float maxAttackSpeed, float penetration,
-			float maxCritChance, float critChance) {
+
+	public Sword(Texture texture, Tile tile, String name, float damage, float maxDamage, int range, int minRange,
+			int maxRange, float attackSpeed, float maxAttackSpeed, float penetration, float critChance,
+			float maxCritChance) {
 		super(AVAILABLE_TEXTURES, texture, tile, name, damage, maxDamage, range, minRange, maxRange, attackSpeed,
 				maxAttackSpeed, penetration);
-		if(maxCritChance<critChance) {
+		if (maxCritChance < critChance) {
 			throw new IllegalMaximumException();
 		}
 		this.maxCritChance = maxCritChance;
