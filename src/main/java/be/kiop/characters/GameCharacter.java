@@ -286,7 +286,7 @@ public abstract class GameCharacter extends Drawable implements Animated, HitBox
 	}
 
 	public void moveEAST() {
-		if (getPositionOfTextureCenterInTile().getX() >= Board.TILE_SIZE.getWidth()) {
+		if (getPositionOfTextureCenterInTile().getX() >= getTile().getSize().getWidth()) {
 			setTile(getTile().getEASTwardTile());
 			getPositionOfTextureCenterInTile().setX(0);
 		}
@@ -294,7 +294,7 @@ public abstract class GameCharacter extends Drawable implements Animated, HitBox
 	}
 
 	public void moveSOUTH() {
-		if (getPositionOfTextureCenterInTile().getY() >= Board.TILE_SIZE.getHeight()) {
+		if (getPositionOfTextureCenterInTile().getY() >= getTile().getSize().getHeight()) {
 			setTile(getTile().getSOUTHwardTile());
 			getPositionOfTextureCenterInTile().setY(0);
 		}
@@ -304,7 +304,7 @@ public abstract class GameCharacter extends Drawable implements Animated, HitBox
 	public void moveWEST() {
 		if (getPositionOfTextureCenterInTile().getX() <= 0) {
 			setTile(getTile().getWESTwardTile());
-			getPositionOfTextureCenterInTile().setX(Board.TILE_SIZE.getWidth() - 1);
+			getPositionOfTextureCenterInTile().setX(getTile().getSize().getWidth() - 1);
 		}
 		setPositionOfTextureCenterInTile(getPositionOfTextureCenterInTile().west());
 	}
@@ -312,7 +312,7 @@ public abstract class GameCharacter extends Drawable implements Animated, HitBox
 	public void moveNORTH() {
 		if (getPositionOfTextureCenterInTile().getY() <= 0) {
 			setTile(getTile().getNORTHwardTile());
-			getPositionOfTextureCenterInTile().setY(Board.TILE_SIZE.getHeight() - 1);
+			getPositionOfTextureCenterInTile().setY(getTile().getSize().getHeight() - 1);
 		}
 		setPositionOfTextureCenterInTile(getPositionOfTextureCenterInTile().north());
 	}

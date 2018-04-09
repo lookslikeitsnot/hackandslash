@@ -379,16 +379,6 @@ public class WarriorTest {
 		assertEquals(gcHealth - weapon.getDamage(), gc.getHealth(), MARGIN);
 	}
 
-//	@Test(expected = IllegalArgumentException.class)
-//	public void setAvailableWeapons_null_IllegalArgument() {
-//		hero.setAvailableWeapons(null);
-//	}
-//
-//	@Test(expected = IllegalArgumentException.class)
-//	public void setAvailableWeapons_emptySet_IllegalArgument() {
-//		hero.setAvailableWeapons(new LinkedHashSet<>());
-//	}
-
 	@Test
 	public void move_validMoveEast_GameCharacterMoved() {
 		Position pos = new Position(hero.getAbsoluteCenterPosition().getX(), hero.getAbsoluteCenterPosition().getY());

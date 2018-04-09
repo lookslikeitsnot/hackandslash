@@ -4,10 +4,13 @@ import java.util.HashSet;
 import java.util.Set;
 
 import be.kiop.events.TileEvent;
+import be.kiop.exceptions.IllegalFrameNumberException;
+import be.kiop.exceptions.IllegalPositionException;
 import be.kiop.exceptions.IllegalTextureSetException;
+import be.kiop.exceptions.IllegalTileException;
+import be.kiop.exceptions.InvalidTextureException;
 import be.kiop.exceptions.NoMoveAnimationException;
-import be.kiop.exceptions.OutOfBoardException;
-import be.kiop.exceptions.SkinNotFoundException;
+import be.kiop.exceptions.OutOfTileException;
 import be.kiop.listeners.TileListener;
 import be.kiop.textures.Texture;
 import be.kiop.valueobjects.Offset;
@@ -15,10 +18,10 @@ import be.kiop.valueobjects.Position;
 import be.kiop.valueobjects.Tile;
 
 public abstract class Drawable implements Cloneable {
-	private final Set<TileListener> tileListeners = new HashSet<>();
 	private final Set<Texture> availableTextures;
 	private final Offset offsetFromPosition;
-	
+	private final Set<TileListener> tileListeners = new HashSet<>();
+
 	private Texture texture;
 	private Position positionOfTextureCenterInTile;
 	private Tile tile;
@@ -31,16 +34,13 @@ public abstract class Drawable implements Cloneable {
 		}
 		this.availableTextures = availableTextures;
 		setTexture(texture);
-		
-		offsetFromPosition = new Offset(texture.getSize().getWidth()/2, texture.getSize().getHeight()/2);
-		
-		setPositionOfTextureCenterInTile(new Position(Board.TILE_SIZE.getWidth()/2, Board.TILE_SIZE.getHeight()/2));
-		
-		setTile(tile);
-	}
 
-	public Set<Texture> getAvailableTextures() {
-		return availableTextures;
+		offsetFromPosition = new Offset(texture.getSize().getWidth() / 2, texture.getSize().getHeight() / 2);
+
+		setTile(tile);
+
+		setPositionOfTextureCenterInTile(new Position(tile.getSize().getWidth() / 2, tile.getSize().getHeight() / 2));
+
 	}
 
 	public Texture getTexture() {
@@ -49,15 +49,49 @@ public abstract class Drawable implements Cloneable {
 
 	public void setTexture(Texture texture) {
 		if (texture == null || !availableTextures.contains(texture)) {
-			throw new SkinNotFoundException();
+			throw new InvalidTextureException();
 		}
 		this.texture = texture;
 	}
 
-	public int getAssociatedFrameNumber(int frameCounter) {
-		if (frameCounter > ANIMATION_LENGTH) {
-			throw new NoMoveAnimationException();
+	public Tile getTile() {
+		return tile;
+	}
+
+	public void setTile(Tile tile) {
+		if (tile == null) {
+			throw new IllegalTileException();
 		}
+		TileEvent event;
+		synchronized (tileListeners) {
+			event = new TileEvent(this.tile, tile);
+			this.tile = tile;
+		}
+		if (event.oldTile != event.newTile) {
+			broadcast(event);
+		}
+	}
+
+	public Position getPositionOfTextureCenterInTile() {
+		return positionOfTextureCenterInTile;
+	}
+
+	public void setPositionOfTextureCenterInTile(Position positionOfTextureCenterInTile) {
+		if (positionOfTextureCenterInTile == null) {
+			throw new IllegalPositionException();
+		}
+		if (positionOfTextureCenterInTile.getX() > tile.getSize().getWidth()
+				|| positionOfTextureCenterInTile.getY() > tile.getSize().getHeight()) {
+			throw new OutOfTileException();
+		}
+		this.positionOfTextureCenterInTile = positionOfTextureCenterInTile;
+	}
+
+	public int getAssociatedFrameNumber(int frameCounter) {
+		if(frameCounter < 1 || frameCounter > ANIMATION_LENGTH) {
+			throw new IllegalFrameNumberException();
+		}
+		
 		switch (frameCounter) {
 		case 1:
 			return 2;
@@ -72,24 +106,6 @@ public abstract class Drawable implements Cloneable {
 		}
 	}
 
-	public Tile getTile() {
-		return tile;
-	}
-
-	public void setTile(Tile tile) {
-		if (tile == null) {
-			throw new IllegalArgumentException();
-		}
-		TileEvent event;
-		synchronized (tileListeners) {
-			event = new TileEvent(this.tile, tile);
-			this.tile = tile;
-		}
-		if (event.oldTile != event.newTile) {
-			broadcast(event);
-		}
-	}
-	
 	public void addTileListener(TileListener listener) {
 		synchronized (tileListeners) {
 			tileListeners.add(listener);
@@ -114,17 +130,6 @@ public abstract class Drawable implements Cloneable {
 
 	public Offset getOffsetFromPosition() {
 		return offsetFromPosition;
-	}
-	
-	public Position getPositionOfTextureCenterInTile() {
-		return positionOfTextureCenterInTile;
-	}
-
-	public void setPositionOfTextureCenterInTile(Position positionOfTextureCenterInTile) {
-		if(positionOfTextureCenterInTile == null) {
-			throw new OutOfBoardException();
-		}
-		this.positionOfTextureCenterInTile = positionOfTextureCenterInTile;
 	}
 
 	public Position getAbsolutePosition() {
@@ -178,7 +183,7 @@ public abstract class Drawable implements Cloneable {
 			return false;
 		return true;
 	}
-	
+
 	@Override
 	public Object clone() throws CloneNotSupportedException {
 		return super.clone();

@@ -1,6 +1,7 @@
 package be.kiop.valueobjects;
 
 import be.kiop.UI.Board;
+import be.kiop.exceptions.IllegalPositionException;
 import be.kiop.exceptions.OutOfBoardException;
 
 public class Position {
@@ -21,7 +22,7 @@ public class Position {
 
 	public void setX(int x) {
 		if (x < 0 || x > Board.MAX_SIZE.getWidth()) {
-			throw new OutOfBoardException();
+			throw new IllegalPositionException();
 		}
 		this.x = x;
 	}
@@ -32,7 +33,7 @@ public class Position {
 
 	public void setY(int y) {
 		if (y < 0 || y > Board.MAX_SIZE.getHeight()) {
-			throw new OutOfBoardException();
+			throw new IllegalPositionException();
 		}
 		this.y = y;
 	}
@@ -164,8 +165,8 @@ public class Position {
 		return getAbsolutePosition(position, tile, new Offset(0,0));
 	}
 	public static Position getAbsolutePosition(Position position, Tile tile, Offset offset) {
-		int posX = tile.getHorizontalPosition()*Board.TILE_SIZE.getWidth()+position.x+Board.exteriorWallSize.getWidth();
-		int posY = tile.getVerticalPosition()*Board.TILE_SIZE.getHeight()+position.y+Board.exteriorWallSize.getHeight();
+		int posX = tile.getHorizontalPosition()*tile.getSize().getWidth()+position.x+Board.exteriorWallSize.getWidth();
+		int posY = tile.getVerticalPosition()*tile.getSize().getHeight()+position.y+Board.exteriorWallSize.getHeight();
 		Position absolutePosition =  new Position(posX, posY);
 		absolutePosition.add(offset);
 		return absolutePosition;

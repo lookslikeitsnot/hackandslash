@@ -54,7 +54,7 @@ public class Board extends JFrame implements TileListener{
 
 	private final Size size;
 
-	public final static Size TILE_SIZE = new Size(32, 48);
+	//public final static Size TILE_SIZE = new Size(32, 48);
 	public final static Size MAX_SIZE = new Size(4000, 4000);
 
 	public Board(int horizontalTiles, int verticalTiles){
@@ -64,7 +64,7 @@ public class Board extends JFrame implements TileListener{
 		wallTiles = new Maze(horizontalTiles, verticalTiles).generateMaze();
 		allAvailableTiles = findAllAvailableTiles(horizontalTiles, verticalTiles, wallTiles);
 
-		this.size = Size.sum(Size.product(TILE_SIZE, horizontalTiles, verticalTiles),
+		this.size = Size.sum(Size.product(new Size(32, 48), horizontalTiles, verticalTiles),
 				Size.product(exteriorWallSize, 2, 2));
 
 		hero = generateHero((Hero) Warriors.Warrior_1_M.getGameCharacter());
@@ -78,7 +78,7 @@ public class Board extends JFrame implements TileListener{
 
 		setLayout(new BorderLayout());
 		boardDrawing = new BoardDrawing(size, FloorTextures.Floor_Stone_Light_Grey_NONE,
-				WallTextures.Wall_Mettalic_Dark, hero, walls, fires, enemies, drops, this);
+				WallTextures.Wall_Mettalic_Dark, hero, walls, fires, enemies, drops, this, new Size(32, 48));
 		hud = new HUD(hero, null);
 //		map.setBorder(BorderFactory.createLineBorder(Color.red));
 		add(hud, BorderLayout.NORTH);
@@ -223,11 +223,11 @@ public class Board extends JFrame implements TileListener{
 
 	private Set<Position> getTileHitBox(Tile tile) {
 		Set<Position> tileHitBox = new LinkedHashSet<>();
-		int minX = exteriorWallSize.getWidth() + tile.getHorizontalPosition() * TILE_SIZE.getWidth();
-		int minY = exteriorWallSize.getHeight() + tile.getVerticalPosition() * TILE_SIZE.getHeight();
+		int minX = exteriorWallSize.getWidth() + tile.getHorizontalPosition() * tile.getSize().getWidth();
+		int minY = exteriorWallSize.getHeight() + tile.getVerticalPosition() * tile.getSize().getHeight();
 
-		int maxX = minX + TILE_SIZE.getWidth();
-		int maxY = minY + TILE_SIZE.getHeight();
+		int maxX = minX + tile.getSize().getWidth();
+		int maxY = minY + tile.getSize().getHeight();
 
 		minX = minX > 0 ? minX : 0;
 		minY = minY > 0 ? minY : 0;

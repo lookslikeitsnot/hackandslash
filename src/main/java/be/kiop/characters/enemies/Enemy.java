@@ -100,7 +100,7 @@ public abstract class Enemy extends GameCharacter implements Dropper {
 		}
 //		System.out.println("position of current center:" + getPositionOfTextureCenterInTile());
 //		System.out.println("position of center:" + Board.TILE_SIZE.getCenter());
-		if (getPositionOfTextureCenterInTile().equals(Board.TILE_SIZE.getCenter())) {
+		if (getPositionOfTextureCenterInTile().equals(getTile().getSize().getCenter())) {
 			nextTile = null;
 			setMoving(false);
 		}

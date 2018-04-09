@@ -9,12 +9,15 @@ import java.util.Set;
 public class Tile {
 	private final int horizontalPosition;
 	private final int verticalPosition;
+	
+	private final Size size;
 
 	public static final Tile ORIGIN = new Tile(0, 0);
 
 	public Tile(int horizontalPosition, int verticalPosition) {
 		this.horizontalPosition = horizontalPosition;
 		this.verticalPosition = verticalPosition;
+		this.size = new Size(32, 48);
 	}
 
 	public int getHorizontalPosition() {
@@ -90,6 +93,10 @@ public class Tile {
 	@Override
 	public String toString() {
 		return "Tile [horizontalPosition=" + horizontalPosition + ", verticalPosition=" + verticalPosition + "]";
+	}
+
+	public Size getSize() {
+		return size;
 	}
 
 }

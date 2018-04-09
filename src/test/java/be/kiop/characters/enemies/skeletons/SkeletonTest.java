@@ -10,16 +10,22 @@ import java.util.stream.IntStream;
 import org.junit.Before;
 import org.junit.Test;
 
+import be.kiop.UI.Drawable;
 import be.kiop.characters.GameCharacter;
+import be.kiop.exceptions.IllegalFrameNumberException;
+import be.kiop.exceptions.IllegalPositionException;
+import be.kiop.exceptions.IllegalTextureSetException;
+import be.kiop.exceptions.IllegalTileException;
 import be.kiop.exceptions.IllegalWeaponException;
+import be.kiop.exceptions.InvalidTextureException;
 import be.kiop.exceptions.MaxLevelReachedException;
 import be.kiop.exceptions.MinLevelReachedException;
-import be.kiop.exceptions.SkinNotFoundException;
+import be.kiop.exceptions.OutOfTileException;
 import be.kiop.items.Drop;
 import be.kiop.textures.FloorTextures;
 import be.kiop.textures.SkeletonTextures;
-import be.kiop.textures.Texture;
 import be.kiop.textures.WeaponTextures;
+import be.kiop.valueobjects.Position;
 import be.kiop.valueobjects.Tile;
 import be.kiop.weapons.Bone;
 import be.kiop.weapons.Bones;
@@ -30,30 +36,161 @@ import be.kiop.weapons.Weapon;
 public class SkeletonTest {
 	private Skeleton enemy;
 	private Weapon weapon;
-//	private Position position;
 	private Tile tile;
 
 	private final static float MARGIN = 0.1F;
 
 	private final static SkeletonTextures ENEMY_TEXTURE = SkeletonTextures.Skeleton_SOUTH_2;
-//	private final static SkeletonTextures ENEMY_NEXT_TEXTURE = SkeletonTextures.Skeleton_SOUTH_1;
 	private final static SkeletonTextures VALID_TEXTURE = SkeletonTextures.Skeleton_Dog_EAST_2;
 	private final static FloorTextures INVALID_TEXTURE = FloorTextures.Floor_Parquet_HORIZONTAL;
 	private final static String ENEMY_NAME = "Skeleton";
 	private final static float ENEMY_HEALTH = 100;
 	private final static int ENEMY_LEVEL = 10;
 	private final static float ENEMY_ARMOR = 50;
-//	private final static int ENEMY_POSX = 32;
-//	private final static int ENEMY_POSY = 32;
 	private final static Set<Drop> ENEMY_DROPPABLES = Set.of(Swords.Sword_1.getWeapon());
 
 	@Before
 	public void before() {
-//		position = new Position(ENEMY_POSX, ENEMY_POSY);
 		tile = new Tile(1, 1);
 		weapon = new Bone(WeaponTextures.Bone, tile, "Little Bone", 50, 75, 40, 30, 100, 5, 10, 20);
 		enemy = new Skeleton(ENEMY_TEXTURE, tile, ENEMY_NAME, ENEMY_HEALTH, weapon, ENEMY_LEVEL, ENEMY_ARMOR,
 				ENEMY_DROPPABLES);
+	}
+
+	/* DRAWABLE TEST */
+	@Test(expected = IllegalTextureSetException.class)
+	public void Drawable_nullAsTextureSet_exception() {
+		new Drawable(null, ENEMY_TEXTURE, tile) {
+		};
+	}
+
+	@Test(expected = IllegalTextureSetException.class)
+	public void Drawable_emptySetAsTextureSet_exception() {
+		new Drawable(Set.of(), ENEMY_TEXTURE, tile) {
+		};
+	}
+
+	@Test
+	public void setTexture_validTexture_textureSet() {
+		Drawable drawable = new Drawable(Set.of(ENEMY_TEXTURE, VALID_TEXTURE), ENEMY_TEXTURE, tile) {
+		};
+		drawable.setTexture(VALID_TEXTURE);
+		assertEquals(VALID_TEXTURE, drawable.getTexture());
+	}
+
+	@Test(expected = InvalidTextureException.class)
+	public void setTexture_nullAsTexture_exception() {
+		Drawable drawable = new Drawable(Set.of(ENEMY_TEXTURE, VALID_TEXTURE), ENEMY_TEXTURE, tile) {
+		};
+		drawable.setTexture(null);
+	}
+
+	@Test(expected = InvalidTextureException.class)
+	public void setTexture_textureNotInAvailableTexturesAsTexture_exception() {
+		Drawable drawable = new Drawable(Set.of(ENEMY_TEXTURE), ENEMY_TEXTURE, tile) {
+		};
+		drawable.setTexture(INVALID_TEXTURE);
+	}
+
+	@Test
+	public void setTile_validTile_tileSet() {
+		Drawable drawable = new Drawable(Set.of(ENEMY_TEXTURE), ENEMY_TEXTURE, tile) {
+		};
+		Tile validTile = Tile.ORIGIN;
+		drawable.setTile(validTile);
+		assertEquals(validTile, drawable.getTile());
+	}
+
+	@Test(expected = IllegalTileException.class)
+	public void setTile_nullAsTile_exception() {
+		Drawable drawable = new Drawable(Set.of(ENEMY_TEXTURE), ENEMY_TEXTURE, tile) {
+		};
+		drawable.setTile(null);
+	}
+
+	@Test
+	public void setPositionOfTextureCenterInTile_validPosition_positionSet() {
+		Drawable drawable = new Drawable(Set.of(ENEMY_TEXTURE), ENEMY_TEXTURE, tile) {
+		};
+		drawable.setPositionOfTextureCenterInTile(Position.ORIGIN);
+		assertEquals(Position.ORIGIN, drawable.getPositionOfTextureCenterInTile());
+	}
+
+	@Test
+	public void setPositionOfTextureCenterInTile_maxPosition_positionSet() {
+		Drawable drawable = new Drawable(Set.of(ENEMY_TEXTURE), ENEMY_TEXTURE, tile) {
+		};
+		Position maxPos = new Position(tile.getSize().getWidth(), tile.getSize().getHeight());
+		drawable.setPositionOfTextureCenterInTile(maxPos);
+		assertEquals(maxPos, drawable.getPositionOfTextureCenterInTile());
+	}
+
+	@Test(expected = IllegalPositionException.class)
+	public void setPositionOfTextureCenterInTile_nullAsPosition_exception() {
+		Drawable drawable = new Drawable(Set.of(ENEMY_TEXTURE), ENEMY_TEXTURE, tile) {
+		};
+		drawable.setPositionOfTextureCenterInTile(null);
+	}
+
+	@Test(expected = IllegalPositionException.class)
+	public void setPositionOfTextureCenterInTile_lessThan0xPosition_exception() {
+		Drawable drawable = new Drawable(Set.of(ENEMY_TEXTURE), ENEMY_TEXTURE, tile) {
+		};
+		drawable.setPositionOfTextureCenterInTile(new Position(-1, 0));
+	}
+
+	@Test(expected = IllegalPositionException.class)
+	public void setPositionOfTextureCenterInTile_lessThan0yPosition_exception() {
+		Drawable drawable = new Drawable(Set.of(ENEMY_TEXTURE), ENEMY_TEXTURE, tile) {
+		};
+		drawable.setPositionOfTextureCenterInTile(new Position(0, -1));
+	}
+
+	@Test(expected = OutOfTileException.class)
+	public void setPositionOfTextureCenterInTile_moreThanTileWidthPosition_exception() {
+		Drawable drawable = new Drawable(Set.of(ENEMY_TEXTURE), ENEMY_TEXTURE, tile) {
+		};
+		drawable.setPositionOfTextureCenterInTile(new Position(tile.getSize().getWidth() + 1, 0));
+	}
+
+	@Test(expected = OutOfTileException.class)
+	public void setPositionOfTextureCenterInTile_moreThanTileHeight_exception() {
+		Drawable drawable = new Drawable(Set.of(ENEMY_TEXTURE), ENEMY_TEXTURE, tile) {
+		};
+		drawable.setPositionOfTextureCenterInTile(new Position(0, tile.getSize().getHeight() + 1));
+	}
+
+	@Test
+	public void getAssociatedFrameNumber_validFrameNumber_associatedFrameNumber() {
+		Drawable drawable = new Drawable(Set.of(ENEMY_TEXTURE), ENEMY_TEXTURE, tile) {
+		};
+		assertEquals(drawable.getAssociatedFrameNumber(1), 2);
+	}
+
+	@Test(expected = IllegalFrameNumberException.class)
+	public void getAssociatedFrameNumber_0AsFrameNumber_exception() {
+		Drawable drawable = new Drawable(Set.of(ENEMY_TEXTURE), ENEMY_TEXTURE, tile) {
+		};
+		drawable.getAssociatedFrameNumber(0);
+	}
+	
+	@Test(expected = IllegalFrameNumberException.class)
+	public void getAssociatedFrameNumber_moreThanAnimationLengthAsFrameNumber_exception() {
+		Drawable drawable = new Drawable(Set.of(ENEMY_TEXTURE), ENEMY_TEXTURE, tile) {
+		};
+		drawable.getAssociatedFrameNumber(Drawable.ANIMATION_LENGTH+1);
+	}
+	
+	@Test
+	public void clone_nA_cloned(){
+		Drawable drawable = new Drawable(Set.of(ENEMY_TEXTURE), ENEMY_TEXTURE, tile) {
+		};
+		try {
+			assertEquals(drawable, drawable.clone());
+		} catch (CloneNotSupportedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	@Test(expected = IllegalArgumentException.class)
@@ -69,23 +206,6 @@ public class SkeletonTest {
 	@Test
 	public void getTexture_nA_gameCharacterSkin() {
 		assertEquals(ENEMY_TEXTURE, enemy.getTexture());
-	}
-
-	@Test
-	public void setTexture_valid_gameCharacterSkinChanged() {
-		enemy.setTexture(VALID_TEXTURE);
-		assertEquals(VALID_TEXTURE, enemy.getTexture());
-	}
-
-	@Test(expected = SkinNotFoundException.class)
-	public void setTexture_unvalid_skinNotFoundException() {
-		enemy.setTexture(INVALID_TEXTURE);
-	}
-
-	@Test(expected = SkinNotFoundException.class)
-	public void setTexture_null_skinNotFoundException() {
-		Texture newTexture = null;
-		enemy.setTexture(newTexture);
 	}
 
 //	@Test

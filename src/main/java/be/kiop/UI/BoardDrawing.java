@@ -41,13 +41,15 @@ public class BoardDrawing extends JPanel {
 	private Set<Fire> fires;
 
 	private Size size;
+	private Size tileSize;
 
 	private int horizontalTiles;
 	private int verticalTiles;
 
 	BoardDrawing(Size size, FloorTextures floorTexture, WallTextures exteriorWallsTexture, Hero hero,
-			Set<Wall> walls, Set<Fire> fires, Set<Enemy> enemies, List<Drop> drops, Board board) {
+			Set<Wall> walls, Set<Fire> fires, Set<Enemy> enemies, List<Drop> drops, Board board, Size tileSize) {
 		this.size = size;
+		this.tileSize = tileSize;
 		this.enemies = enemies;
 		this.hero = hero;
 		this.drops = drops;
@@ -95,8 +97,8 @@ public class BoardDrawing extends JPanel {
 	private Set<Position> generateFloorPositions(FloorTextures floorTexture) {
 		int minX = Board.exteriorWallSize.getWidth();
 		int minY = Board.exteriorWallSize.getHeight();
-		int maxX = Board.TILE_SIZE.getWidth() * horizontalTiles + Board.exteriorWallSize.getWidth();
-		int maxY = Board.TILE_SIZE.getHeight() * verticalTiles + Board.exteriorWallSize.getHeight();
+		int maxX = tileSize.getWidth() * horizontalTiles + Board.exteriorWallSize.getWidth();
+		int maxY = tileSize.getHeight() * verticalTiles + Board.exteriorWallSize.getHeight();
 		int stepX = floorTexture.getSize().getWidth();
 		int stepY = floorTexture.getSize().getHeight();
 
