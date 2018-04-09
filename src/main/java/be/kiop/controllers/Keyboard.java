@@ -54,7 +54,7 @@ public class Keyboard {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			hero.move(direction, board.getAllHitBoxes(0));
+			hero.move(direction, board.getAllHitBoxes(0, hero.getTile()));
 		}
 	}
 	

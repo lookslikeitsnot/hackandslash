@@ -127,4 +127,10 @@ public abstract class Hero extends GameCharacter {
 			listener.lifeChanged(lifeEvent);
 		}
 	}
+	
+	@Override
+	public void setNextTexture() {
+		super.setNextTexture();
+		setMoving(false);
+	}
 }

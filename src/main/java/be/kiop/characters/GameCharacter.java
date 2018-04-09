@@ -1,13 +1,8 @@
 package be.kiop.characters;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -31,7 +26,6 @@ import be.kiop.textures.MoveAnimation;
 import be.kiop.textures.Texture;
 import be.kiop.textures.TextureBuilder;
 import be.kiop.textures.WeaponTextures;
-import be.kiop.utils.MapUtils;
 import be.kiop.utils.SetUtils;
 import be.kiop.utils.StringUtils;
 import be.kiop.valueobjects.Directions;
@@ -154,7 +148,7 @@ public abstract class GameCharacter extends Drawable implements Animated, HitBox
 		return moving;
 	}
 
-	private void setMoving(boolean moving) {
+	protected void setMoving(boolean moving) {
 		this.moving = moving;
 	}
 
@@ -363,49 +357,49 @@ public abstract class GameCharacter extends Drawable implements Animated, HitBox
 //
 //	}
 
-	private void move() {
-		if (!moving) {
-			throw new UnsupportedOperationException();
-		}
-		try {
-			Method moveMethod = this.getClass().getMethod("move" + direction.name());
-			try {
-				moveMethod.invoke(this);
-			} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-				throw new UnsupportedOperationException();
-			}
-		} catch (NoSuchMethodException | SecurityException e) {
-			throw new UnsupportedOperationException();
-		}
-//		System.out.println("position of current center:" + getPositionOfTextureCenterInTile());
-//		System.out.println("position of center:" + Board.TILE_SIZE.getCenter());
-		if (getPositionOfTextureCenterInTile().equals(Board.TILE_SIZE.getCenter())) {
-			moving = false;
-		}
-	}
+//	private void move() {
+//		if (!moving) {
+//			throw new UnsupportedOperationException();
+//		}
+//		try {
+//			Method moveMethod = this.getClass().getMethod("move" + direction.name());
+//			try {
+//				moveMethod.invoke(this);
+//			} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+//				throw new UnsupportedOperationException();
+//			}
+//		} catch (NoSuchMethodException | SecurityException e) {
+//			throw new UnsupportedOperationException();
+//		}
+////		System.out.println("position of current center:" + getPositionOfTextureCenterInTile());
+////		System.out.println("position of center:" + Board.TILE_SIZE.getCenter());
+//		if (getPositionOfTextureCenterInTile().equals(Board.TILE_SIZE.getCenter())) {
+//			moving = false;
+//		}
+//	}
 
-	public Set<Tile> move(Set<Tile> availableTiles) {
-		if (moving) {
-			move();
-		} else {
-			movementFrame = 1;
-			Map<Directions, Tile> possibleTiles = null;
-			try {
-				possibleTiles = getTile().getAvailableAdjacentTiles(availableTiles);
-			} catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException
-					| InvocationTargetException e) {
-			}
-			if (MapUtils.isValidMap(possibleTiles)) {
-				List<Directions> keys = new ArrayList<>(possibleTiles.keySet());
-				Directions direction = keys.get(random.nextInt(keys.size()));
-				this.moving = true;
-				this.direction = direction;
-				availableTiles.add(getTile());
-				availableTiles.remove(possibleTiles.get(direction));
-			}
-		}
-		return availableTiles;
-	}
+//	public Set<Tile> move(Set<Tile> availableTiles) {
+//		if (moving) {
+//			move();
+//		} else {
+//			movementFrame = 1;
+//			Map<Directions, Tile> possibleTiles = null;
+//			try {
+//				possibleTiles = getTile().getAvailableAdjacentTiles(availableTiles);
+//			} catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException
+//					| InvocationTargetException e) {
+//			}
+//			if (MapUtils.isValidMap(possibleTiles)) {
+//				List<Directions> keys = new ArrayList<>(possibleTiles.keySet());
+//				Directions direction = keys.get(random.nextInt(keys.size()));
+//				this.moving = true;
+//				this.direction = direction;
+//				availableTiles.add(getTile());
+//				availableTiles.remove(possibleTiles.get(direction));
+//			}
+//		}
+//		return availableTiles;
+//	}
 
 	public void move(Directions direction, Set<Position> unavailablePositions) {
 

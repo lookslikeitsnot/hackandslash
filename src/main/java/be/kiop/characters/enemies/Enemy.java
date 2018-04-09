@@ -1,16 +1,24 @@
 package be.kiop.characters.enemies;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
 
+import be.kiop.UI.Board;
 import be.kiop.characters.GameCharacter;
 import be.kiop.exceptions.IllegalDropSetException;
 import be.kiop.items.Drop;
 import be.kiop.items.Dropper;
 import be.kiop.textures.Texture;
 import be.kiop.textures.WeaponTextures;
+import be.kiop.utils.MapUtils;
 import be.kiop.utils.SetUtils;
+import be.kiop.valueobjects.Directions;
 import be.kiop.valueobjects.Tile;
 import be.kiop.weapons.Weapon;
 
@@ -19,6 +27,7 @@ public abstract class Enemy extends GameCharacter implements Dropper {
 	private final Set<Drop> droppables;
 
 	private boolean active;
+	private Tile nextTile;
 
 	private static int counter = 0;
 
@@ -73,4 +82,59 @@ public abstract class Enemy extends GameCharacter implements Dropper {
 			return false;
 		return true;
 	}
+	
+	private void move() {
+		if (!isMoving()) {
+			throw new UnsupportedOperationException();
+		}
+		try {
+			Method moveMethod = this.getClass().getMethod("move" + getDirection().name());
+			try {
+				moveMethod.invoke(this);
+			} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+				throw new UnsupportedOperationException();
+			}
+		} catch (NoSuchMethodException | SecurityException e) {
+			throw new UnsupportedOperationException();
+		}
+//		System.out.println("position of current center:" + getPositionOfTextureCenterInTile());
+//		System.out.println("position of center:" + Board.TILE_SIZE.getCenter());
+		if (getPositionOfTextureCenterInTile().equals(Board.TILE_SIZE.getCenter())) {
+			nextTile = null;
+			setMoving(false);
+		}
+	}
+	
+	public Set<Tile> move(Set<Tile> availableTiles) {
+		if (isMoving()) {
+			move();
+		} else {
+			setMovementFrame(1);
+			Map<Directions, Tile> possibleTiles = null;
+			try {
+				possibleTiles = getTile().getAvailableAdjacentTiles(availableTiles);
+			} catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException
+					| InvocationTargetException e) {
+			}
+			if (MapUtils.isValidMap(possibleTiles)) {
+				List<Directions> keys = new ArrayList<>(possibleTiles.keySet());
+				Directions direction = keys.get(new Random().nextInt(keys.size()));
+				setMoving(true);
+				setDirection(direction);
+				availableTiles.add(getTile());
+				nextTile = possibleTiles.get(direction);
+				availableTiles.remove(nextTile);
+
+			}
+		}
+		return availableTiles;
+	}
+
+	public Tile getNextTile() {
+		return nextTile;
+	}
+
+//	public void setNextTile(Tile nextTile) {
+//		this.nextTile = nextTile;
+//	}
 }
