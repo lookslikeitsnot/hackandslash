@@ -3,7 +3,6 @@ package be.kiop.characters;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
-import java.util.Random;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -44,7 +43,6 @@ public abstract class GameCharacter extends Drawable implements Animated, HitBox
 	private final String name;
 	private final Set<WeaponTextures> availableWeapons;
 	private final Set<HealthListener> healthListeners = new HashSet<>();
-	private final Random random = new Random();
 
 	private float health;
 	private Weapon weapon;
@@ -536,6 +534,7 @@ public abstract class GameCharacter extends Drawable implements Animated, HitBox
 //	}
 
 	public boolean inFrontOf(int rangeX, int rangeY, Tile potentiallyInFront, Set<Tile> availableTiles) {
+//		System.out.println("available tiles size: " + availableTiles.size());
 		int potX = potentiallyInFront.getHorizontalPosition();
 		int potY = potentiallyInFront.getVerticalPosition();
 
@@ -546,27 +545,35 @@ public abstract class GameCharacter extends Drawable implements Animated, HitBox
 		int minY = potY > thisY ? thisY : potY;
 		int maxX = potX < thisX ? thisX : potX;
 		int maxY = potY < thisY ? thisY : potY;
+		
+		if (maxX - minX > rangeX || maxY - minY > rangeY) {
+			return false;
+		}
 
 		switch (direction) {
 		case EAST:
 			if (potY != thisY || potX < thisX) {
 				return false;
 			}
+//			maxX += rangeX;
 			break;
 		case SOUTH:
 			if (potX != thisX || potY < thisY) {
 				return false;
 			}
+//			maxY += rangeY;
 			break;
 		case WEST:
 			if (potY != thisY || potX > thisX) {
 				return false;
 			}
+//			minX -= rangeX;
 			break;
 		case NORTH:
-			if (potX != thisX || potY < thisY) {
+			if (potX != thisX || potY > thisY) {
 				return false;
 			}
+//			minY -= rangeY;
 			break;
 		}
 //		System.out.println("minX tile: " + minX);
@@ -580,8 +587,14 @@ public abstract class GameCharacter extends Drawable implements Animated, HitBox
 			}
 		}
 		if(!SetUtils.isValidSet(tilesBetween)) {
+//			System.out.println("empty set of infront tiles");
 			return false;
 		}
+//		System.out.println("available contains all infront: " + availableTiles.containsAll(tilesBetween));
+//		System.out.println(tilesBetween);
+		Set<Tile> commons = new LinkedHashSet<>(tilesBetween);
+		commons.retainAll(availableTiles);
+//		System.out.println("valid tiles: " + commons);
 		return availableTiles.containsAll(tilesBetween);
 
 //		Position center = getAbsoluteCenterPosition();

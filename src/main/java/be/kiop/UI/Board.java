@@ -16,19 +16,20 @@ import be.kiop.characters.enemies.Enemy;
 import be.kiop.characters.enemies.skeletons.Skeletons;
 import be.kiop.characters.heroes.Hero;
 import be.kiop.characters.heroes.warriors.Warriors;
+import be.kiop.events.TileEvent;
 import be.kiop.items.Drop;
 import be.kiop.listeners.RepaintTimer;
+import be.kiop.listeners.TileListener;
 import be.kiop.maze.Maze;
 import be.kiop.obstacles.fires.Fire;
 import be.kiop.obstacles.walls.Wall;
 import be.kiop.textures.FloorTextures;
 import be.kiop.textures.WallTextures;
-import be.kiop.utils.SetUtils;
 import be.kiop.valueobjects.Position;
 import be.kiop.valueobjects.Size;
 import be.kiop.valueobjects.Tile;
 
-public class Board extends JFrame {
+public class Board extends JFrame implements TileListener{
 	private static final long serialVersionUID = 1L;
 
 	private BoardDrawing boardDrawing;
@@ -36,9 +37,11 @@ public class Board extends JFrame {
 
 	private final int horizontalTiles;
 	private final int verticalTiles;
+	private final Set<Tile> allAvailableTiles;
 
 	private Set<Tile> occupiedTiles = new LinkedHashSet<>();
-	private Set<Tile> availableTiles = new LinkedHashSet<>();
+//	private Set<Tile> availableTiles = new LinkedHashSet<>();
+	private Set<Tile> wallTiles = new LinkedHashSet<>();
 
 	private Hero hero;
 	private Enemy activeEnemy;
@@ -46,37 +49,33 @@ public class Board extends JFrame {
 	private Set<Wall> walls = new LinkedHashSet<>();
 	private Set<Fire> fires = new LinkedHashSet<>();
 	private List<Drop> drops = new ArrayList<>();
-//	private final Set<Position> fixedHitBoxes;
 
 	public static final Size exteriorWallSize = new Size(32, 32);
 
-//	static int testWidth = 1888;
-//	static int testHeight = 1008;
-//	private static Size size = new Size(2 * exteriorWallSize.getWidth() + testWidth,
-//			2 * exteriorWallSize.getHeight() + testHeight);
 	private final Size size;
 
 	public final static Size TILE_SIZE = new Size(32, 48);
 	public final static Size MAX_SIZE = new Size(4000, 4000);
 
-	public Board(int horizontalTiles, int verticalTiles) {
+	public Board(int horizontalTiles, int verticalTiles){
 		this.horizontalTiles = horizontalTiles;
 		this.verticalTiles = verticalTiles;
+//		allTiles  = generateAllTiles(horizontalTiles, verticalTiles);
 
-		Set<Tile> unavailableTiles = new Maze(horizontalTiles, verticalTiles).generateMaze();
-		availableTiles = findAvailableTiles(horizontalTiles, verticalTiles, unavailableTiles);
+		wallTiles = new Maze(horizontalTiles, verticalTiles).generateMaze();
+		allAvailableTiles = findAllAvailableTiles(horizontalTiles, verticalTiles, wallTiles);
 
 		this.size = Size.sum(Size.product(TILE_SIZE, horizontalTiles, verticalTiles),
 				Size.product(exteriorWallSize, 2, 2));
 
 		hero = generateHero((Hero) Warriors.Warrior_1_F.getGameCharacter());
+		hero.addTileListener(this);
 
-		walls = generateAllWalls(unavailableTiles);
-//		fixedHitBoxes = calculateFixedHitBoxes();
+		walls = generateAllWalls(wallTiles);
 //		fires = generateFirePits();
 
-		enemies = generateEnemies(4, (Enemy) Skeletons.Skeleton_1.getGameCharacter());
-		enemies.addAll(generateEnemies(4, (Enemy) Skeletons.Skeleton_Dog_1.getGameCharacter()));
+		enemies = generateEnemies(8, (Enemy) Skeletons.Skeleton_1.getGameCharacter());
+		//enemies.addAll(generateEnemies(4, (Enemy) Skeletons.Skeleton_Dog_1.getGameCharacter()));
 
 		setLayout(new BorderLayout());
 		boardDrawing = new BoardDrawing(size, FloorTextures.Floor_Stone_Light_Grey_NONE,
@@ -94,20 +93,27 @@ public class Board extends JFrame {
 		setVisible(true);
 	}
 
-	private static Set<Tile> findAvailableTiles(int horizontalTiles, int verticalTiles, Set<Tile> unavailableTiles) {
-		Set<Tile> availableTiles = new LinkedHashSet<>();
-		for (int i = 0; i < horizontalTiles; i++) {
-			for (int j = 0; j < verticalTiles; j++) {
-				availableTiles.add(new Tile(i, j));
+	private static Set<Tile> generateAllTiles(int horizontalTiles, int verticalTiles) {
+		Set<Tile> allTiles = new LinkedHashSet<>();
+		for(int x = 0; x < horizontalTiles; x++) {
+			for(int y = 0; y < verticalTiles; y++) {
+				allTiles.add(new Tile(x, y));
 			}
 		}
-		availableTiles.removeAll(unavailableTiles);
-		return availableTiles;
+		return allTiles;
 	}
 
-	private static Hero generateHero(Hero hero) {
+	private static Set<Tile> findAllAvailableTiles(int horizontalTiles, int verticalTiles, Set<Tile> unavailableTiles) {
+		Set<Tile> allAvailableTiles = generateAllTiles(horizontalTiles, verticalTiles);
+		allAvailableTiles.removeAll(unavailableTiles);
+		return allAvailableTiles;
+	}
+
+	private Hero generateHero(Hero hero) {
 		Tile tile = Tile.ORIGIN;
 		hero.setTile(tile);
+//		availableTiles.remove(tile);
+		occupiedTiles.add(tile);
 		return hero;
 	}
 
@@ -138,7 +144,8 @@ public class Board extends JFrame {
 		Enemy addedEnemy;
 
 		List<Tile> availableTilesList = new ArrayList<>();
-		availableTilesList.addAll(availableTiles);
+		availableTilesList.addAll(allAvailableTiles);
+		availableTilesList.removeAll(occupiedTiles);
 
 		Random random = new Random();
 		Tile randomTile;
@@ -149,8 +156,9 @@ public class Board extends JFrame {
 			randomTile = availableTilesList.get(random.nextInt(availableTilesList.size()));
 
 			addedEnemy.setTile(randomTile);
+			addedEnemy.addTileListener(this);
 
-			availableTiles.remove(randomTile);
+//			availableTiles.remove(randomTile);
 			occupiedTiles.add(randomTile);
 
 			enemies.add(addedEnemy);
@@ -174,8 +182,10 @@ public class Board extends JFrame {
 	}
 
 	private void moveEnemies() {
+		Set<Tile> availableTiles = new LinkedHashSet<>(allAvailableTiles);
+		availableTiles.removeAll(occupiedTiles);
 		for (Enemy enemy : enemies) {
-			availableTiles = enemy.move(availableTiles);
+			enemy.move(availableTiles);
 		}
 	}
 
@@ -188,8 +198,8 @@ public class Board extends JFrame {
 					drop.setTile(enemy.getTile());
 					drops.add(drop);
 				}
-				availableTiles.add(enemy.getTile());
-				availableTiles.add(enemy.getNextTile());
+//				availableTiles.add(enemy.getTile());
+//				availableTiles.add(enemy.getNextTile());
 				occupiedTiles.remove(enemy.getTile());
 				occupiedTiles.remove(enemy.getNextTile());
 				iterator.remove();
@@ -205,7 +215,7 @@ public class Board extends JFrame {
 
 		Set<Tile> adjacentTiles = tile.getAdjacentTiles();
 		for (Tile adjacentTile : adjacentTiles) {
-			if (!availableTiles.contains(adjacentTile)) {
+			if (!allAvailableTiles.contains(adjacentTile)) {
 				allHitBoxes.addAll(getTileHitBox(adjacentTile));
 			}
 		}
@@ -242,8 +252,13 @@ public class Board extends JFrame {
 	}
 
 	public Optional<Enemy> enemyInRange() {
+//		System.out.println("available tiles size: " + availableTiles.size());
+//		System.out.println("available tiles: " + availableTiles);
+//		System.out.println("occupied tiles size: " + occupiedTiles.size());
+//		System.out.println("occupied tiles: " + occupiedTiles);
+//		System.out.println("total tiles size: " + SetUtils.merge(availableTiles, occupiedTiles).size());
 		for (Enemy enemy : enemies) {
-			if (hero.inFrontOf(1, 1, enemy.getTile(), SetUtils.merge(availableTiles, occupiedTiles))) {
+			if (hero.inFrontOf(hero.getWeapon().getRange(), hero.getWeapon().getRange(), enemy.getTile(), allAvailableTiles)) {
 				return Optional.ofNullable(enemy);
 			}
 		}
@@ -251,11 +266,11 @@ public class Board extends JFrame {
 	}
 
 	private void findActiveEnemy() {
-		for (Enemy enemy : enemies) {
-			if (enemy.inFrontOf(2, 2, hero.getTile(), availableTiles)) {
-				enemy.setActive(true);
-			}
-		}
+//		for (Enemy enemy : enemies) {
+//			if (enemy.inFrontOf(2, 2, hero.getTile(), availableTiles)) {
+//				enemy.setActive(true);
+//			}
+//		}
 	}
 
 	public int getHorizontalTiles() {
@@ -264,5 +279,11 @@ public class Board extends JFrame {
 
 	public int getVerticalTiles() {
 		return verticalTiles;
+	}
+
+	@Override
+	public void tileChanged(TileEvent event) {
+		occupiedTiles.add(event.newTile);
+		occupiedTiles.remove(event.oldTile);
 	}
 }

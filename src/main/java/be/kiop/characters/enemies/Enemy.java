@@ -25,6 +25,7 @@ import be.kiop.weapons.Weapon;
 public abstract class Enemy extends GameCharacter implements Dropper {
 	private final int id;
 	private final Set<Drop> droppables;
+	private final Random random = new Random();
 
 	private boolean active;
 	private Tile nextTile;
@@ -118,7 +119,7 @@ public abstract class Enemy extends GameCharacter implements Dropper {
 			}
 			if (MapUtils.isValidMap(possibleTiles)) {
 				List<Directions> keys = new ArrayList<>(possibleTiles.keySet());
-				Directions direction = keys.get(new Random().nextInt(keys.size()));
+				Directions direction = keys.get(random.nextInt(keys.size()));
 				setMoving(true);
 				setDirection(direction);
 				availableTiles.add(getTile());
@@ -133,8 +134,4 @@ public abstract class Enemy extends GameCharacter implements Dropper {
 	public Tile getNextTile() {
 		return nextTile;
 	}
-
-//	public void setNextTile(Tile nextTile) {
-//		this.nextTile = nextTile;
-//	}
 }
