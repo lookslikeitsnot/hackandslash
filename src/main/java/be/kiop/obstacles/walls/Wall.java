@@ -17,13 +17,4 @@ public class Wall extends Obstacle{
 public Wall(Texture texture, Tile tile, boolean destructible) {
 		super(AVAILABLE_TEXTURES, texture, tile, destructible);
 	}
-
-	@Override
-	public Drawable copy() {
-		try {
-			return (Wall) this.clone();
-		} catch (CloneNotSupportedException e) {
-			return null;
-		}
-	}
 }

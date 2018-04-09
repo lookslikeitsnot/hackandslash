@@ -471,11 +471,4 @@ public class MageTest {
 	public void setExperience_lessThanZero_IllegalArgument() {
 		hero.increaseExperience(-1);
 	}
-
-	@Test(expected = CharacterDiedException.class)
-	public void setHealth_0andNoLivesLeft_CharacterDied() {
-		IntStream.range(0, HERO_LIVES-1).forEach(i -> hero.decreaseLives());
-
-		hero.setHealth(0);
-	}
 }

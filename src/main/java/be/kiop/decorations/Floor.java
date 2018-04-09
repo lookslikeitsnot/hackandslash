@@ -16,15 +16,4 @@ public class Floor extends Drawable {
 	public Floor(Texture texture, Tile tile) {
 		super(AVAILABLE_TEXTURES, texture, tile);
 	}
-
-
-
-	@Override
-	public Drawable copy() {
-		try {
-			return (Floor) this.clone();
-		} catch (CloneNotSupportedException e) {
-			return null;
-		}
-	}
 }

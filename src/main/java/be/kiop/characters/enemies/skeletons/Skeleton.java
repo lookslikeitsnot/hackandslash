@@ -22,13 +22,4 @@ public class Skeleton extends Enemy {
 			Set<Drop> droppables) {
 		super(AVAILABLE_TEXTURES, texture, tile, name, AVAILABLE_WEAPONS, health, weapon, level, armor, droppables);
 	}
-
-	@Override
-	public Drawable copy() {
-		try {
-			return (Skeleton) this.clone();
-		} catch (CloneNotSupportedException e) {
-			return null;
-		}
-	}
 }

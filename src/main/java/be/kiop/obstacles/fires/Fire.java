@@ -29,14 +29,4 @@ public Fire(Texture texture, Tile tile, boolean destructible) {
 		int associatedFrame = getAssociatedFrameNumber(movementFrame);
 		setTexture(Enum.valueOf(FireTextures.class, (getTexture().getName() +"_"+ Integer.toString(associatedFrame))));
 	}
-
-	@Override
-	public Drawable copy() {
-		try {
-			return (Fire) this.clone();
-		} catch (CloneNotSupportedException e) {
-			return null;
-		}
-	}
-
 }

@@ -178,25 +178,9 @@ public abstract class Drawable implements Cloneable {
 			return false;
 		return true;
 	}
-
-	public abstract Drawable copy();
-
 	
-
-//	public abstract void setNextTexture();
-
-//	public String getTextureAbsoluteName() {
-//		String name = texture.name().substring(0, texture.name().lastIndexOf(String.valueOf(getAnimationFrame()))-1);
-//		return name.substring(0, name.lastIndexOf("_"));
-//	}
-//	
-//	public int getAnimationDirection() {
-//		String name = texture.name().substring(0, texture.name().lastIndexOf(String.valueOf(getAnimationFrame()))-1);
-//		return Integer.parseInt(name.substring(name.lastIndexOf("_")+1));
-//	}
-//	
-//	public int getAnimationFrame() {
-//		String name = texture.name();
-//		return Integer.parseInt(name.substring(name.lastIndexOf("_")+1));
-//	}
+	@Override
+	public Object clone() throws CloneNotSupportedException {
+		return super.clone();
+	}
 }

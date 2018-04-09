@@ -54,13 +54,4 @@ public class Mage extends Hero {
 		}
 		setMana(mana + increment);
 	}
-
-	@Override
-	public Drawable copy() {
-		try {
-			return (Mage) this.clone();
-		} catch (CloneNotSupportedException e) {
-			return null;
-		}
-	}
 }

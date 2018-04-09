@@ -83,7 +83,7 @@ public abstract class GameCharacter extends Drawable implements Animated, HitBox
 		}
 	}
 
-	public void setHealth(float health) {
+	protected void setHealth(float health) {
 		HealthEvent event;
 		synchronized (healthListeners) {
 			event = new HealthEvent(this.health, health);
@@ -106,9 +106,9 @@ public abstract class GameCharacter extends Drawable implements Animated, HitBox
 		return weapon;
 	}
 
-	public void setWeapon(Weapon weapon) {
-		if (!availableWeapons.stream().anyMatch(value -> value.getWeaponClass().equals(weapon.getClass()))
-				&& !(weapon instanceof Fist)) {
+	private void setWeapon(Weapon weapon) {
+		if (weapon == null || (!availableWeapons.contains(weapon.getTexture())
+				&& !(weapon instanceof Fist))) {
 			throw new IllegalWeaponException();
 		}
 		this.weapon = weapon;
@@ -178,6 +178,8 @@ public abstract class GameCharacter extends Drawable implements Animated, HitBox
 	public void setTakingDamage(boolean takingDamage) {
 		this.takingDamage = takingDamage;
 	}
+	
+	
 
 	public void reset() {
 		attacking = false;
@@ -315,164 +317,6 @@ public abstract class GameCharacter extends Drawable implements Animated, HitBox
 		setPositionOfTextureCenterInTile(getPositionOfTextureCenterInTile().north());
 	}
 
-//	public void teleport(int x, int y) {
-//		getPosition().setX(x);
-//		getPosition().setY(y);
-//	}
-
-//	public void mazeMove(Set<Position> unavailablePositions) {
-////		System.out.println("dir1: " + direction.name());
-//		Directions nextDirection = NextDirection.valueOf(direction.name()).getNextDirection();
-//		if (canMove(nextDirection, unavailablePositions)) {
-//			direction = nextDirection;
-//			move(unavailablePositions);
-//		} else if (canMove(direction, unavailablePositions)) {
-//			move(unavailablePositions);
-//		} else {
-//			nextDirection = NextDirection.valueOf(nextDirection.name()).getNextDirection();
-//			if (canMove(nextDirection, unavailablePositions)) {
-//				direction = nextDirection;
-//				move(unavailablePositions);
-//			} else {
-//				direction = NextDirection.valueOf(nextDirection.name()).getNextDirection();
-//				move(unavailablePositions);
-//			}
-//		}
-////		System.out.println("dir2: " + direction.name());
-//	}
-
-//	public void move(Set<Position> unavailablePositions) {
-//		Random r = new Random();
-//		int tried = 0;
-//		while (!canMove(direction, unavailablePositions) && tried < 20) {
-//			tried++;
-//			this.direction = Directions.values()[r.nextInt(Directions.values().length)];
-//		}
-//		move(direction, unavailablePositions);
-//
-//	}
-
-//	private void move() {
-//		if (!moving) {
-//			throw new UnsupportedOperationException();
-//		}
-//		try {
-//			Method moveMethod = this.getClass().getMethod("move" + direction.name());
-//			try {
-//				moveMethod.invoke(this);
-//			} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-//				throw new UnsupportedOperationException();
-//			}
-//		} catch (NoSuchMethodException | SecurityException e) {
-//			throw new UnsupportedOperationException();
-//		}
-////		System.out.println("position of current center:" + getPositionOfTextureCenterInTile());
-////		System.out.println("position of center:" + Board.TILE_SIZE.getCenter());
-//		if (getPositionOfTextureCenterInTile().equals(Board.TILE_SIZE.getCenter())) {
-//			moving = false;
-//		}
-//	}
-
-//	public Set<Tile> move(Set<Tile> availableTiles) {
-//		if (moving) {
-//			move();
-//		} else {
-//			movementFrame = 1;
-//			Map<Directions, Tile> possibleTiles = null;
-//			try {
-//				possibleTiles = getTile().getAvailableAdjacentTiles(availableTiles);
-//			} catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException
-//					| InvocationTargetException e) {
-//			}
-//			if (MapUtils.isValidMap(possibleTiles)) {
-//				List<Directions> keys = new ArrayList<>(possibleTiles.keySet());
-//				Directions direction = keys.get(random.nextInt(keys.size()));
-//				this.moving = true;
-//				this.direction = direction;
-//				availableTiles.add(getTile());
-//				availableTiles.remove(possibleTiles.get(direction));
-//			}
-//		}
-//		return availableTiles;
-//	}
-
-//	public void move(Directions direction, Set<Position> unavailablePositions) {
-//
-//		this.moving = true;
-//		if (this.direction != direction) {
-//			movementFrame = 1;
-//		}
-//		this.direction = direction;
-//
-//		switch (direction) {
-//		case SOUTH:
-//			for (int i = 0; i < SPEED; i++) {
-//				if (canMove(Directions.SOUTH, unavailablePositions)) {
-//					moveSOUTH();
-//				} else {
-//					break;
-//				}
-//			}
-//			break;
-//		case WEST:
-//			for (int i = 0; i < SPEED; i++) {
-//				if (canMove(Directions.WEST, unavailablePositions)) {
-//					moveWEST();
-//				} else {
-//					break;
-//				}
-//			}
-//			break;
-//		case EAST:
-//			for (int i = 0; i < SPEED; i++) {
-//				if (canMove(Directions.EAST, unavailablePositions)) {
-//					moveEAST();
-//				} else {
-//					break;
-//				}
-//			}
-//			break;
-//		case NORTH:
-//			for (int i = 0; i < SPEED; i++) {
-//				if (canMove(Directions.NORTH, unavailablePositions)) {
-//					moveNORTH();
-//				} else {
-//					break;
-//				}
-//			}
-//			break;
-//		}
-//	}
-
-//	private boolean canMove(Directions direction, Set<Position> unavailablePositions) {
-//		int textureCenterX = getAbsolutePosition().getX() + getTexture().getSize().getWidth() / 2;
-//		int textureCenterY = getAbsolutePosition().getY() + getTexture().getSize().getHeight() / 2;
-//		int minHitBoxX = textureCenterX - ((HitBoxTexture) getTexture()).getHitBoxSize().getWidth() / 2;
-//		int minHitBoxY = textureCenterY - ((HitBoxTexture) getTexture()).getHitBoxSize().getHeight() / 2;
-//		int maxHitBoxX = textureCenterX + ((HitBoxTexture) getTexture()).getHitBoxSize().getWidth() / 2;
-//		int maxHitBoxY = textureCenterY + ((HitBoxTexture) getTexture()).getHitBoxSize().getHeight() / 2;
-//		Set<Position> toCheck = new LinkedHashSet<>();
-//		switch (direction) {
-//		case SOUTH:
-//			toCheck = IntStream.range(minHitBoxX, maxHitBoxX).mapToObj(posX -> new Position(posX, maxHitBoxY + 1))
-//					.collect(Collectors.toSet());
-//			break;
-//		case WEST:
-//			toCheck = IntStream.range(minHitBoxY, maxHitBoxY).mapToObj(posY -> new Position(minHitBoxX - 1, posY))
-//					.collect(Collectors.toSet());
-//			break;
-//		case EAST:
-//			toCheck = IntStream.range(minHitBoxY, maxHitBoxY).mapToObj(posY -> new Position(maxHitBoxX + 1, posY))
-//					.collect(Collectors.toSet());
-//			break;
-//		case NORTH:
-//			toCheck = IntStream.range(minHitBoxX, maxHitBoxX).mapToObj(posX -> new Position(posX, minHitBoxY - 1))
-//					.collect(Collectors.toSet());
-//			break;
-//		}
-//		return (Collections.disjoint(unavailablePositions, toCheck));
-//	}
-
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
 	public void setNextTexture() {
@@ -504,7 +348,6 @@ public abstract class GameCharacter extends Drawable implements Animated, HitBox
 			setTexture(TextureBuilder.getTexture(textureClass, textureString, genderString, directionString,
 					Integer.toString(associatedFrame)));
 		}
-//		this.moving = false;
 	}
 
 	@Override
@@ -526,12 +369,7 @@ public abstract class GameCharacter extends Drawable implements Animated, HitBox
 		return positions;
 	}
 
-//	public void setTakingDamage(boolean takingDamage) {
-//		this.takingDamage = takingDamage;
-//	}
-
 	public boolean inFrontOf(int rangeX, int rangeY, Tile potentiallyInFront, Set<Tile> availableTiles) {
-//		System.out.println("available tiles size: " + availableTiles.size());
 		int potX = potentiallyInFront.getHorizontalPosition();
 		int potY = potentiallyInFront.getVerticalPosition();
 
@@ -552,31 +390,24 @@ public abstract class GameCharacter extends Drawable implements Animated, HitBox
 			if (potY != thisY || potX < thisX) {
 				return false;
 			}
-//			maxX += rangeX;
 			break;
 		case SOUTH:
 			if (potX != thisX || potY < thisY) {
 				return false;
 			}
-//			maxY += rangeY;
 			break;
 		case WEST:
 			if (potY != thisY || potX > thisX) {
 				return false;
 			}
-//			minX -= rangeX;
 			break;
 		case NORTH:
 			if (potX != thisX || potY > thisY) {
 				return false;
 			}
-//			minY -= rangeY;
 			break;
 		}
-//		System.out.println("minX tile: " + minX);
-//		System.out.println("minY tile: " + minY);
-//		System.out.println("maxX tile: " + maxX);
-//		System.out.println("maxY tile: " + maxY);
+
 		Set<Tile> tilesBetween = new LinkedHashSet<>();
 		for (int x = minX; x <= maxX; x++) {
 			for (int y = minY; y <= maxY; y++) {
@@ -584,69 +415,11 @@ public abstract class GameCharacter extends Drawable implements Animated, HitBox
 			}
 		}
 		if(!SetUtils.isValidSet(tilesBetween)) {
-//			System.out.println("empty set of infront tiles");
 			return false;
 		}
-//		System.out.println("available contains all infront: " + availableTiles.containsAll(tilesBetween));
-//		System.out.println(tilesBetween);
+
 		Set<Tile> commons = new LinkedHashSet<>(tilesBetween);
 		commons.retainAll(availableTiles);
-//		System.out.println("valid tiles: " + commons);
 		return availableTiles.containsAll(tilesBetween);
-
-//		Position center = getAbsoluteCenterPosition();
-//		int centerX = center.getX();
-//		int centerY = center.getY();
-//
-//		int minX = potX > centerX ? centerX : potX;
-//		int minY = potY > centerY ? centerY : potY;
-//		int maxX = potX < centerX ? centerX : potX;
-//		int maxY = potY < centerY ? centerY : potY;
-//
-//		if (maxX - minX > rangeX || maxY - minY > rangeY) {
-//			return false;
-//		}
-//
-//		Set<Position> line = new LinkedHashSet<>();
-//
-//		Size hitBoxSize = ((HitBoxTexture) getTexture()).getHitBoxSize();
-//
-//		switch (direction) {
-//		case EAST:
-//			if (potX < centerX || maxY-minY>24 ) {
-//				return false;
-//			}
-//			minX += hitBoxSize.getWidth();
-//			break;
-//		case SOUTH:
-//			if (potY < centerY || maxX-minX>24) {
-//				return false;
-//			}
-//			minY += hitBoxSize.getHeight();
-//			break;
-//		case WEST:
-//			if (potX > centerX || maxY-minY>16) {
-//				return false;
-//			}
-//			break;
-//		case NORTH:
-//			if (potY > centerY || maxX-minX>16) {
-//				return false;
-//			}
-//			break;
-//		default:
-//			break;
-//
-//		}
-//		for (int x = minX; x < maxX; x++) {
-//			for (int y = minY; y < maxY; y++) {
-//				line.add(new Position(x, y));
-//			}
-//		}
-//		if (line.isEmpty()) {
-//			return false;
-//		}
-//		return Collections.disjoint(line, unavailablePositions);
 	}
-
 }

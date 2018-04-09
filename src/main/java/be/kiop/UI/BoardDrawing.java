@@ -268,7 +268,6 @@ public class BoardDrawing extends JPanel {
 
 	private static AffineTransform weaponImageTransform(GameCharacter gc) {
 		AffineTransform at = new AffineTransform();
-		// at.translate(24, 24);
 		at.translate(gc.getAbsoluteCenterPosition().getX(), gc.getAbsoluteCenterPosition().getY());
 		at.scale(0.8, 0.8);
 		switch (gc.getDirection()) {

@@ -57,13 +57,4 @@ public class Sword extends Weapon {
 		}
 		setCritChance(this.critChance - decrement);
 	}
-
-	@Override
-	public Drawable copy() {
-		try {
-			return (Sword) this.clone();
-		} catch (CloneNotSupportedException e) {
-			return null;
-		}
-	}
 }

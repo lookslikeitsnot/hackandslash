@@ -13,6 +13,7 @@ import java.util.Set;
 import javax.swing.JFrame;
 
 import be.kiop.characters.enemies.Enemy;
+import be.kiop.characters.enemies.skeletons.Skeleton;
 import be.kiop.characters.enemies.skeletons.Skeletons;
 import be.kiop.characters.heroes.Hero;
 import be.kiop.characters.heroes.warriors.Warriors;
@@ -40,7 +41,6 @@ public class Board extends JFrame implements TileListener{
 	private final Set<Tile> allAvailableTiles;
 
 	private Set<Tile> occupiedTiles = new LinkedHashSet<>();
-//	private Set<Tile> availableTiles = new LinkedHashSet<>();
 	private Set<Tile> wallTiles = new LinkedHashSet<>();
 
 	private Hero hero;
@@ -150,17 +150,21 @@ public class Board extends JFrame implements TileListener{
 		Tile randomTile;
 
 		for (int i = 0; i < amount; i++) {
-			addedEnemy = (Enemy) enemy.copy();
+			try {
+				addedEnemy = (Enemy) enemy.clone();
 
-			randomTile = availableTilesList.get(random.nextInt(availableTilesList.size()));
+				randomTile = availableTilesList.get(random.nextInt(availableTilesList.size()));
 
-			addedEnemy.setTile(randomTile);
-			addedEnemy.addTileListener(this);
+				addedEnemy.setTile(randomTile);
+				addedEnemy.addTileListener(this);
 
-//			availableTiles.remove(randomTile);
-			occupiedTiles.add(randomTile);
+				occupiedTiles.add(randomTile);
 
-			enemies.add(addedEnemy);
+				enemies.add(addedEnemy);
+			} catch (CloneNotSupportedException e) {
+				e.printStackTrace();
+			}
+
 		}
 		return enemies;
 	}

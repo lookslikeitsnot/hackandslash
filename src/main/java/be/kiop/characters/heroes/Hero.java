@@ -99,7 +99,7 @@ public abstract class Hero extends GameCharacter {
 	}
 
 	@Override
-	public void setHealth(float health) {
+	protected void setHealth(float health) {
 		super.setHealth(health);
 		if(getHealth() == 0) {
 			if (lives > 1) {

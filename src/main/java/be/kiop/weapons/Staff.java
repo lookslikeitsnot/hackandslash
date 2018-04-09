@@ -30,13 +30,4 @@ public class Staff extends Weapon{
 	public float getManaCost() {
 		return manaCost;
 	}
-
-	@Override
-	public Drawable copy() {
-		try {
-			return (Staff) this.clone();
-		} catch (CloneNotSupportedException e) {
-			return null;
-		}
-	}
 }

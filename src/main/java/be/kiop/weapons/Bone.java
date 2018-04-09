@@ -18,13 +18,4 @@ public class Bone extends Weapon {
 		super(AVAILABLE_TEXTURES, texture, tile, name, damage, maxDamage, range, minRange, maxRange, attackSpeed, maxAttackSpeed,
 				penetration);
 	}
-
-	@Override
-	public Drawable copy() {
-		try {
-			return (Bone) this.clone();
-		} catch (CloneNotSupportedException e) {
-			return null;
-		}
-	}
 }

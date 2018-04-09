@@ -22,13 +22,4 @@ public class Fist extends Weapon {
 	public Fist() {
 		super(AVAILABLE_TEXTURES, WeaponTextures.Fist, Tile.ORIGIN, "Fist", 1, 1, 1, 1, 1, 1, 1, 0);
 	}
-
-	@Override
-	public Drawable copy() {
-		try {
-			return (Fist) this.clone();
-		} catch (CloneNotSupportedException e) {
-			return null;
-		}
-	}
 }

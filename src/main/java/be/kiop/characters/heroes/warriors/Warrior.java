@@ -68,13 +68,4 @@ public class Warrior extends Hero {
 		}
 		super.takeDamage(damage);
 	}
-
-	@Override
-	public Drawable copy() {
-		try {
-			return (Warrior) this.clone();
-		} catch (CloneNotSupportedException e) {
-			return null;
-		}
-	}
 }
