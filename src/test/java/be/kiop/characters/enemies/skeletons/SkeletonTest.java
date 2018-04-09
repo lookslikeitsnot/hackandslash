@@ -8,6 +8,7 @@ import java.util.stream.IntStream;
 import org.junit.Before;
 import org.junit.Test;
 
+import be.kiop.UI.Animated;
 import be.kiop.UI.Drawable;
 import be.kiop.characters.GameCharacter;
 import be.kiop.exceptions.IllegalFrameNumberException;
@@ -59,7 +60,7 @@ public class SkeletonTest {
 				GAMECHARACTER_LEVEL, GAMECHARACTER_ARMOR, ENEMY_DROPPABLES);
 	}
 
-	/* DRAWABLE TEST */
+	/* DRAWABLE TESTS */
 	@Test(expected = IllegalTextureSetException.class)
 	public void Drawable_nullAsTextureSet_exception() {
 		new Drawable(null, DRAWABLE_TEXTURE, tile) {
@@ -163,27 +164,6 @@ public class SkeletonTest {
 	}
 
 	@Test
-	public void getAssociatedFrameNumber_validFrameNumber_associatedFrameNumber() {
-		Drawable drawable = new Drawable(Set.of(DRAWABLE_TEXTURE), DRAWABLE_TEXTURE, tile) {
-		};
-		assertEquals(drawable.getAssociatedFrameNumber(1), 2);
-	}
-
-	@Test(expected = IllegalFrameNumberException.class)
-	public void getAssociatedFrameNumber_0AsFrameNumber_exception() {
-		Drawable drawable = new Drawable(Set.of(DRAWABLE_TEXTURE), DRAWABLE_TEXTURE, tile) {
-		};
-		drawable.getAssociatedFrameNumber(0);
-	}
-
-	@Test(expected = IllegalFrameNumberException.class)
-	public void getAssociatedFrameNumber_moreThanAnimationLengthAsFrameNumber_exception() {
-		Drawable drawable = new Drawable(Set.of(DRAWABLE_TEXTURE), DRAWABLE_TEXTURE, tile) {
-		};
-		drawable.getAssociatedFrameNumber(Drawable.ANIMATION_LENGTH + 1);
-	}
-
-	@Test
 	public void clone_nA_cloned() {
 		Drawable drawable = new Drawable(Set.of(DRAWABLE_TEXTURE), DRAWABLE_TEXTURE, tile) {
 		};
@@ -194,7 +174,7 @@ public class SkeletonTest {
 		}
 	}
 
-	/* GAMECHARACTER TEST */
+	/* GAMECHARACTER TESTS */
 	@Test(expected = IllegalNameException.class)
 	public void GameCharacter_nullAsName_exception() {
 		new GameCharacter(Set.of(VALID_TEXTURE), VALID_TEXTURE, tile, null,
@@ -408,6 +388,36 @@ public class SkeletonTest {
 		};
 		assertEquals(GameCharacter.MAX_ARMOR, gc.getArmor(), MARGIN);
 	}
+	
+	/* ANIMATED TESTS */
+	@Test
+	public void getAssociatedFrameNumber_validFrameNumber_associatedFrameNumber() {
+		Animated animated = new GameCharacter(Set.of(VALID_TEXTURE), VALID_TEXTURE, tile, "VALID",
+				Set.of((WeaponTextures) weapon.getTexture(), (WeaponTextures) VALID_WEAPON.getTexture()), GAMECHARACTER_HEALTH, weapon, GAMECHARACTER_LEVEL,
+				GAMECHARACTER_ARMOR) {
+		};
+		assertEquals(((GameCharacter) animated).getAssociatedFrameNumber(1), 2);
+	}
+
+	@Test(expected = IllegalFrameNumberException.class)
+	public void getAssociatedFrameNumber_0AsFrameNumber_exception() {
+		Animated animated = new GameCharacter(Set.of(VALID_TEXTURE), VALID_TEXTURE, tile, "VALID",
+				Set.of((WeaponTextures) weapon.getTexture(), (WeaponTextures) VALID_WEAPON.getTexture()), GAMECHARACTER_HEALTH, weapon, GAMECHARACTER_LEVEL,
+				GAMECHARACTER_ARMOR) {
+		};
+		((GameCharacter) animated).getAssociatedFrameNumber(0);
+	}
+
+	@Test(expected = IllegalFrameNumberException.class)
+	public void getAssociatedFrameNumber_moreThanAnimationLengthAsFrameNumber_exception() {
+		Animated animated = new GameCharacter(Set.of(VALID_TEXTURE), VALID_TEXTURE, tile, "VALID",
+				Set.of((WeaponTextures) weapon.getTexture(), (WeaponTextures) VALID_WEAPON.getTexture()), GAMECHARACTER_HEALTH, weapon, GAMECHARACTER_LEVEL,
+				GAMECHARACTER_ARMOR) {
+		};
+		((GameCharacter) animated).getAssociatedFrameNumber(Animated.ANIMATION_LENGTH+1);
+	}
+
+	
 
 //	@Test(expected = IllegalArgumentException.class)
 //	public void setName_null_IllegalArgument() {

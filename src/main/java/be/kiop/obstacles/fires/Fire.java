@@ -5,7 +5,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import be.kiop.UI.Animated;
-import be.kiop.UI.Drawable;
+import be.kiop.exceptions.IllegalFrameNumberException;
 import be.kiop.obstacles.Obstacle;
 import be.kiop.textures.FireTextures;
 import be.kiop.textures.Texture;
@@ -25,8 +25,29 @@ public Fire(Texture texture, Tile tile, boolean destructible) {
 	@Override
 	public void setNextTexture() {
 		movementFrame++;
-		movementFrame = movementFrame>Drawable.ANIMATION_LENGTH ? 1 : movementFrame;
+		movementFrame = movementFrame>ANIMATION_LENGTH ? 1 : movementFrame;
 		int associatedFrame = getAssociatedFrameNumber(movementFrame);
 		setTexture(Enum.valueOf(FireTextures.class, (getTexture().getName() +"_"+ Integer.toString(associatedFrame))));
 	}
+	
+	public int getAssociatedFrameNumber(int frameCounter) {
+		if(frameCounter < 1 || frameCounter > ANIMATION_LENGTH) {
+			throw new IllegalFrameNumberException();
+		}
+		
+		switch (frameCounter) {
+		case 1:
+			return 2;
+		case 2:
+			return 1;
+		case 3:
+			return 2;
+		case 4:
+			return 3;
+		default:
+			return 1;
+		}
+	}
+
+	
 }

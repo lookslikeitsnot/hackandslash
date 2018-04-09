@@ -144,7 +144,7 @@ public abstract class Hero extends GameCharacter {
 	public void move(Directions direction, Set<Position> unavailablePositions) {
 		this.setMoving(true);
 		if (this.getDirection() != direction) {
-			setMovementFrame(1);
+			resetMovementFrame();
 		}
 		setDirection(direction);
 

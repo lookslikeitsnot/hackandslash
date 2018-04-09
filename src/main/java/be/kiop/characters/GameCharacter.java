@@ -7,7 +7,9 @@ import java.util.Set;
 import be.kiop.UI.Animated;
 import be.kiop.UI.Drawable;
 import be.kiop.events.HealthEvent;
+import be.kiop.exceptions.IllegalFrameNumberException;
 import be.kiop.exceptions.IllegalLevelException;
+import be.kiop.exceptions.IllegalMovementFrameException;
 import be.kiop.exceptions.IllegalNameException;
 import be.kiop.exceptions.IllegalWeaponException;
 import be.kiop.exceptions.IllegalWeaponSetException;
@@ -215,8 +217,15 @@ public abstract class GameCharacter extends Drawable implements Animated, HitBox
 		return movementFrame;
 	}
 
-	public void setMovementFrame(int movementFrame) {
+	private void setMovementFrame(int movementFrame) {
+		if(movementFrame < 0) {
+			throw new IllegalMovementFrameException();
+		}
 		this.movementFrame = movementFrame;
+	}
+	
+	protected void resetMovementFrame() {
+		setMovementFrame(1);
 	}
 
 	public Directions getDirection() {
@@ -333,13 +342,34 @@ public abstract class GameCharacter extends Drawable implements Animated, HitBox
 			String directionString = direction.name();
 
 			movementFrame++;
-			movementFrame = movementFrame > Drawable.ANIMATION_LENGTH ? 1 : movementFrame;
+			movementFrame = movementFrame > ANIMATION_LENGTH ? 1 : movementFrame;
 			int associatedFrame = getAssociatedFrameNumber(movementFrame);
 
 			setTexture(TextureBuilder.getTexture(textureClass, textureString, genderString, directionString,
 					Integer.toString(associatedFrame)));
 		}
 	}
+	
+	public int getAssociatedFrameNumber(int frameCounter) {
+		if(frameCounter < 1 || frameCounter > ANIMATION_LENGTH) {
+			throw new IllegalFrameNumberException();
+		}
+		
+		switch (frameCounter) {
+		case 1:
+			return 2;
+		case 2:
+			return 1;
+		case 3:
+			return 2;
+		case 4:
+			return 3;
+		default:
+			return 1;
+		}
+	}
+
+	
 
 	@Override
 	public Set<Position> getHitBox(int range) {

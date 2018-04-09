@@ -123,7 +123,7 @@ public abstract class Enemy extends GameCharacter implements Dropper {
 			if (isMoving()) {
 				move();
 			} else {
-				setMovementFrame(1);
+				resetMovementFrame();
 				Map<Directions, Tile> possibleTiles = null;
 				try {
 					possibleTiles = getTile().getAvailableAdjacentTiles(availableTiles);

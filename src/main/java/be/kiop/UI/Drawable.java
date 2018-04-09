@@ -4,7 +4,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import be.kiop.events.TileEvent;
-import be.kiop.exceptions.IllegalFrameNumberException;
 import be.kiop.exceptions.IllegalPositionException;
 import be.kiop.exceptions.IllegalTextureSetException;
 import be.kiop.exceptions.IllegalTileException;
@@ -25,7 +24,7 @@ public abstract class Drawable implements Cloneable {
 	private Position positionOfTextureCenterInTile;
 	private Tile tile;
 
-	public static final int ANIMATION_LENGTH = 4;
+	
 
 	public Drawable(Set<Texture> availableTextures, Texture texture, Tile tile) {
 		if (availableTextures == null || availableTextures.isEmpty()) {
@@ -84,25 +83,6 @@ public abstract class Drawable implements Cloneable {
 			throw new OutOfTileException();
 		}
 		this.positionOfTextureCenterInTile = positionOfTextureCenterInTile;
-	}
-
-	public int getAssociatedFrameNumber(int frameCounter) {
-		if(frameCounter < 1 || frameCounter > ANIMATION_LENGTH) {
-			throw new IllegalFrameNumberException();
-		}
-		
-		switch (frameCounter) {
-		case 1:
-			return 2;
-		case 2:
-			return 1;
-		case 3:
-			return 2;
-		case 4:
-			return 3;
-		default:
-			return 1;
-		}
 	}
 
 	public void addTileListener(TileListener listener) {
