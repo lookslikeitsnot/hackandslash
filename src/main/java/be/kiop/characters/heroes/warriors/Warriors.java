@@ -10,7 +10,7 @@ import be.kiop.weapons.Weapon;
 public enum Warriors {
 	Warrior_1_F(WarriorTextures.Warrior_FEMALE_SOUTH_2, Tile.ORIGIN, "Female Warrior", 100, Swords.Sword_1.getWeapon(),
 			1, 0, 3, 100),
-	Warriore_1_M(WarriorTextures.Warrior_MALE_SOUTH_2, Tile.ORIGIN, "Male Warrior", 100, Swords.Sword_1.getWeapon(), 1,
+	Warrior_1_M(WarriorTextures.Warrior_MALE_SOUTH_2, Tile.ORIGIN, "Male Warrior", 100, Swords.Sword_1.getWeapon(), 1,
 			0, 3, 100),
 	Warrior_5_F(WarriorTextures.Warrior_FEMALE_SOUTH_2, Tile.ORIGIN, "Female Warrior", 500, Swords.Sword_5.getWeapon(),
 			5, 0, 3, 100),

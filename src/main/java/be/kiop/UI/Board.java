@@ -60,7 +60,6 @@ public class Board extends JFrame implements TileListener{
 	public Board(int horizontalTiles, int verticalTiles){
 		this.horizontalTiles = horizontalTiles;
 		this.verticalTiles = verticalTiles;
-//		allTiles  = generateAllTiles(horizontalTiles, verticalTiles);
 
 		wallTiles = new Maze(horizontalTiles, verticalTiles).generateMaze();
 		allAvailableTiles = findAllAvailableTiles(horizontalTiles, verticalTiles, wallTiles);
@@ -68,7 +67,7 @@ public class Board extends JFrame implements TileListener{
 		this.size = Size.sum(Size.product(TILE_SIZE, horizontalTiles, verticalTiles),
 				Size.product(exteriorWallSize, 2, 2));
 
-		hero = generateHero((Hero) Warriors.Warrior_1_F.getGameCharacter());
+		hero = generateHero((Hero) Warriors.Warrior_1_M.getGameCharacter());
 		hero.addTileListener(this);
 
 		walls = generateAllWalls(wallTiles);
@@ -198,8 +197,6 @@ public class Board extends JFrame implements TileListener{
 					drop.setTile(enemy.getTile());
 					drops.add(drop);
 				}
-//				availableTiles.add(enemy.getTile());
-//				availableTiles.add(enemy.getNextTile());
 				occupiedTiles.remove(enemy.getTile());
 				occupiedTiles.remove(enemy.getNextTile());
 				iterator.remove();
@@ -251,18 +248,14 @@ public class Board extends JFrame implements TileListener{
 		return activeEnemy;
 	}
 
-	public Optional<Enemy> enemyInRange() {
-//		System.out.println("available tiles size: " + availableTiles.size());
-//		System.out.println("available tiles: " + availableTiles);
-//		System.out.println("occupied tiles size: " + occupiedTiles.size());
-//		System.out.println("occupied tiles: " + occupiedTiles);
-//		System.out.println("total tiles size: " + SetUtils.merge(availableTiles, occupiedTiles).size());
+	public Optional<Set<Enemy>> enemiesInRange() {
+		Set<Enemy> enemiesInRange = new LinkedHashSet<>();
 		for (Enemy enemy : enemies) {
 			if (hero.inFrontOf(hero.getWeapon().getRange(), hero.getWeapon().getRange(), enemy.getTile(), allAvailableTiles)) {
-				return Optional.ofNullable(enemy);
+				enemiesInRange.add(enemy);
 			}
 		}
-		return Optional.empty();
+		return Optional.ofNullable(enemiesInRange);
 	}
 
 	private void findActiveEnemy() {

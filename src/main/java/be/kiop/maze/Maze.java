@@ -12,7 +12,7 @@ public class Maze {
 	private final int horizontalTiles;
 	private final int vertictalTiles;
 
-	private static final int TRIES = 15000;
+	private static final int TRIES = 150000;
 	
 	public Maze(int horizontalTiles, int verticalTiles) {
 		this.horizontalTiles = horizontalTiles;

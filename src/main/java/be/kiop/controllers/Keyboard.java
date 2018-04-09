@@ -2,6 +2,7 @@ package be.kiop.controllers;
 
 import java.awt.event.ActionEvent;
 import java.util.Optional;
+import java.util.Set;
 
 import javax.swing.AbstractAction;
 import javax.swing.ActionMap;
@@ -71,11 +72,13 @@ public class Keyboard {
 		
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			Optional<Enemy> optEnemy = board.enemyInRange();
-			if(optEnemy.isPresent())
-				hero.attack(optEnemy.get());
-//			System.out.println("attacking");
+			Optional<Set<Enemy>> optEnemies = board.enemiesInRange();
+			if(optEnemies.isPresent()) {
+				Set<Enemy> enemies = optEnemies.get();
+				for(Enemy enemy: enemies) {
+					hero.attack(enemy);
+				}
+			}
 		}
-		
 	}
 }
