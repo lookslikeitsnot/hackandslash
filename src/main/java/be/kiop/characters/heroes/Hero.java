@@ -26,19 +26,19 @@ import be.kiop.weapons.Weapon;
 
 public abstract class Hero extends GameCharacter {
 	private final Set<LifeListener> lifeListeners = new HashSet<>();
-	
+
 	private int lives;
 	private float experience;
-	
+
 	public static final int MAX_LIVES = 5;
-	
+
 	public Hero(Set<Texture> availableTextures, Texture texture, Tile tile, String name,
 			Set<WeaponTextures> availableWeapons, float health, Weapon weapon, int level, float armor, int lives) {
 		super(availableTextures, texture, tile, name, availableWeapons, health, weapon, level, armor);
 		setLives(lives);
 		setExperience(0);
 	}
-	
+
 	public int getLives() {
 		synchronized (lifeListeners) {
 			return lives;
@@ -61,15 +61,15 @@ public abstract class Hero extends GameCharacter {
 			broadcast(lifeEvent);
 		}
 	}
-	
+
 	public float getExperience() {
 		return experience;
 	}
-	
+
 	private void setExperience(float experience) {
 		if (experience < 0) {
 			throw new NegativeExperienceException();
-		} else if(experience < this.experience) {
+		} else if (experience < this.experience) {
 			throw new LessThanCurrentExperienceException();
 		}
 		this.experience = experience;
@@ -78,22 +78,22 @@ public abstract class Hero extends GameCharacter {
 			increaseLevel();
 		}
 	}
-	
+
 	public void decreaseLives() {
-		setLives(getLives()-1);
+		setLives(getLives() - 1);
 	}
 
 	public void increaseLives(int lives) {
-		if(lives < 0) {
+		if (lives < 0) {
 			throw new NegativeLifeException();
 		}
-		setLives(getLives()+lives);
+		setLives(getLives() + lives);
 	}
 
 	public void increaseExperience(float increment) {
 		setExperience(this.experience + increment);
 	}
-	
+
 	private float getRequiredExpForNextLevel() {
 		return getLevel() * 100;
 	}
@@ -101,7 +101,7 @@ public abstract class Hero extends GameCharacter {
 	@Override
 	protected void setHealth(float health) {
 		super.setHealth(health);
-		if(getHealth() == 0) {
+		if (getHealth() == 0) {
 			if (lives > 1) {
 				setLives(lives - 1);
 				setHealth(getMaxHealth());
@@ -124,7 +124,7 @@ public abstract class Hero extends GameCharacter {
 			lifeListeners.remove(listener);
 		}
 	}
-	
+
 	private void broadcast(LifeEvent lifeEvent) {
 		Set<LifeListener> snapshot;
 		synchronized (lifeListeners) {
@@ -134,15 +134,18 @@ public abstract class Hero extends GameCharacter {
 			listener.lifeChanged(lifeEvent);
 		}
 	}
-	
+
 	@Override
 	public void setNextTexture() {
 		super.setNextTexture();
-		setMoving(false);
+		stopMoving();
 	}
-	
+
 	public void move(Directions direction, Set<Position> unavailablePositions) {
-		this.setMoving(true);
+		if (!isMoving()) {
+			startMoving();
+		}
+
 		if (this.getDirection() != direction) {
 			resetMovementFrame();
 		}
@@ -187,7 +190,7 @@ public abstract class Hero extends GameCharacter {
 			break;
 		}
 	}
-	
+
 	private boolean canMove(Directions direction, Set<Position> unavailablePositions) {
 		int textureCenterX = getAbsolutePosition().getX() + getTexture().getSize().getWidth() / 2;
 		int textureCenterY = getAbsolutePosition().getY() + getTexture().getSize().getHeight() / 2;

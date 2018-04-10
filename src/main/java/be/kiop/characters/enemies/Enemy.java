@@ -71,7 +71,6 @@ public abstract class Enemy extends GameCharacter implements Dropper {
 
 	@Override
 	public boolean equals(Object obj) {
-//		System.out.println("testing");
 		if (this == obj)
 			return true;
 		if (!super.equals(obj))
@@ -88,33 +87,18 @@ public abstract class Enemy extends GameCharacter implements Dropper {
 		if (!isMoving()) {
 			throw new UnsupportedOperationException();
 		}
+		
 		try {
-			Method moveMethod = this.getClass().getMethod("move" + getDirection().name());
-			try {
-//				IntStream.range(0, SPEED).forEach(i->{
-//					try {
-//						moveMethod.invoke(this);
-//					} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-//						// TODO Auto-generated catch block
-//						e.printStackTrace();
-//					}
-//				});
-				try {
-					moveMethod.invoke(this);
-				} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-					throw new UnsupportedOperationException();
-				}
-			} catch (IllegalArgumentException e) {
-				throw new UnsupportedOperationException();
-			}
-		} catch (NoSuchMethodException | SecurityException e) {
+			Method moveMethod = GameCharacter.class.getDeclaredMethod("move" + getDirection().name());
+			moveMethod.setAccessible(true);
+			moveMethod.invoke(this);
+		} catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException
+				| InvocationTargetException e) {
 			throw new UnsupportedOperationException();
 		}
-//		System.out.println("position of current center:" + getPositionOfTextureCenterInTile());
-//		System.out.println("position of center:" + Board.TILE_SIZE.getCenter());
+		
 		if (getPositionOfTextureCenterInTile().equals(getTile().getSize().getCenter())) {
-//			nextTile = null;
-			setMoving(false);
+			stopMoving();
 		}
 	}
 
@@ -133,7 +117,7 @@ public abstract class Enemy extends GameCharacter implements Dropper {
 				if (MapUtils.isValidMap(possibleTiles)) {
 					List<Directions> keys = new ArrayList<>(possibleTiles.keySet());
 					Directions direction = keys.get(random.nextInt(keys.size()));
-					setMoving(true);
+					startMoving();
 					setDirection(direction);
 					availableTiles.add(getTile());
 //				nextTile = possibleTiles.get(direction);

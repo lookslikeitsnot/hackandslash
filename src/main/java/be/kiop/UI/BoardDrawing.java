@@ -241,7 +241,9 @@ public class BoardDrawing extends JPanel {
 	}
 
 	private void drawHero(Graphics g) {
-		hero.setNextTexture();
+		if(hero.isMoving()) {
+			hero.setNextTexture();
+		}
 		int x = hero.getAbsolutePosition().getX();
 		int y = hero.getAbsolutePosition().getY();
 
