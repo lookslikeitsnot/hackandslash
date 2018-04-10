@@ -15,6 +15,7 @@ import org.junit.Test;
 import be.kiop.UI.Animated;
 import be.kiop.UI.Drawable;
 import be.kiop.characters.GameCharacter;
+import be.kiop.events.HealthEvent;
 import be.kiop.exceptions.AlreadyAttackingException;
 import be.kiop.exceptions.AlreadyMovingException;
 import be.kiop.exceptions.AlreadyPeacefulException;
@@ -39,6 +40,7 @@ import be.kiop.exceptions.NegativePenetrationException;
 import be.kiop.exceptions.NoMoveAnimationException;
 import be.kiop.exceptions.OutOfTileException;
 import be.kiop.items.Drop;
+import be.kiop.listeners.HealthListener;
 import be.kiop.textures.FloorTextures;
 import be.kiop.textures.SkeletonTextures;
 import be.kiop.textures.WeaponTextures;
@@ -727,7 +729,60 @@ public class SkeletonTest {
 	}
 	
 	@Test
-	public void moveEast_by1_positionOfCenterChangedAndTileIsTheSame() {
+	public void addHealthListener_validListener_healthListenerAdded() {
+		GameCharacter gc = new GameCharacter(Set.of(VALID_TEXTURE), VALID_TEXTURE, tile, "VALID",
+				Set.of((WeaponTextures) weapon.getTexture(), (WeaponTextures) VALID_WEAPON.getTexture()),
+				GAMECHARACTER_HEALTH, weapon, GAMECHARACTER_LEVEL, GAMECHARACTER_ARMOR) {
+		};
+		HealthListener hL = new HealthListener() {
+			@Override
+			public void healthChanged(HealthEvent event) {}
+		};
+		gc.addHealthListener(hL);
+		assertTrue(gc.getHealthListeners().contains(hL));
+	}
+	
+	@Test
+	public void removeHealthListener_validListener_healthListenerRemoved() {
+		GameCharacter gc = new GameCharacter(Set.of(VALID_TEXTURE), VALID_TEXTURE, tile, "VALID",
+				Set.of((WeaponTextures) weapon.getTexture(), (WeaponTextures) VALID_WEAPON.getTexture()),
+				GAMECHARACTER_HEALTH, weapon, GAMECHARACTER_LEVEL, GAMECHARACTER_ARMOR) {
+		};
+		HealthListener hL = new HealthListener() {
+			@Override
+			public void healthChanged(HealthEvent event) {}
+		};
+		gc.addHealthListener(hL);
+		assertTrue(gc.getHealthListeners().contains(hL));
+		gc.removeHealthListener(hL);
+		assertTrue(gc.getHealthListeners().isEmpty());
+	}
+	
+	
+	@Test
+	public void broadcast_validEvent_eventBroadcasted() {
+		int test = 0;
+		GameCharacter gc = new GameCharacter(Set.of(VALID_TEXTURE), VALID_TEXTURE, tile, "VALID",
+				Set.of((WeaponTextures) weapon.getTexture(), (WeaponTextures) VALID_WEAPON.getTexture()),
+				GAMECHARACTER_HEALTH, weapon, GAMECHARACTER_LEVEL, GAMECHARACTER_ARMOR) {
+		};
+		HealthEvent hE = new HealthEvent(test, 1);
+		HealthListener hL = new HealthListener() {
+			@Override
+			public void healthChanged(HealthEvent event) {
+				//test = 1;
+			}
+		};
+		gc.addHealthListener(hL);
+		assertTrue(gc.getHealthListeners().contains(hL));
+		gc.removeHealthListener(hL);
+		assertTrue(gc.getHealthListeners().isEmpty());
+	}
+	
+	
+	
+	@Test
+	public void moveEAST_by1_positionOfCenterChangedAndTileIsTheSame() {
 		GameCharacter gc = new GameCharacter(Set.of(VALID_TEXTURE), VALID_TEXTURE, tile, "VALID",
 				Set.of((WeaponTextures) weapon.getTexture(), (WeaponTextures) VALID_WEAPON.getTexture()),
 				GAMECHARACTER_HEALTH, weapon, GAMECHARACTER_LEVEL, GAMECHARACTER_ARMOR) {
@@ -745,7 +800,7 @@ public class SkeletonTest {
 	}
 	
 	@Test
-	public void moveEast_byATilePlus1_positionOfCenterChangedAndTileChanged() {
+	public void moveEAST_byATilePlus1_positionOfCenterChangedAndTileChanged() {
 		GameCharacter gc = new GameCharacter(Set.of(VALID_TEXTURE), VALID_TEXTURE, tile, "VALID",
 				Set.of((WeaponTextures) weapon.getTexture(), (WeaponTextures) VALID_WEAPON.getTexture()),
 				GAMECHARACTER_HEALTH, weapon, GAMECHARACTER_LEVEL, GAMECHARACTER_ARMOR) {
@@ -757,12 +812,137 @@ public class SkeletonTest {
 				try {
 					moveEAST.invoke(gc);
 				} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			});
 			assertEquals(tile.getSize().getWidth()/2+1, gc.getPositionOfTextureCenterInTile().getX());
 			assertEquals(tile.getEASTwardTile(), gc.getTile());
+		} catch (NoSuchMethodException | SecurityException | IllegalArgumentException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	
+	@Test
+	public void moveSOUTH_by1_positionOfCenterChangedAndTileIsTheSame() {
+		GameCharacter gc = new GameCharacter(Set.of(VALID_TEXTURE), VALID_TEXTURE, tile, "VALID",
+				Set.of((WeaponTextures) weapon.getTexture(), (WeaponTextures) VALID_WEAPON.getTexture()),
+				GAMECHARACTER_HEALTH, weapon, GAMECHARACTER_LEVEL, GAMECHARACTER_ARMOR) {
+		};
+		try {
+			Method moveSOUTH = GameCharacter.class.getDeclaredMethod("moveSOUTH");
+			moveSOUTH.setAccessible(true);
+			moveSOUTH.invoke(gc);
+			assertEquals(tile.getSize().getHeight()/2+1, gc.getPositionOfTextureCenterInTile().getY());
+			assertEquals(tile, gc.getTile());
+		} catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException
+				| InvocationTargetException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	@Test
+	public void moveSOUTH_byATilePlus1_positionOfCenterChangedAndTileChanged() {
+		GameCharacter gc = new GameCharacter(Set.of(VALID_TEXTURE), VALID_TEXTURE, tile, "VALID",
+				Set.of((WeaponTextures) weapon.getTexture(), (WeaponTextures) VALID_WEAPON.getTexture()),
+				GAMECHARACTER_HEALTH, weapon, GAMECHARACTER_LEVEL, GAMECHARACTER_ARMOR) {
+		};
+		try {
+			Method moveSOUTH = GameCharacter.class.getDeclaredMethod("moveSOUTH");
+			moveSOUTH.setAccessible(true);
+			IntStream.range(0, tile.getSize().getHeight()+1).forEach(i ->{
+				try {
+					moveSOUTH.invoke(gc);
+				} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+					e.printStackTrace();
+				}
+			});
+			assertEquals(tile.getSize().getHeight()/2+1, gc.getPositionOfTextureCenterInTile().getY());
+			assertEquals(tile.getSOUTHwardTile(), gc.getTile());
+		} catch (NoSuchMethodException | SecurityException | IllegalArgumentException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	
+	@Test
+	public void moveWEST_by1_positionOfCenterChangedAndTileIsTheSame() {
+		GameCharacter gc = new GameCharacter(Set.of(VALID_TEXTURE), VALID_TEXTURE, tile, "VALID",
+				Set.of((WeaponTextures) weapon.getTexture(), (WeaponTextures) VALID_WEAPON.getTexture()),
+				GAMECHARACTER_HEALTH, weapon, GAMECHARACTER_LEVEL, GAMECHARACTER_ARMOR) {
+		};
+		try {
+			Method moveWEST = GameCharacter.class.getDeclaredMethod("moveWEST");
+			moveWEST.setAccessible(true);
+			moveWEST.invoke(gc);
+			assertEquals(tile.getSize().getWidth()/2-1, gc.getPositionOfTextureCenterInTile().getX());
+			assertEquals(tile, gc.getTile());
+		} catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException
+				| InvocationTargetException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	@Test
+	public void moveWEST_byATilePlus1_positionOfCenterChangedAndTileChanged() {
+		GameCharacter gc = new GameCharacter(Set.of(VALID_TEXTURE), VALID_TEXTURE, tile, "VALID",
+				Set.of((WeaponTextures) weapon.getTexture(), (WeaponTextures) VALID_WEAPON.getTexture()),
+				GAMECHARACTER_HEALTH, weapon, GAMECHARACTER_LEVEL, GAMECHARACTER_ARMOR) {
+		};
+		try {
+			Method moveWEST = GameCharacter.class.getDeclaredMethod("moveWEST");
+			moveWEST.setAccessible(true);
+			IntStream.range(0, tile.getSize().getWidth()+1).forEach(i ->{
+				try {
+					moveWEST.invoke(gc);
+				} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+					e.printStackTrace();
+				}
+			});
+			assertEquals(tile.getSize().getWidth()/2-1, gc.getPositionOfTextureCenterInTile().getX());
+			assertEquals(tile.getWESTwardTile(), gc.getTile());
+		} catch (NoSuchMethodException | SecurityException | IllegalArgumentException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	
+	@Test
+	public void moveNORTH_by1_positionOfCenterChangedAndTileIsTheSame() {
+		GameCharacter gc = new GameCharacter(Set.of(VALID_TEXTURE), VALID_TEXTURE, tile, "VALID",
+				Set.of((WeaponTextures) weapon.getTexture(), (WeaponTextures) VALID_WEAPON.getTexture()),
+				GAMECHARACTER_HEALTH, weapon, GAMECHARACTER_LEVEL, GAMECHARACTER_ARMOR) {
+		};
+		try {
+			Method moveNORTH = GameCharacter.class.getDeclaredMethod("moveNORTH");
+			moveNORTH.setAccessible(true);
+			moveNORTH.invoke(gc);
+			assertEquals(tile.getSize().getHeight()/2-1, gc.getPositionOfTextureCenterInTile().getY());
+			assertEquals(tile, gc.getTile());
+		} catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException
+				| InvocationTargetException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	@Test
+	public void moveNORTH_byATilePlus1_positionOfCenterChangedAndTileChanged() {
+		GameCharacter gc = new GameCharacter(Set.of(VALID_TEXTURE), VALID_TEXTURE, tile, "VALID",
+				Set.of((WeaponTextures) weapon.getTexture(), (WeaponTextures) VALID_WEAPON.getTexture()),
+				GAMECHARACTER_HEALTH, weapon, GAMECHARACTER_LEVEL, GAMECHARACTER_ARMOR) {
+		};
+		try {
+			Method moveNORTH = GameCharacter.class.getDeclaredMethod("moveNORTH");
+			moveNORTH.setAccessible(true);
+			IntStream.range(0, tile.getSize().getHeight()+1).forEach(i ->{
+				try {
+					moveNORTH.invoke(gc);
+				} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+					e.printStackTrace();
+				}
+			});
+			assertEquals(tile.getSize().getHeight()/2-1, gc.getPositionOfTextureCenterInTile().getY());
+			assertEquals(tile.getNORTHwardTile(), gc.getTile());
 		} catch (NoSuchMethodException | SecurityException | IllegalArgumentException e) {
 			e.printStackTrace();
 		}

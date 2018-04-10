@@ -276,6 +276,10 @@ public abstract class GameCharacter extends Drawable implements Animated, HitBox
 		setTakingDamage(false);
 	}
 
+	public Set<HealthListener> getHealthListeners() {
+		return healthListeners;
+	}
+
 	public void addHealthListener(HealthListener listener) {
 		synchronized (healthListeners) {
 			healthListeners.add(listener);
@@ -287,7 +291,7 @@ public abstract class GameCharacter extends Drawable implements Animated, HitBox
 			healthListeners.remove(listener);
 		}
 	}
-
+	
 	private void broadcast(HealthEvent healthEvent) {
 		Set<HealthListener> snapshot;
 		synchronized (healthListeners) {
@@ -317,7 +321,7 @@ public abstract class GameCharacter extends Drawable implements Animated, HitBox
 	protected void moveWEST() {
 		if (getPositionOfTextureCenterInTile().getX() <= 0) {
 			setTile(getTile().getWESTwardTile());
-			getPositionOfTextureCenterInTile().setX(getTile().getSize().getWidth() - 1);
+			getPositionOfTextureCenterInTile().setX(getTile().getSize().getWidth());
 		}
 		setPositionOfTextureCenterInTile(getPositionOfTextureCenterInTile().west());
 	}
@@ -325,7 +329,7 @@ public abstract class GameCharacter extends Drawable implements Animated, HitBox
 	protected void moveNORTH() {
 		if (getPositionOfTextureCenterInTile().getY() <= 0) {
 			setTile(getTile().getNORTHwardTile());
-			getPositionOfTextureCenterInTile().setY(getTile().getSize().getHeight() - 1);
+			getPositionOfTextureCenterInTile().setY(getTile().getSize().getHeight());
 		}
 		setPositionOfTextureCenterInTile(getPositionOfTextureCenterInTile().north());
 	}
