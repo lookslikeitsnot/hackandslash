@@ -149,20 +149,15 @@ public class Board extends JFrame implements TileListener{
 		Tile randomTile;
 
 		for (int i = 0; i < amount; i++) {
-			try {
-				addedEnemy = (Enemy) enemy.clone();
+			addedEnemy = (Enemy) enemy.clone();
 
-				randomTile = availableTilesList.get(random.nextInt(availableTilesList.size()));
+			randomTile = availableTilesList.get(random.nextInt(availableTilesList.size()));
 
-				addedEnemy.setTile(randomTile);
-				addedEnemy.addTileListener(this);
+			addedEnemy.setTile(randomTile);
+			addedEnemy.addTileListener(this);
 
-				occupiedTiles.add(randomTile);
-
-				enemies.add(addedEnemy);
-			} catch (CloneNotSupportedException e) {
-				e.printStackTrace();
-			}
+			occupiedTiles.add(randomTile);
+			enemies.add(addedEnemy);
 
 		}
 		return enemies;

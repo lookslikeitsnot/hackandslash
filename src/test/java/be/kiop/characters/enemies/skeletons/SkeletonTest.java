@@ -2,10 +2,12 @@ package be.kiop.characters.enemies.skeletons;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.stream.IntStream;
@@ -16,13 +18,16 @@ import org.junit.Test;
 import be.kiop.UI.Animated;
 import be.kiop.UI.Drawable;
 import be.kiop.characters.GameCharacter;
+import be.kiop.characters.enemies.Enemy;
 import be.kiop.events.HealthEvent;
+import be.kiop.events.TileEvent;
 import be.kiop.exceptions.AlreadyAttackingException;
 import be.kiop.exceptions.AlreadyMovingException;
 import be.kiop.exceptions.AlreadyPeacefulException;
 import be.kiop.exceptions.AlreadyStoppedException;
 import be.kiop.exceptions.CharacterDiedException;
 import be.kiop.exceptions.IllegalDirectionException;
+import be.kiop.exceptions.IllegalDropSetException;
 import be.kiop.exceptions.IllegalFrameNumberException;
 import be.kiop.exceptions.IllegalLevelException;
 import be.kiop.exceptions.IllegalMovementFrameException;
@@ -30,6 +35,7 @@ import be.kiop.exceptions.IllegalNameException;
 import be.kiop.exceptions.IllegalPositionException;
 import be.kiop.exceptions.IllegalTextureSetException;
 import be.kiop.exceptions.IllegalTileException;
+import be.kiop.exceptions.IllegalTileSetException;
 import be.kiop.exceptions.IllegalWeaponException;
 import be.kiop.exceptions.IllegalWeaponSetException;
 import be.kiop.exceptions.InvalidTextureException;
@@ -43,6 +49,7 @@ import be.kiop.exceptions.OutOfTileException;
 import be.kiop.exceptions.TooLittleRangeException;
 import be.kiop.items.Drop;
 import be.kiop.listeners.HealthListener;
+import be.kiop.listeners.TileListener;
 import be.kiop.textures.FloorTextures;
 import be.kiop.textures.SkeletonTextures;
 import be.kiop.textures.WeaponTextures;
@@ -57,7 +64,8 @@ import be.kiop.weapons.Weapon;
 public class SkeletonTest {
 	private GameCharacter gc;
 	private Drawable drawable;
-	private Skeleton enemy;
+	private Enemy enemy;
+	private Skeleton skeleton;
 	private Weapon weapon;
 	private Tile tile;
 
@@ -84,11 +92,23 @@ public class SkeletonTest {
 				Set.of((WeaponTextures) weapon.getTexture()), GAMECHARACTER_HEALTH, weapon, GAMECHARACTER_LEVEL,
 				GAMECHARACTER_ARMOR) {
 		};
-		enemy = new Skeleton(DRAWABLE_TEXTURE, tile, GAMECHARACTER_NAME, GAMECHARACTER_HEALTH, weapon,
+		enemy = new Enemy(Set.of(VALID_TEXTURE), VALID_TEXTURE, tile, GAMECHARACTER_NAME,
+				Set.of((WeaponTextures) weapon.getTexture()), GAMECHARACTER_HEALTH, weapon, GAMECHARACTER_LEVEL,
+				GAMECHARACTER_ARMOR, ENEMY_DROPPABLES) {
+
+			@Override
+			public Enemy clone() {
+				return null;
+			}
+		};
+		skeleton = new Skeleton(DRAWABLE_TEXTURE, tile, GAMECHARACTER_NAME, GAMECHARACTER_HEALTH, weapon,
 				GAMECHARACTER_LEVEL, GAMECHARACTER_ARMOR, ENEMY_DROPPABLES);
 	}
 
-	/* DRAWABLE TESTS */
+	/* START SKELETON TESTS */
+	/* START ENEMY TESTS */
+	/* START GAMECHARACTER TESTS */
+	/* START DRAWABLE TESTS */
 	@Test(expected = IllegalTextureSetException.class)
 	public void Drawable_nullAsTextureSet_exception() {
 		new Drawable(null, DRAWABLE_TEXTURE, tile) {
@@ -166,6 +186,96 @@ public class SkeletonTest {
 	public void setPositionOfTextureCenterInTile_moreThanTileHeight_exception() {
 		drawable.setPositionOfTextureCenterInTile(new Position(0, tile.getSize().getHeight() + 1));
 	}
+	
+	@Test
+	public void addTileListener_validListener_tileListenerAdded() {
+		TileListener tL = new TileListener() {
+			@Override
+			public void tileChanged(TileEvent event) {
+			}
+		};
+		drawable.addTileListener(tL);
+		assertTrue(drawable.getTileListeners().contains(tL));
+	}
+
+	@Test
+	public void removeTileListener_validListener_tileListenerRemoved() {
+		TileListener tL = new TileListener() {
+			@Override
+			public void tileChanged(TileEvent event) {
+			}
+		};
+		drawable.addTileListener(tL);
+		assertTrue(drawable.getTileListeners().contains(tL));
+		drawable.removeTileListener(tL);
+		assertTrue(drawable.getTileListeners().isEmpty());
+	}
+
+	@Test
+	public void broadcast_validTileEvent_tileEventBroadcasted() {
+		TileEvent tE = new TileEvent(tile, Tile.ORIGIN);
+		TileListener tL = new TileListener() {
+			
+			@Override
+			public void tileChanged(TileEvent event) {
+				assertEquals(Tile.ORIGIN, event.newTile);
+			}
+		};
+		drawable.addTileListener(tL);
+		try {
+			Method broadcast = Drawable.class.getDeclaredMethod("broadcast", TileEvent.class);
+			broadcast.setAccessible(true);
+			broadcast.invoke(drawable, tE);
+		} catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException
+				| InvocationTargetException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	@Test
+	public void equals_sameDrawable_true() {
+		assertEquals(drawable, drawable);
+	}
+	
+	@Test
+	public void equals_sameDrawableParameters_true() {
+		assertEquals(drawable, new Drawable(Set.of(DRAWABLE_TEXTURE, VALID_TEXTURE), DRAWABLE_TEXTURE, tile) {
+		});
+	}
+	
+	@Test
+	public void equals_nullAsDrawable_false() {
+		assertNotEquals(drawable, null);
+	}
+	
+	@Test
+	public void equals_notInstanceOfDrawable_false() {
+		assertNotEquals(drawable, new Fist());
+	}
+	
+	@Test
+	public void equals_differentPositionOfTextureCenterInTile_false() {
+		Drawable drawable2 = new Drawable(Set.of(DRAWABLE_TEXTURE, VALID_TEXTURE), DRAWABLE_TEXTURE, tile) {
+		};
+		drawable2.setPositionOfTextureCenterInTile(Position.ORIGIN);
+		assertNotEquals(drawable, drawable2);
+	}
+	
+	@Test
+	public void equals_differentTexture_false() {
+		Drawable drawable2 = new Drawable(Set.of(DRAWABLE_TEXTURE, VALID_TEXTURE), DRAWABLE_TEXTURE, tile) {
+		};
+		drawable2.setTexture(VALID_TEXTURE);
+		assertNotEquals(drawable, drawable2);
+	}
+	
+	@Test
+	public void equals_differentTiles_false() {
+		Drawable drawable2 = new Drawable(Set.of(DRAWABLE_TEXTURE, VALID_TEXTURE), DRAWABLE_TEXTURE, tile) {
+		};
+		drawable2.setTile(Tile.ORIGIN);
+		assertNotEquals(drawable, drawable2);
+	}
 
 	@Test
 	public void clone_nA_cloned() {
@@ -177,8 +287,6 @@ public class SkeletonTest {
 	}
 
 	/* END DRAWABLE TESTS */
-
-	/* GAMECHARACTER TESTS */
 
 	@Test(expected = IllegalNameException.class)
 	public void GameCharacter_nullAsName_exception() {
@@ -599,7 +707,7 @@ public class SkeletonTest {
 	}
 
 	@Test
-	public void broadcast_validEvent_eventBroadcasted() {
+	public void broadcast_validHealthEvent_healthEventBroadcasted() {
 		int test = 0;
 		HealthEvent hE = new HealthEvent(test, 1);
 		HealthListener hL = new HealthListener() {
@@ -1405,4 +1513,114 @@ public class SkeletonTest {
 		int min = Math.min(VALID_TEXTURE.getHitBoxSize().getWidth() / 2, VALID_TEXTURE.getHitBoxSize().getHeight() / 2);
 		gc.getHitBox(-min);
 	}
+
+	/* END HITBOX TESTS */
+	/* END GAMECHARACTER TESTS */
+
+	@Test(expected = IllegalDropSetException.class)
+	public void Enemy_emptyDropSet_exception() {
+		new Enemy(Set.of(VALID_TEXTURE), VALID_TEXTURE, tile, GAMECHARACTER_NAME,
+				Set.of((WeaponTextures) weapon.getTexture()), GAMECHARACTER_HEALTH, weapon, GAMECHARACTER_LEVEL,
+				GAMECHARACTER_ARMOR, Set.of()) {
+
+			@Override
+			public Enemy clone() {
+				return null;
+			}
+		};
+	}
+
+	@Test(expected = IllegalDropSetException.class)
+	public void Enemy_nullAsDropSet_exception() {
+		new Enemy(Set.of(VALID_TEXTURE), VALID_TEXTURE, tile, GAMECHARACTER_NAME,
+				Set.of((WeaponTextures) weapon.getTexture()), GAMECHARACTER_HEALTH, weapon, GAMECHARACTER_LEVEL,
+				GAMECHARACTER_ARMOR, null) {
+
+			@Override
+			public Enemy clone() {
+				return null;
+			}
+		};
+	}
+
+	@Test
+	public void equals_null_false() {
+		assertNotEquals(enemy, null);
+	}
+
+	@Test
+	public void equals_otherObject_false() {
+		assertNotEquals(enemy, new Fist());
+	}
+
+	@Test
+	public void equals_clone_false() {
+		assertNotEquals(enemy,enemy.clone());
+	}
+
+	@Test
+	public void equals_differentEnnemies_false() {
+		Enemy enemy2 = new Enemy(Set.of(VALID_TEXTURE), VALID_TEXTURE, tile, GAMECHARACTER_NAME,
+				Set.of((WeaponTextures) weapon.getTexture()), GAMECHARACTER_HEALTH, weapon, GAMECHARACTER_LEVEL,
+				GAMECHARACTER_ARMOR, ENEMY_DROPPABLES) {
+
+			@Override
+			public Enemy clone() {
+				return null;
+			}
+		};
+		assertNotEquals(enemy,enemy2);
+	}
+
+	@Test
+	public void equals_sameEnemy_true() {
+		assertTrue(enemy.equals(enemy));
+	}
+
+	@Test(expected = IllegalTileSetException.class)
+	public void move_nullAsTileSet_exception() {
+		enemy.move(null);
+	}
+
+	@Test
+	public void move_emptyTileSet_noMovement() {
+		Position pos = enemy.getAbsolutePosition();
+		enemy.move(Set.of());
+		assertEquals(pos, enemy.getAbsolutePosition());
+	}
+	
+	@Test
+	public void move_noAdjacentTileInTileSet_noMovement() {
+		Position pos = enemy.getAbsolutePosition();
+		enemy.move(Set.of(tile.getEASTwardTile().getEASTwardTile()));
+		assertEquals(pos, enemy.getAbsolutePosition());
+	}
+
+	@Test
+	public void move_adjacentTileInTileSet_moved() {
+		Position pos = enemy.getAbsolutePosition();
+		Set<Tile> availableTiles = new HashSet<>();
+		availableTiles.add(tile.getEASTwardTile());
+		enemy.move(availableTiles);
+		assertNotEquals(pos, enemy.getAbsolutePosition());
+	}
+
+	/* END ENEMY TESTS */
+
+	/* START DROPPER TESTS */
+	@Test
+	public void getDrop_nA_aDropInTheSet() {
+		assertEquals(Swords.Sword_1.getWeapon(), enemy.getDrop().get());
+	}
+
+	/* END DROPPER TESTS */
+
+	@Test
+	public void clone_nA_differentId() throws CloneNotSupportedException {
+		Skeleton skeleton1 = (Skeleton) skeleton.clone();
+		Skeleton skeleton2 = (Skeleton) skeleton.clone();
+		assertNotEquals(skeleton1.getId(), skeleton2.getId());
+	}
+
+	/* END SKELETON TESTS */
 }

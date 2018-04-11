@@ -21,4 +21,9 @@ public class Skeleton extends Enemy {
 			Set<Drop> droppables) {
 		super(AVAILABLE_TEXTURES, texture, tile, name, AVAILABLE_WEAPONS, health, weapon, level, armor, droppables);
 	}
+	
+	@Override
+	public Skeleton clone() {
+		return new Skeleton(getTexture(), getTile(), getName(), getHealth(), getWeapon(), getLevel(), getArmor(), getDroppables());
+	}
 }

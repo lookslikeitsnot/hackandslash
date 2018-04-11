@@ -19,11 +19,11 @@ public enum FireTextures implements Texture, IdleAnimation, HitBoxTexture {
 	Fire_Off_2("fires", "Fire_Off", new Position(32, 0), new Size(32, 55), new Size(20, 40), 2),
 	Fire_Off_3("fires", "Fire_Off", new Position(64, 0), new Size(32, 55), new Size(20, 40), 3);
 
-	private String name;
-	private Size size;
-	private Size hitBoxSize;
-	private int animationFrame;
-	private BufferedImage skin;
+	private final String name;
+	private final Size size;
+	private final Size hitBoxSize;
+	private final int animationFrame;
+	private final BufferedImage skin;
 
 	FireTextures(String path, String name, Position position, Size size, Size hitBoxSize, int animationFrame) {
 		this.name = name;
@@ -63,5 +63,4 @@ public enum FireTextures implements Texture, IdleAnimation, HitBoxTexture {
 	public Size getHitBoxSize() {
 		return hitBoxSize;
 	}
-
 }

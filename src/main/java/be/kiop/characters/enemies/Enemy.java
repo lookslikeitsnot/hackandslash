@@ -12,6 +12,7 @@ import java.util.stream.IntStream;
 
 import be.kiop.characters.GameCharacter;
 import be.kiop.exceptions.IllegalDropSetException;
+import be.kiop.exceptions.IllegalTileSetException;
 import be.kiop.items.Drop;
 import be.kiop.items.Dropper;
 import be.kiop.textures.Texture;
@@ -27,7 +28,7 @@ public abstract class Enemy extends GameCharacter implements Dropper {
 	private final Set<Drop> droppables;
 	private final Random random = new Random();
 
-	private boolean active;
+//	private boolean active;
 //	private Tile nextTile;
 
 	private static int counter = 0;
@@ -41,19 +42,23 @@ public abstract class Enemy extends GameCharacter implements Dropper {
 			throw new IllegalDropSetException();
 		}
 		this.droppables = droppables;
-		this.active = false;
+//		this.active = false;
 	}
 
 	public int getId() {
 		return id;
 	}
 
-	public boolean isActive() {
-		return active;
-	}
+//	public boolean isActive() {
+//		return active;
+//	}
+//
+//	public void setActive(boolean active) {
+//		this.active = active;
+//	}
 
-	public void setActive(boolean active) {
-		this.active = active;
+	protected Set<Drop> getDroppables() {
+		return droppables;
 	}
 
 	@Override
@@ -64,7 +69,7 @@ public abstract class Enemy extends GameCharacter implements Dropper {
 	@Override
 	public int hashCode() {
 		final int prime = 31;
-		int result = super.hashCode();
+		int result = 0;
 		result = prime * result + id;
 		return result;
 	}
@@ -73,8 +78,6 @@ public abstract class Enemy extends GameCharacter implements Dropper {
 	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;
-		if (!super.equals(obj))
-			return false;
 		if (!(obj instanceof Enemy))
 			return false;
 		Enemy other = (Enemy) obj;
@@ -87,7 +90,7 @@ public abstract class Enemy extends GameCharacter implements Dropper {
 		if (!isMoving()) {
 			throw new UnsupportedOperationException();
 		}
-		
+
 		try {
 			Method moveMethod = GameCharacter.class.getDeclaredMethod("move" + getDirection().name());
 			moveMethod.setAccessible(true);
@@ -96,13 +99,16 @@ public abstract class Enemy extends GameCharacter implements Dropper {
 				| InvocationTargetException e) {
 			throw new UnsupportedOperationException();
 		}
-		
+
 		if (getPositionOfTextureCenterInTile().equals(getTile().getSize().getCenter())) {
 			stopMoving();
 		}
 	}
 
 	public void move(Set<Tile> availableTiles) {
+		if(availableTiles == null) {
+			throw new IllegalTileSetException();
+		}
 		IntStream.range(0, SPEED).forEach(i -> {
 			if (isMoving()) {
 				move();
@@ -120,16 +126,10 @@ public abstract class Enemy extends GameCharacter implements Dropper {
 					startMoving();
 					setDirection(direction);
 					availableTiles.add(getTile());
-//				nextTile = possibleTiles.get(direction);
-//				availableTiles.remove(nextTile);
-
 				}
 			}
 		});
-//		return availableTiles;
 	}
-
-//	public Tile getNextTile() {
-//		return nextTile;
-//	}
+	@Override
+	public abstract Enemy clone();
 }

@@ -188,9 +188,11 @@ public abstract class GameCharacter extends Drawable implements Animated, HitBox
 	}
 
 	public void attack(GameCharacter gc) {
-		startAttacking();
-		if (gc != null) {
-			gc.takeDamage(this.weapon.getDamage(), this.weapon.getPenetration());
+		if(!attacking) {
+			startAttacking();
+			if (gc != null) {
+				gc.takeDamage(this.weapon.getDamage(), this.weapon.getPenetration());
+			}
 		}
 	}
 

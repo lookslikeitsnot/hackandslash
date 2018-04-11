@@ -85,6 +85,10 @@ public abstract class Drawable implements Cloneable {
 		this.positionOfTextureCenterInTile = positionOfTextureCenterInTile;
 	}
 
+	public Set<TileListener> getTileListeners() {
+		return tileListeners;
+	}
+
 	public void addTileListener(TileListener listener) {
 		synchronized (tileListeners) {
 			tileListeners.add(listener);
@@ -120,12 +124,13 @@ public abstract class Drawable implements Cloneable {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result
-				+ ((positionOfTextureCenterInTile == null) ? 0 : positionOfTextureCenterInTile.hashCode());
-		result = prime * result + ((offsetFromPosition == null) ? 0 : offsetFromPosition.hashCode());
-		result = prime * result + ((texture == null) ? 0 : texture.hashCode());
-		result = prime * result + ((tile == null) ? 0 : tile.hashCode());
+				+  positionOfTextureCenterInTile.hashCode();
+		result = prime * result +  texture.hashCode();
+		result = prime * result + tile.hashCode();
 		return result;
 	}
+
+
 
 	@Override
 	public boolean equals(Object obj) {
@@ -133,28 +138,14 @@ public abstract class Drawable implements Cloneable {
 			return true;
 		if (obj == null)
 			return false;
-		if (getClass() != obj.getClass())
+		if (!(obj instanceof Drawable))
 			return false;
 		Drawable other = (Drawable) obj;
-		if (positionOfTextureCenterInTile == null) {
-			if (other.positionOfTextureCenterInTile != null)
-				return false;
-		} else if (!positionOfTextureCenterInTile.equals(other.positionOfTextureCenterInTile))
+		if (!positionOfTextureCenterInTile.equals(other.positionOfTextureCenterInTile))
 			return false;
-		if (offsetFromPosition == null) {
-			if (other.offsetFromPosition != null)
-				return false;
-		} else if (!offsetFromPosition.equals(other.offsetFromPosition))
+		if (!texture.equals(other.texture))
 			return false;
-		if (texture == null) {
-			if (other.texture != null)
-				return false;
-		} else if (!texture.equals(other.texture))
-			return false;
-		if (tile == null) {
-			if (other.tile != null)
-				return false;
-		} else if (!tile.equals(other.tile))
+		if (!tile.equals(other.tile))
 			return false;
 		return true;
 	}
