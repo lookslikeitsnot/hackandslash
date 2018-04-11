@@ -19,12 +19,14 @@ import be.kiop.exceptions.IllegalMovementFrameException;
 import be.kiop.exceptions.IllegalNameException;
 import be.kiop.exceptions.IllegalWeaponException;
 import be.kiop.exceptions.IllegalWeaponSetException;
+import be.kiop.exceptions.InvalidTextureException;
 import be.kiop.exceptions.MaxLevelReachedException;
 import be.kiop.exceptions.NegativeArmorException;
 import be.kiop.exceptions.NegativeDamageException;
 import be.kiop.exceptions.NegativeHealthException;
 import be.kiop.exceptions.NegativePenetrationException;
 import be.kiop.exceptions.NoMoveAnimationException;
+import be.kiop.exceptions.TooLittleRangeException;
 import be.kiop.listeners.HealthListener;
 import be.kiop.textures.HitBoxTexture;
 import be.kiop.textures.MoveAnimation;
@@ -357,21 +359,25 @@ public abstract class GameCharacter extends Drawable implements Animated, HitBox
 			if (potY != thisY || potX < thisX) {
 				return false;
 			}
+//			maxY = minY = thisY;
 			break;
 		case SOUTH:
 			if (potX != thisX || potY < thisY) {
 				return false;
 			}
+//			maxX = minX = thisX;
 			break;
 		case WEST:
 			if (potY != thisY || potX > thisX) {
 				return false;
 			}
+//			maxY = minY = thisY;
 			break;
 		case NORTH:
 			if (potX != thisX || potY > thisY) {
 				return false;
 			}
+//			maxX = minX = thisX;
 			break;
 		}
 
@@ -381,9 +387,9 @@ public abstract class GameCharacter extends Drawable implements Animated, HitBox
 				tilesBetween.add(new Tile(x, y));
 			}
 		}
-		if (!SetUtils.isValidSet(tilesBetween)) {
-			return false;
-		}
+//		if (!SetUtils.isValidSet(tilesBetween)) {
+//			return false;
+//		}
 
 		Set<Tile> commons = new LinkedHashSet<>(tilesBetween);
 		commons.retainAll(availableTiles);
@@ -479,13 +485,27 @@ public abstract class GameCharacter extends Drawable implements Animated, HitBox
 
 	@Override
 	public Set<Position> getHitBox(int range) {
+		Texture texture = getTexture();
+		if(!(texture instanceof HitBoxTexture)) {
+			throw new InvalidTextureException();
+		}
+		HitBoxTexture hitBoxTexture = (HitBoxTexture) texture;
+		
+		int hitBoxWidth = hitBoxTexture.getHitBoxSize().getWidth();
+		int hitBoxHeight = hitBoxTexture.getHitBoxSize().getHeight();
+		
+		if(range <= -hitBoxWidth/2 || range <= -hitBoxHeight/2) {
+			throw new TooLittleRangeException();
+		}
+		
 		Set<Position> positions = new LinkedHashSet<>();
-		int textureCenterX = getAbsolutePosition().getX() + getTexture().getSize().getWidth() / 2;
-		int textureCenterY = getAbsolutePosition().getY() + getTexture().getSize().getHeight() / 2;
-		int minHitBoxX = textureCenterX - ((HitBoxTexture) getTexture()).getHitBoxSize().getWidth() / 2 - range;
-		int minHitBoxY = textureCenterY - ((HitBoxTexture) getTexture()).getHitBoxSize().getHeight() / 2 - range;
-		int maxHitBoxX = textureCenterX + ((HitBoxTexture) getTexture()).getHitBoxSize().getWidth() / 2 + range;
-		int maxHitBoxY = textureCenterY + ((HitBoxTexture) getTexture()).getHitBoxSize().getHeight() / 2 + range;
+		
+		int textureCenterX = getAbsoluteCenterPosition().getX();
+		int textureCenterY = getAbsoluteCenterPosition().getY();
+		int minHitBoxX = textureCenterX - hitBoxWidth / 2 - range;
+		int minHitBoxY = textureCenterY - hitBoxHeight / 2 - range;
+		int maxHitBoxX = textureCenterX + hitBoxWidth / 2 + range;
+		int maxHitBoxY = textureCenterY + hitBoxHeight / 2 + range;
 
 		for (int x = minHitBoxX; x <= maxHitBoxX; x++) {
 			for (int y = minHitBoxY; y <= maxHitBoxY; y++) {

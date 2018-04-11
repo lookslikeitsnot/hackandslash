@@ -6,6 +6,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.stream.IntStream;
 
@@ -39,6 +40,7 @@ import be.kiop.exceptions.NegativeHealthException;
 import be.kiop.exceptions.NegativePenetrationException;
 import be.kiop.exceptions.NoMoveAnimationException;
 import be.kiop.exceptions.OutOfTileException;
+import be.kiop.exceptions.TooLittleRangeException;
 import be.kiop.items.Drop;
 import be.kiop.listeners.HealthListener;
 import be.kiop.textures.FloorTextures;
@@ -53,6 +55,8 @@ import be.kiop.weapons.Swords;
 import be.kiop.weapons.Weapon;
 
 public class SkeletonTest {
+	private GameCharacter gc;
+	private Drawable drawable;
 	private Skeleton enemy;
 	private Weapon weapon;
 	private Tile tile;
@@ -74,6 +78,12 @@ public class SkeletonTest {
 	public void before() {
 		tile = new Tile(1, 1);
 		weapon = new Bone(WeaponTextures.Bone, tile, "Little Bone", 50, 75, 40, 30, 100, 5, 10, 20);
+		drawable = new Drawable(Set.of(DRAWABLE_TEXTURE, VALID_TEXTURE), DRAWABLE_TEXTURE, tile) {
+		};
+		gc = new GameCharacter(Set.of(VALID_TEXTURE), VALID_TEXTURE, tile, GAMECHARACTER_NAME,
+				Set.of((WeaponTextures) weapon.getTexture()), GAMECHARACTER_HEALTH, weapon, GAMECHARACTER_LEVEL,
+				GAMECHARACTER_ARMOR) {
+		};
 		enemy = new Skeleton(DRAWABLE_TEXTURE, tile, GAMECHARACTER_NAME, GAMECHARACTER_HEALTH, weapon,
 				GAMECHARACTER_LEVEL, GAMECHARACTER_ARMOR, ENEMY_DROPPABLES);
 	}
@@ -93,30 +103,22 @@ public class SkeletonTest {
 
 	@Test
 	public void setTexture_validTexture_textureSet() {
-		Drawable drawable = new Drawable(Set.of(DRAWABLE_TEXTURE, VALID_TEXTURE), DRAWABLE_TEXTURE, tile) {
-		};
 		drawable.setTexture(VALID_TEXTURE);
 		assertEquals(VALID_TEXTURE, drawable.getTexture());
 	}
 
 	@Test(expected = InvalidTextureException.class)
 	public void setTexture_nullAsTexture_exception() {
-		Drawable drawable = new Drawable(Set.of(DRAWABLE_TEXTURE, VALID_TEXTURE), DRAWABLE_TEXTURE, tile) {
-		};
 		drawable.setTexture(null);
 	}
 
 	@Test(expected = InvalidTextureException.class)
 	public void setTexture_textureNotInAvailableTexturesAsTexture_exception() {
-		Drawable drawable = new Drawable(Set.of(DRAWABLE_TEXTURE), DRAWABLE_TEXTURE, tile) {
-		};
 		drawable.setTexture(INVALID_TEXTURE);
 	}
 
 	@Test
 	public void setTile_validTile_tileSet() {
-		Drawable drawable = new Drawable(Set.of(DRAWABLE_TEXTURE), DRAWABLE_TEXTURE, tile) {
-		};
 		Tile validTile = Tile.ORIGIN;
 		drawable.setTile(validTile);
 		assertEquals(validTile, drawable.getTile());
@@ -124,23 +126,17 @@ public class SkeletonTest {
 
 	@Test(expected = IllegalTileException.class)
 	public void setTile_nullAsTile_exception() {
-		Drawable drawable = new Drawable(Set.of(DRAWABLE_TEXTURE), DRAWABLE_TEXTURE, tile) {
-		};
 		drawable.setTile(null);
 	}
 
 	@Test
 	public void setPositionOfTextureCenterInTile_validPosition_positionSet() {
-		Drawable drawable = new Drawable(Set.of(DRAWABLE_TEXTURE), DRAWABLE_TEXTURE, tile) {
-		};
 		drawable.setPositionOfTextureCenterInTile(Position.ORIGIN);
 		assertEquals(Position.ORIGIN, drawable.getPositionOfTextureCenterInTile());
 	}
 
 	@Test
 	public void setPositionOfTextureCenterInTile_maxPosition_positionSet() {
-		Drawable drawable = new Drawable(Set.of(DRAWABLE_TEXTURE), DRAWABLE_TEXTURE, tile) {
-		};
 		Position maxPos = new Position(tile.getSize().getWidth(), tile.getSize().getHeight());
 		drawable.setPositionOfTextureCenterInTile(maxPos);
 		assertEquals(maxPos, drawable.getPositionOfTextureCenterInTile());
@@ -148,54 +144,42 @@ public class SkeletonTest {
 
 	@Test(expected = IllegalPositionException.class)
 	public void setPositionOfTextureCenterInTile_nullAsPosition_exception() {
-		Drawable drawable = new Drawable(Set.of(DRAWABLE_TEXTURE), DRAWABLE_TEXTURE, tile) {
-		};
 		drawable.setPositionOfTextureCenterInTile(null);
 	}
 
 	@Test(expected = IllegalPositionException.class)
 	public void setPositionOfTextureCenterInTile_lessThan0xPosition_exception() {
-		Drawable drawable = new Drawable(Set.of(DRAWABLE_TEXTURE), DRAWABLE_TEXTURE, tile) {
-		};
 		drawable.setPositionOfTextureCenterInTile(new Position(-1, 0));
 	}
 
 	@Test(expected = IllegalPositionException.class)
 	public void setPositionOfTextureCenterInTile_lessThan0yPosition_exception() {
-		Drawable drawable = new Drawable(Set.of(DRAWABLE_TEXTURE), DRAWABLE_TEXTURE, tile) {
-		};
 		drawable.setPositionOfTextureCenterInTile(new Position(0, -1));
 	}
 
 	@Test(expected = OutOfTileException.class)
 	public void setPositionOfTextureCenterInTile_moreThanTileWidthPosition_exception() {
-		Drawable drawable = new Drawable(Set.of(DRAWABLE_TEXTURE), DRAWABLE_TEXTURE, tile) {
-		};
 		drawable.setPositionOfTextureCenterInTile(new Position(tile.getSize().getWidth() + 1, 0));
 	}
 
 	@Test(expected = OutOfTileException.class)
 	public void setPositionOfTextureCenterInTile_moreThanTileHeight_exception() {
-		Drawable drawable = new Drawable(Set.of(DRAWABLE_TEXTURE), DRAWABLE_TEXTURE, tile) {
-		};
 		drawable.setPositionOfTextureCenterInTile(new Position(0, tile.getSize().getHeight() + 1));
 	}
 
 	@Test
 	public void clone_nA_cloned() {
-		Drawable drawable = new Drawable(Set.of(DRAWABLE_TEXTURE), DRAWABLE_TEXTURE, tile) {
-		};
 		try {
 			assertEquals(drawable, drawable.clone());
 		} catch (CloneNotSupportedException e) {
 			e.printStackTrace();
 		}
 	}
-	
-	/* END DRAWABLE TESTS*/
+
+	/* END DRAWABLE TESTS */
 
 	/* GAMECHARACTER TESTS */
-	
+
 	@Test(expected = IllegalNameException.class)
 	public void GameCharacter_nullAsName_exception() {
 		new GameCharacter(Set.of(VALID_TEXTURE), VALID_TEXTURE, tile, null,
@@ -234,39 +218,23 @@ public class SkeletonTest {
 
 	@Test
 	public void increaseLevel_validTimes_levelIncreased() {
-		GameCharacter gc = new GameCharacter(Set.of(VALID_TEXTURE), VALID_TEXTURE, tile, "VALID",
-				Set.of((WeaponTextures) weapon.getTexture()), GAMECHARACTER_HEALTH, weapon, GAMECHARACTER_LEVEL,
-				GAMECHARACTER_ARMOR) {
-		};
 		gc.increaseLevel();
 		assertEquals(GAMECHARACTER_LEVEL + 1, gc.getLevel());
 	}
 
 	@Test(expected = MaxLevelReachedException.class)
 	public void increaseLevel_toReachMoreThanMaxLevelTimes_exception() {
-		GameCharacter gc = new GameCharacter(Set.of(VALID_TEXTURE), VALID_TEXTURE, tile, "VALID",
-				Set.of((WeaponTextures) weapon.getTexture()), GAMECHARACTER_HEALTH, weapon, GAMECHARACTER_LEVEL,
-				GAMECHARACTER_ARMOR) {
-		};
 		IntStream.range(0, GameCharacter.MAX_LEVEL + 1).forEach(i -> gc.increaseLevel());
 	}
 
 	@Test
 	public void decreaseLevel_validTimes_levelIncreased() {
-		GameCharacter gc = new GameCharacter(Set.of(VALID_TEXTURE), VALID_TEXTURE, tile, "VALID",
-				Set.of((WeaponTextures) weapon.getTexture()), GAMECHARACTER_HEALTH, weapon, GAMECHARACTER_LEVEL,
-				GAMECHARACTER_ARMOR) {
-		};
 		gc.decreaseLevel();
 		assertEquals(GAMECHARACTER_LEVEL - 1, gc.getLevel());
 	}
 
 	@Test(expected = IllegalLevelException.class)
 	public void decreaseLevel_toReachLessThan0Times_exception() {
-		GameCharacter gc = new GameCharacter(Set.of(VALID_TEXTURE), VALID_TEXTURE, tile, "VALID",
-				Set.of((WeaponTextures) weapon.getTexture()), GAMECHARACTER_HEALTH, weapon, GAMECHARACTER_LEVEL,
-				GAMECHARACTER_ARMOR) {
-		};
 		IntStream.range(0, GameCharacter.MAX_LEVEL + 1).forEach(i -> gc.decreaseLevel());
 	}
 
@@ -279,10 +247,6 @@ public class SkeletonTest {
 
 	@Test
 	public void increaseHealth_validAmount_healthIncreased() {
-		GameCharacter gc = new GameCharacter(Set.of(VALID_TEXTURE), VALID_TEXTURE, tile, "VALID",
-				Set.of((WeaponTextures) weapon.getTexture()), GAMECHARACTER_HEALTH, weapon, GAMECHARACTER_LEVEL,
-				GAMECHARACTER_ARMOR) {
-		};
 		try {
 			Method increaseHealth = GameCharacter.class.getDeclaredMethod("increaseHealth", float.class);
 			increaseHealth.setAccessible(true);
@@ -296,10 +260,6 @@ public class SkeletonTest {
 
 	@Test
 	public void increaseHealth_by0_healthUnchanged() {
-		GameCharacter gc = new GameCharacter(Set.of(VALID_TEXTURE), VALID_TEXTURE, tile, "VALID",
-				Set.of((WeaponTextures) weapon.getTexture()), GAMECHARACTER_HEALTH, weapon, GAMECHARACTER_LEVEL,
-				GAMECHARACTER_ARMOR) {
-		};
 		try {
 			Method increaseHealth = GameCharacter.class.getDeclaredMethod("increaseHealth", float.class);
 			increaseHealth.setAccessible(true);
@@ -313,10 +273,6 @@ public class SkeletonTest {
 
 	@Test(expected = NegativeHealthException.class)
 	public void increaseHealth_negativeAmount_exception() throws Throwable {
-		GameCharacter gc = new GameCharacter(Set.of(VALID_TEXTURE), VALID_TEXTURE, tile, "VALID",
-				Set.of((WeaponTextures) weapon.getTexture()), GAMECHARACTER_HEALTH, weapon, GAMECHARACTER_LEVEL,
-				GAMECHARACTER_ARMOR) {
-		};
 		try {
 			Method increaseHealth = GameCharacter.class.getDeclaredMethod("increaseHealth", float.class);
 			increaseHealth.setAccessible(true);
@@ -328,49 +284,29 @@ public class SkeletonTest {
 
 	@Test
 	public void heal_validAmount_healthIncreased() {
-		GameCharacter gc = new GameCharacter(Set.of(VALID_TEXTURE), VALID_TEXTURE, tile, "VALID",
-				Set.of((WeaponTextures) weapon.getTexture()), GAMECHARACTER_HEALTH, weapon, GAMECHARACTER_LEVEL,
-				GAMECHARACTER_ARMOR) {
-		};
 		gc.heal(1);
 		assertEquals(GAMECHARACTER_HEALTH + 1, gc.getHealth(), MARGIN);
 	}
 
 	@Test
 	public void heal_0_sameHealth() {
-		GameCharacter gc = new GameCharacter(Set.of(VALID_TEXTURE), VALID_TEXTURE, tile, "VALID",
-				Set.of((WeaponTextures) weapon.getTexture()), GAMECHARACTER_HEALTH, weapon, GAMECHARACTER_LEVEL,
-				GAMECHARACTER_ARMOR) {
-		};
 		gc.heal(0);
 		assertEquals(GAMECHARACTER_HEALTH, gc.getHealth(), MARGIN);
 	}
 
 	@Test(expected = NegativeHealthException.class)
 	public void heal_negativeAmount_exception() {
-		GameCharacter gc = new GameCharacter(Set.of(VALID_TEXTURE), VALID_TEXTURE, tile, "VALID",
-				Set.of((WeaponTextures) weapon.getTexture()), GAMECHARACTER_HEALTH, weapon, GAMECHARACTER_LEVEL,
-				GAMECHARACTER_ARMOR) {
-		};
 		gc.heal(-1);
 	}
 
 	@Test
 	public void heal_moreThanMaxHealthAmount_maxHealth() {
-		GameCharacter gc = new GameCharacter(Set.of(VALID_TEXTURE), VALID_TEXTURE, tile, "VALID",
-				Set.of((WeaponTextures) weapon.getTexture()), GAMECHARACTER_HEALTH, weapon, GAMECHARACTER_LEVEL,
-				GAMECHARACTER_ARMOR) {
-		};
 		gc.heal(gc.getMaxHealth() + 1);
 		assertEquals(gc.getMaxHealth(), gc.getHealth(), MARGIN);
 	}
 
 	@Test
 	public void decreaseHealth_validAmount_healthDecreasedAndTakingDamage() {
-		GameCharacter gc = new GameCharacter(Set.of(VALID_TEXTURE), VALID_TEXTURE, tile, "VALID",
-				Set.of((WeaponTextures) weapon.getTexture()), GAMECHARACTER_HEALTH, weapon, GAMECHARACTER_LEVEL,
-				GAMECHARACTER_ARMOR) {
-		};
 		try {
 			Method decreaseHealth = GameCharacter.class.getDeclaredMethod("decreaseHealth", float.class);
 			decreaseHealth.setAccessible(true);
@@ -385,10 +321,6 @@ public class SkeletonTest {
 
 	@Test
 	public void decreaseHealth_by0_healthUnchangedAndNotTakingDamage() {
-		GameCharacter gc = new GameCharacter(Set.of(VALID_TEXTURE), VALID_TEXTURE, tile, "VALID",
-				Set.of((WeaponTextures) weapon.getTexture()), GAMECHARACTER_HEALTH, weapon, GAMECHARACTER_LEVEL,
-				GAMECHARACTER_ARMOR) {
-		};
 		try {
 			Method decreaseHealth = GameCharacter.class.getDeclaredMethod("decreaseHealth", float.class);
 			decreaseHealth.setAccessible(true);
@@ -403,10 +335,6 @@ public class SkeletonTest {
 
 	@Test(expected = NegativeHealthException.class)
 	public void decreaseHealth_lessThan0_exception() throws Throwable {
-		GameCharacter gc = new GameCharacter(Set.of(VALID_TEXTURE), VALID_TEXTURE, tile, "VALID",
-				Set.of((WeaponTextures) weapon.getTexture()), GAMECHARACTER_HEALTH, weapon, GAMECHARACTER_LEVEL,
-				GAMECHARACTER_ARMOR) {
-		};
 		try {
 			Method decreaseHealth = GameCharacter.class.getDeclaredMethod("decreaseHealth", float.class);
 			decreaseHealth.setAccessible(true);
@@ -419,10 +347,6 @@ public class SkeletonTest {
 
 	@Test
 	public void getDamageFactor_lessPenetrationThanArmorAmount_validFactor() {
-		GameCharacter gc = new GameCharacter(Set.of(VALID_TEXTURE), VALID_TEXTURE, tile, "VALID",
-				Set.of((WeaponTextures) weapon.getTexture()), GAMECHARACTER_HEALTH, weapon, GAMECHARACTER_LEVEL,
-				GAMECHARACTER_ARMOR) {
-		};
 		try {
 			Method getDamageFactor = GameCharacter.class.getDeclaredMethod("getDamageFactor", float.class);
 			getDamageFactor.setAccessible(true);
@@ -435,10 +359,6 @@ public class SkeletonTest {
 
 	@Test
 	public void getDamageFactor_0PenetrationAmount_between0And1Factor() {
-		GameCharacter gc = new GameCharacter(Set.of(VALID_TEXTURE), VALID_TEXTURE, tile, "VALID",
-				Set.of((WeaponTextures) weapon.getTexture()), GAMECHARACTER_HEALTH, weapon, GAMECHARACTER_LEVEL,
-				GAMECHARACTER_ARMOR) {
-		};
 		try {
 			Method getDamageFactor = GameCharacter.class.getDeclaredMethod("getDamageFactor", float.class);
 			getDamageFactor.setAccessible(true);
@@ -451,10 +371,6 @@ public class SkeletonTest {
 
 	@Test(expected = NegativePenetrationException.class)
 	public void getDamageFactor_negativePenetrationAmount_exception() throws Throwable {
-		GameCharacter gc = new GameCharacter(Set.of(VALID_TEXTURE), VALID_TEXTURE, tile, "VALID",
-				Set.of((WeaponTextures) weapon.getTexture()), GAMECHARACTER_HEALTH, weapon, GAMECHARACTER_LEVEL,
-				GAMECHARACTER_ARMOR) {
-		};
 		try {
 			Method getDamageFactor = GameCharacter.class.getDeclaredMethod("getDamageFactor", float.class);
 			getDamageFactor.setAccessible(true);
@@ -467,10 +383,6 @@ public class SkeletonTest {
 
 	@Test
 	public void getDamageFactor_morePenetrationThanArmorAmount_1AsFactor() {
-		GameCharacter gc = new GameCharacter(Set.of(VALID_TEXTURE), VALID_TEXTURE, tile, "VALID",
-				Set.of((WeaponTextures) weapon.getTexture()), GAMECHARACTER_HEALTH, weapon, GAMECHARACTER_LEVEL,
-				GAMECHARACTER_ARMOR) {
-		};
 		try {
 			Method getDamageFactor = GameCharacter.class.getDeclaredMethod("getDamageFactor", float.class);
 			getDamageFactor.setAccessible(true);
@@ -483,10 +395,6 @@ public class SkeletonTest {
 
 	@Test
 	public void takeDamage_validAmount_healthDecreasedAndTakingDamage() {
-		GameCharacter gc = new GameCharacter(Set.of(VALID_TEXTURE), VALID_TEXTURE, tile, "VALID",
-				Set.of((WeaponTextures) weapon.getTexture()), GAMECHARACTER_HEALTH, weapon, GAMECHARACTER_LEVEL,
-				GAMECHARACTER_ARMOR) {
-		};
 		try {
 			Method takeDamage = GameCharacter.class.getDeclaredMethod("takeDamage", float.class, float.class);
 			takeDamage.setAccessible(true);
@@ -501,10 +409,6 @@ public class SkeletonTest {
 
 	@Test
 	public void takeDamage_0Damage_healthUnchangedAndNotTakingDamage() {
-		GameCharacter gc = new GameCharacter(Set.of(VALID_TEXTURE), VALID_TEXTURE, tile, "VALID",
-				Set.of((WeaponTextures) weapon.getTexture()), GAMECHARACTER_HEALTH, weapon, GAMECHARACTER_LEVEL,
-				GAMECHARACTER_ARMOR) {
-		};
 		try {
 			Method takeDamage = GameCharacter.class.getDeclaredMethod("takeDamage", float.class, float.class);
 			takeDamage.setAccessible(true);
@@ -519,10 +423,6 @@ public class SkeletonTest {
 
 	@Test(expected = NegativeDamageException.class)
 	public void takeDamage_lessThan0Damage_exception() throws Throwable {
-		GameCharacter gc = new GameCharacter(Set.of(VALID_TEXTURE), VALID_TEXTURE, tile, "VALID",
-				Set.of((WeaponTextures) weapon.getTexture()), GAMECHARACTER_HEALTH, weapon, GAMECHARACTER_LEVEL,
-				GAMECHARACTER_ARMOR) {
-		};
 		try {
 			Method takeDamage = GameCharacter.class.getDeclaredMethod("takeDamage", float.class, float.class);
 			takeDamage.setAccessible(true);
@@ -535,10 +435,6 @@ public class SkeletonTest {
 
 	@Test(expected = NegativePenetrationException.class)
 	public void takeDamage_lessThan0Penetration_exception() throws Throwable {
-		GameCharacter gc = new GameCharacter(Set.of(VALID_TEXTURE), VALID_TEXTURE, tile, "VALID",
-				Set.of((WeaponTextures) weapon.getTexture()), GAMECHARACTER_HEALTH, weapon, GAMECHARACTER_LEVEL,
-				GAMECHARACTER_ARMOR) {
-		};
 		try {
 			Method takeDamage = GameCharacter.class.getDeclaredMethod("takeDamage", float.class, float.class);
 			takeDamage.setAccessible(true);
@@ -550,15 +446,9 @@ public class SkeletonTest {
 	}
 
 	@Test
-	public void attack_validAmount_healthDecreased() {
-		GameCharacter gc1 = new GameCharacter(Set.of(VALID_TEXTURE), VALID_TEXTURE, tile, "VALID",
-				Set.of((WeaponTextures) weapon.getTexture()), GAMECHARACTER_HEALTH, weapon, GAMECHARACTER_LEVEL,
-				GAMECHARACTER_ARMOR) {
-		};
-		GameCharacter gc2 = new GameCharacter(Set.of(VALID_TEXTURE), VALID_TEXTURE, tile, "VALID",
-				Set.of((WeaponTextures) weapon.getTexture()), GAMECHARACTER_HEALTH, weapon, GAMECHARACTER_LEVEL,
-				GAMECHARACTER_ARMOR) {
-		};
+	public void attack_validAmount_healthDecreased() throws CloneNotSupportedException {
+		GameCharacter gc1 = (GameCharacter) gc.clone();
+		GameCharacter gc2 = (GameCharacter) gc.clone();
 		gc2.attack(gc1);
 		assertEquals(
 				GAMECHARACTER_HEALTH - (weapon.getDamage() * (100 - gc1.getArmor() + weapon.getPenetration()) / 100),
@@ -577,38 +467,22 @@ public class SkeletonTest {
 
 	@Test(expected = IllegalWeaponException.class)
 	public void changeWeapon_nullAsWeapon_exception() {
-		GameCharacter gc = new GameCharacter(Set.of(VALID_TEXTURE), VALID_TEXTURE, tile, "VALID",
-				Set.of((WeaponTextures) weapon.getTexture(), (WeaponTextures) VALID_WEAPON.getTexture()),
-				GAMECHARACTER_HEALTH, weapon, GAMECHARACTER_LEVEL, GAMECHARACTER_ARMOR) {
-		};
 		gc.changeWeapon(null);
 	}
 
 	@Test(expected = IllegalWeaponException.class)
 	public void changeWeapon_weaponNotInWeaponSetAsWeapon_exception() {
-		GameCharacter gc = new GameCharacter(Set.of(VALID_TEXTURE), VALID_TEXTURE, tile, "VALID",
-				Set.of((WeaponTextures) weapon.getTexture()), GAMECHARACTER_HEALTH, weapon, GAMECHARACTER_LEVEL,
-				GAMECHARACTER_ARMOR) {
-		};
 		gc.changeWeapon(VALID_WEAPON);
 	}
 
 	@Test
 	public void changeWeapon_fistAsWeapon_weaponChanged() {
-		GameCharacter gc = new GameCharacter(Set.of(VALID_TEXTURE), VALID_TEXTURE, tile, "VALID",
-				Set.of((WeaponTextures) weapon.getTexture(), (WeaponTextures) VALID_WEAPON.getTexture()),
-				GAMECHARACTER_HEALTH, weapon, GAMECHARACTER_LEVEL, GAMECHARACTER_ARMOR) {
-		};
 		gc.changeWeapon(new Fist());
 		assertEquals(new Fist(), gc.getWeapon());
 	}
 
 	@Test
 	public void dropWeapon_nA_weaponIsFist() {
-		GameCharacter gc = new GameCharacter(Set.of(VALID_TEXTURE), VALID_TEXTURE, tile, "VALID",
-				Set.of((WeaponTextures) weapon.getTexture(), (WeaponTextures) VALID_WEAPON.getTexture()),
-				GAMECHARACTER_HEALTH, weapon, GAMECHARACTER_LEVEL, GAMECHARACTER_ARMOR) {
-		};
 		gc.dropWeapon();
 		assertEquals(new Fist(), gc.getWeapon());
 	}
@@ -641,13 +515,9 @@ public class SkeletonTest {
 		};
 		assertEquals(GameCharacter.MAX_ARMOR, gc.getArmor(), MARGIN);
 	}
-	
+
 	@Test
 	public void setDirection_validDirection_directionChanged() {
-		GameCharacter gc = new GameCharacter(Set.of(VALID_TEXTURE), VALID_TEXTURE, tile, "VALID",
-				Set.of((WeaponTextures) weapon.getTexture(), (WeaponTextures) VALID_WEAPON.getTexture()),
-				GAMECHARACTER_HEALTH, weapon, GAMECHARACTER_LEVEL, GAMECHARACTER_ARMOR) {
-		};
 		try {
 			Method setDirection = GameCharacter.class.getDeclaredMethod("setDirection", Directions.class);
 			setDirection.setAccessible(true);
@@ -658,13 +528,9 @@ public class SkeletonTest {
 			e.printStackTrace();
 		}
 	}
-	
+
 	@Test(expected = IllegalDirectionException.class)
 	public void setDirection_nullAsDirection_exception() throws Throwable {
-		GameCharacter gc = new GameCharacter(Set.of(VALID_TEXTURE), VALID_TEXTURE, tile, "VALID",
-				Set.of((WeaponTextures) weapon.getTexture(), (WeaponTextures) VALID_WEAPON.getTexture()),
-				GAMECHARACTER_HEALTH, weapon, GAMECHARACTER_LEVEL, GAMECHARACTER_ARMOR) {
-		};
 		try {
 			Method setDirection = GameCharacter.class.getDeclaredMethod("setDirection", Directions.class);
 			setDirection.setAccessible(true);
@@ -674,103 +540,56 @@ public class SkeletonTest {
 			throw e.getCause();
 		}
 	}
-	
+
 	@Test
 	public void startAttacking_notYetAttacking_startsAttacking() {
-		GameCharacter gc = new GameCharacter(Set.of(VALID_TEXTURE), VALID_TEXTURE, tile, "VALID",
-				Set.of((WeaponTextures) weapon.getTexture(), (WeaponTextures) VALID_WEAPON.getTexture()),
-				GAMECHARACTER_HEALTH, weapon, GAMECHARACTER_LEVEL, GAMECHARACTER_ARMOR) {
-		};
 		gc.startAttacking();
 		assertTrue(gc.isAttacking());
 	}
-	
+
 	@Test
 	public void stopAttacking_alreadyAttacking_stopsAttacking() {
-		GameCharacter gc = new GameCharacter(Set.of(VALID_TEXTURE), VALID_TEXTURE, tile, "VALID",
-				Set.of((WeaponTextures) weapon.getTexture(), (WeaponTextures) VALID_WEAPON.getTexture()),
-				GAMECHARACTER_HEALTH, weapon, GAMECHARACTER_LEVEL, GAMECHARACTER_ARMOR) {
-		};
 		gc.startAttacking();
 		assertTrue(gc.isAttacking());
 		gc.stopAttacking();
 		assertFalse(gc.isAttacking());
 	}
-	
+
 	@Test(expected = AlreadyAttackingException.class)
 	public void startAttacking_alreadyAttacking_exception() {
-		GameCharacter gc = new GameCharacter(Set.of(VALID_TEXTURE), VALID_TEXTURE, tile, "VALID",
-				Set.of((WeaponTextures) weapon.getTexture(), (WeaponTextures) VALID_WEAPON.getTexture()),
-				GAMECHARACTER_HEALTH, weapon, GAMECHARACTER_LEVEL, GAMECHARACTER_ARMOR) {
-		};
 		gc.startAttacking();
 		gc.startAttacking();
 	}
-	
+
 	@Test(expected = AlreadyPeacefulException.class)
 	public void stopAttacking_notYetAttacking_stopsAttacking() {
-		GameCharacter gc = new GameCharacter(Set.of(VALID_TEXTURE), VALID_TEXTURE, tile, "VALID",
-				Set.of((WeaponTextures) weapon.getTexture(), (WeaponTextures) VALID_WEAPON.getTexture()),
-				GAMECHARACTER_HEALTH, weapon, GAMECHARACTER_LEVEL, GAMECHARACTER_ARMOR) {
-		};
 		gc.stopAttacking();
 	}
-	
+
 	@Test
 	public void reset_alreadyAttacking_stopsAttacking() {
-		GameCharacter gc = new GameCharacter(Set.of(VALID_TEXTURE), VALID_TEXTURE, tile, "VALID",
-				Set.of((WeaponTextures) weapon.getTexture(), (WeaponTextures) VALID_WEAPON.getTexture()),
-				GAMECHARACTER_HEALTH, weapon, GAMECHARACTER_LEVEL, GAMECHARACTER_ARMOR) {
-		};
 		gc.startAttacking();
 		assertTrue(gc.isAttacking());
 		gc.reset();
 		assertFalse(gc.isAttacking());
 	}
-	
+
 	@Test
 	public void addHealthListener_validListener_healthListenerAdded() {
-		GameCharacter gc = new GameCharacter(Set.of(VALID_TEXTURE), VALID_TEXTURE, tile, "VALID",
-				Set.of((WeaponTextures) weapon.getTexture(), (WeaponTextures) VALID_WEAPON.getTexture()),
-				GAMECHARACTER_HEALTH, weapon, GAMECHARACTER_LEVEL, GAMECHARACTER_ARMOR) {
-		};
-		HealthListener hL = new HealthListener() {
-			@Override
-			public void healthChanged(HealthEvent event) {}
-		};
-		gc.addHealthListener(hL);
-		assertTrue(gc.getHealthListeners().contains(hL));
-	}
-	
-	@Test
-	public void removeHealthListener_validListener_healthListenerRemoved() {
-		GameCharacter gc = new GameCharacter(Set.of(VALID_TEXTURE), VALID_TEXTURE, tile, "VALID",
-				Set.of((WeaponTextures) weapon.getTexture(), (WeaponTextures) VALID_WEAPON.getTexture()),
-				GAMECHARACTER_HEALTH, weapon, GAMECHARACTER_LEVEL, GAMECHARACTER_ARMOR) {
-		};
-		HealthListener hL = new HealthListener() {
-			@Override
-			public void healthChanged(HealthEvent event) {}
-		};
-		gc.addHealthListener(hL);
-		assertTrue(gc.getHealthListeners().contains(hL));
-		gc.removeHealthListener(hL);
-		assertTrue(gc.getHealthListeners().isEmpty());
-	}
-	
-	
-	@Test
-	public void broadcast_validEvent_eventBroadcasted() {
-		int test = 0;
-		GameCharacter gc = new GameCharacter(Set.of(VALID_TEXTURE), VALID_TEXTURE, tile, "VALID",
-				Set.of((WeaponTextures) weapon.getTexture(), (WeaponTextures) VALID_WEAPON.getTexture()),
-				GAMECHARACTER_HEALTH, weapon, GAMECHARACTER_LEVEL, GAMECHARACTER_ARMOR) {
-		};
-		HealthEvent hE = new HealthEvent(test, 1);
 		HealthListener hL = new HealthListener() {
 			@Override
 			public void healthChanged(HealthEvent event) {
-				//test = 1;
+			}
+		};
+		gc.addHealthListener(hL);
+		assertTrue(gc.getHealthListeners().contains(hL));
+	}
+
+	@Test
+	public void removeHealthListener_validListener_healthListenerRemoved() {
+		HealthListener hL = new HealthListener() {
+			@Override
+			public void healthChanged(HealthEvent event) {
 			}
 		};
 		gc.addHealthListener(hL);
@@ -778,196 +597,633 @@ public class SkeletonTest {
 		gc.removeHealthListener(hL);
 		assertTrue(gc.getHealthListeners().isEmpty());
 	}
-	
-	
-	
+
+	@Test
+	public void broadcast_validEvent_eventBroadcasted() {
+		int test = 0;
+		HealthEvent hE = new HealthEvent(test, 1);
+		HealthListener hL = new HealthListener() {
+			@Override
+			public void healthChanged(HealthEvent event) {
+				assertEquals(1, event.newHealth, MARGIN);
+			}
+		};
+		gc.addHealthListener(hL);
+		try {
+			Method broadcast = GameCharacter.class.getDeclaredMethod("broadcast", HealthEvent.class);
+			broadcast.setAccessible(true);
+			broadcast.invoke(gc, hE);
+		} catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException
+				| InvocationTargetException e) {
+			e.printStackTrace();
+		}
+	}
+
 	@Test
 	public void moveEAST_by1_positionOfCenterChangedAndTileIsTheSame() {
-		GameCharacter gc = new GameCharacter(Set.of(VALID_TEXTURE), VALID_TEXTURE, tile, "VALID",
-				Set.of((WeaponTextures) weapon.getTexture(), (WeaponTextures) VALID_WEAPON.getTexture()),
-				GAMECHARACTER_HEALTH, weapon, GAMECHARACTER_LEVEL, GAMECHARACTER_ARMOR) {
-		};
 		try {
 			Method moveEAST = GameCharacter.class.getDeclaredMethod("moveEAST");
 			moveEAST.setAccessible(true);
 			moveEAST.invoke(gc);
-			assertEquals(tile.getSize().getWidth()/2+1, gc.getPositionOfTextureCenterInTile().getX());
+			assertEquals(tile.getSize().getWidth() / 2 + 1, gc.getPositionOfTextureCenterInTile().getX());
 			assertEquals(tile, gc.getTile());
 		} catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException
 				| InvocationTargetException e) {
 			e.printStackTrace();
 		}
 	}
-	
+
 	@Test
 	public void moveEAST_byATilePlus1_positionOfCenterChangedAndTileChanged() {
-		GameCharacter gc = new GameCharacter(Set.of(VALID_TEXTURE), VALID_TEXTURE, tile, "VALID",
-				Set.of((WeaponTextures) weapon.getTexture(), (WeaponTextures) VALID_WEAPON.getTexture()),
-				GAMECHARACTER_HEALTH, weapon, GAMECHARACTER_LEVEL, GAMECHARACTER_ARMOR) {
-		};
 		try {
 			Method moveEAST = GameCharacter.class.getDeclaredMethod("moveEAST");
 			moveEAST.setAccessible(true);
-			IntStream.range(0, tile.getSize().getWidth()+1).forEach(i ->{
+			IntStream.range(0, tile.getSize().getWidth() + 1).forEach(i -> {
 				try {
 					moveEAST.invoke(gc);
 				} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
 					e.printStackTrace();
 				}
 			});
-			assertEquals(tile.getSize().getWidth()/2+1, gc.getPositionOfTextureCenterInTile().getX());
+			assertEquals(tile.getSize().getWidth() / 2 + 1, gc.getPositionOfTextureCenterInTile().getX());
 			assertEquals(tile.getEASTwardTile(), gc.getTile());
 		} catch (NoSuchMethodException | SecurityException | IllegalArgumentException e) {
 			e.printStackTrace();
 		}
 	}
-	
-	
+
 	@Test
 	public void moveSOUTH_by1_positionOfCenterChangedAndTileIsTheSame() {
-		GameCharacter gc = new GameCharacter(Set.of(VALID_TEXTURE), VALID_TEXTURE, tile, "VALID",
-				Set.of((WeaponTextures) weapon.getTexture(), (WeaponTextures) VALID_WEAPON.getTexture()),
-				GAMECHARACTER_HEALTH, weapon, GAMECHARACTER_LEVEL, GAMECHARACTER_ARMOR) {
-		};
 		try {
 			Method moveSOUTH = GameCharacter.class.getDeclaredMethod("moveSOUTH");
 			moveSOUTH.setAccessible(true);
 			moveSOUTH.invoke(gc);
-			assertEquals(tile.getSize().getHeight()/2+1, gc.getPositionOfTextureCenterInTile().getY());
+			assertEquals(tile.getSize().getHeight() / 2 + 1, gc.getPositionOfTextureCenterInTile().getY());
 			assertEquals(tile, gc.getTile());
 		} catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException
 				| InvocationTargetException e) {
 			e.printStackTrace();
 		}
 	}
-	
+
 	@Test
 	public void moveSOUTH_byATilePlus1_positionOfCenterChangedAndTileChanged() {
-		GameCharacter gc = new GameCharacter(Set.of(VALID_TEXTURE), VALID_TEXTURE, tile, "VALID",
-				Set.of((WeaponTextures) weapon.getTexture(), (WeaponTextures) VALID_WEAPON.getTexture()),
-				GAMECHARACTER_HEALTH, weapon, GAMECHARACTER_LEVEL, GAMECHARACTER_ARMOR) {
-		};
 		try {
 			Method moveSOUTH = GameCharacter.class.getDeclaredMethod("moveSOUTH");
 			moveSOUTH.setAccessible(true);
-			IntStream.range(0, tile.getSize().getHeight()+1).forEach(i ->{
+			IntStream.range(0, tile.getSize().getHeight() + 1).forEach(i -> {
 				try {
 					moveSOUTH.invoke(gc);
 				} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
 					e.printStackTrace();
 				}
 			});
-			assertEquals(tile.getSize().getHeight()/2+1, gc.getPositionOfTextureCenterInTile().getY());
+			assertEquals(tile.getSize().getHeight() / 2 + 1, gc.getPositionOfTextureCenterInTile().getY());
 			assertEquals(tile.getSOUTHwardTile(), gc.getTile());
 		} catch (NoSuchMethodException | SecurityException | IllegalArgumentException e) {
 			e.printStackTrace();
 		}
 	}
-	
-	
+
 	@Test
 	public void moveWEST_by1_positionOfCenterChangedAndTileIsTheSame() {
-		GameCharacter gc = new GameCharacter(Set.of(VALID_TEXTURE), VALID_TEXTURE, tile, "VALID",
-				Set.of((WeaponTextures) weapon.getTexture(), (WeaponTextures) VALID_WEAPON.getTexture()),
-				GAMECHARACTER_HEALTH, weapon, GAMECHARACTER_LEVEL, GAMECHARACTER_ARMOR) {
-		};
 		try {
 			Method moveWEST = GameCharacter.class.getDeclaredMethod("moveWEST");
 			moveWEST.setAccessible(true);
 			moveWEST.invoke(gc);
-			assertEquals(tile.getSize().getWidth()/2-1, gc.getPositionOfTextureCenterInTile().getX());
+			assertEquals(tile.getSize().getWidth() / 2 - 1, gc.getPositionOfTextureCenterInTile().getX());
 			assertEquals(tile, gc.getTile());
 		} catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException
 				| InvocationTargetException e) {
 			e.printStackTrace();
 		}
 	}
-	
+
 	@Test
 	public void moveWEST_byATilePlus1_positionOfCenterChangedAndTileChanged() {
-		GameCharacter gc = new GameCharacter(Set.of(VALID_TEXTURE), VALID_TEXTURE, tile, "VALID",
-				Set.of((WeaponTextures) weapon.getTexture(), (WeaponTextures) VALID_WEAPON.getTexture()),
-				GAMECHARACTER_HEALTH, weapon, GAMECHARACTER_LEVEL, GAMECHARACTER_ARMOR) {
-		};
 		try {
 			Method moveWEST = GameCharacter.class.getDeclaredMethod("moveWEST");
 			moveWEST.setAccessible(true);
-			IntStream.range(0, tile.getSize().getWidth()+1).forEach(i ->{
+			IntStream.range(0, tile.getSize().getWidth() + 1).forEach(i -> {
 				try {
 					moveWEST.invoke(gc);
 				} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
 					e.printStackTrace();
 				}
 			});
-			assertEquals(tile.getSize().getWidth()/2-1, gc.getPositionOfTextureCenterInTile().getX());
+			assertEquals(tile.getSize().getWidth() / 2 - 1, gc.getPositionOfTextureCenterInTile().getX());
 			assertEquals(tile.getWESTwardTile(), gc.getTile());
 		} catch (NoSuchMethodException | SecurityException | IllegalArgumentException e) {
 			e.printStackTrace();
 		}
 	}
-	
-	
+
 	@Test
 	public void moveNORTH_by1_positionOfCenterChangedAndTileIsTheSame() {
-		GameCharacter gc = new GameCharacter(Set.of(VALID_TEXTURE), VALID_TEXTURE, tile, "VALID",
-				Set.of((WeaponTextures) weapon.getTexture(), (WeaponTextures) VALID_WEAPON.getTexture()),
-				GAMECHARACTER_HEALTH, weapon, GAMECHARACTER_LEVEL, GAMECHARACTER_ARMOR) {
-		};
 		try {
 			Method moveNORTH = GameCharacter.class.getDeclaredMethod("moveNORTH");
 			moveNORTH.setAccessible(true);
 			moveNORTH.invoke(gc);
-			assertEquals(tile.getSize().getHeight()/2-1, gc.getPositionOfTextureCenterInTile().getY());
+			assertEquals(tile.getSize().getHeight() / 2 - 1, gc.getPositionOfTextureCenterInTile().getY());
 			assertEquals(tile, gc.getTile());
 		} catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException
 				| InvocationTargetException e) {
 			e.printStackTrace();
 		}
 	}
-	
+
 	@Test
 	public void moveNORTH_byATilePlus1_positionOfCenterChangedAndTileChanged() {
-		GameCharacter gc = new GameCharacter(Set.of(VALID_TEXTURE), VALID_TEXTURE, tile, "VALID",
-				Set.of((WeaponTextures) weapon.getTexture(), (WeaponTextures) VALID_WEAPON.getTexture()),
-				GAMECHARACTER_HEALTH, weapon, GAMECHARACTER_LEVEL, GAMECHARACTER_ARMOR) {
-		};
 		try {
 			Method moveNORTH = GameCharacter.class.getDeclaredMethod("moveNORTH");
 			moveNORTH.setAccessible(true);
-			IntStream.range(0, tile.getSize().getHeight()+1).forEach(i ->{
+			IntStream.range(0, tile.getSize().getHeight() + 1).forEach(i -> {
 				try {
 					moveNORTH.invoke(gc);
 				} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
 					e.printStackTrace();
 				}
 			});
-			assertEquals(tile.getSize().getHeight()/2-1, gc.getPositionOfTextureCenterInTile().getY());
+			assertEquals(tile.getSize().getHeight() / 2 - 1, gc.getPositionOfTextureCenterInTile().getY());
 			assertEquals(tile.getNORTHwardTile(), gc.getTile());
 		} catch (NoSuchMethodException | SecurityException | IllegalArgumentException e) {
 			e.printStackTrace();
 		}
 	}
-	
-	
-	
+
+	@Test
+	public void inFrontOf_goingEastAndinRangeAndInFrontAndAllAvailableTiles_true() {
+		try {
+			Method setDirection = GameCharacter.class.getDeclaredMethod("setDirection", Directions.class);
+			setDirection.setAccessible(true);
+			setDirection.invoke(gc, Directions.EAST);
+		} catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException
+				| InvocationTargetException e) {
+			e.printStackTrace();
+		}
+
+		int rangeX = 1;
+		int rangeY = 1;
+
+		Tile inFront = tile.getEASTwardTile();
+		Set<Tile> availableTiles = Set.of(tile, inFront);
+		assertTrue(gc.inFrontOf(rangeX, rangeY, inFront, availableTiles));
+	}
+
+	@Test
+	public void inFrontOf_goingSouthAndinRangeAndInFrontAndAllAvailableTiles_true() {
+		try {
+			Method setDirection = GameCharacter.class.getDeclaredMethod("setDirection", Directions.class);
+			setDirection.setAccessible(true);
+			setDirection.invoke(gc, Directions.SOUTH);
+		} catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException
+				| InvocationTargetException e) {
+			e.printStackTrace();
+		}
+
+		int rangeX = 1;
+		int rangeY = 1;
+
+		Tile inFront = tile.getSOUTHwardTile();
+		Set<Tile> availableTiles = Set.of(tile, inFront);
+		assertTrue(gc.inFrontOf(rangeX, rangeY, inFront, availableTiles));
+	}
+
+	@Test
+	public void inFrontOf_goingWestAndinRangeAndInFrontAndAllAvailableTiles_true() {
+		try {
+			Method setDirection = GameCharacter.class.getDeclaredMethod("setDirection", Directions.class);
+			setDirection.setAccessible(true);
+			setDirection.invoke(gc, Directions.WEST);
+		} catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException
+				| InvocationTargetException e) {
+			e.printStackTrace();
+		}
+
+		int rangeX = 1;
+		int rangeY = 1;
+
+		Tile inFront = tile.getWESTwardTile();
+		Set<Tile> availableTiles = Set.of(tile, inFront);
+		assertTrue(gc.inFrontOf(rangeX, rangeY, inFront, availableTiles));
+	}
+
+	@Test
+	public void inFrontOf_goingNorthAndinRangeAndInFrontAndAllAvailableTiles_true() {
+		try {
+			Method setDirection = GameCharacter.class.getDeclaredMethod("setDirection", Directions.class);
+			setDirection.setAccessible(true);
+			setDirection.invoke(gc, Directions.NORTH);
+		} catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException
+				| InvocationTargetException e) {
+			e.printStackTrace();
+		}
+
+		int rangeX = 1;
+		int rangeY = 1;
+
+		Tile inFront = tile.getNORTHwardTile();
+		Set<Tile> availableTiles = Set.of(tile, inFront);
+		assertTrue(gc.inFrontOf(rangeX, rangeY, inFront, availableTiles));
+	}
+
+	@Test
+	public void inFrontOf_goingEastAndOutOfRangeAndInFrontAndAllAvailableTiles_false() {
+		try {
+			Method setDirection = GameCharacter.class.getDeclaredMethod("setDirection", Directions.class);
+			setDirection.setAccessible(true);
+			setDirection.invoke(gc, Directions.EAST);
+		} catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException
+				| InvocationTargetException e) {
+			e.printStackTrace();
+		}
+
+		int rangeX = 1;
+		int rangeY = 1;
+
+		Tile inFront = tile.getEASTwardTile();
+		Tile OutOfRangeInFront = inFront.getEASTwardTile();
+		Set<Tile> availableTiles = Set.of(tile, inFront, OutOfRangeInFront);
+		assertFalse(gc.inFrontOf(rangeX, rangeY, OutOfRangeInFront, availableTiles));
+	}
+
+	@Test
+	public void inFrontOf_goingSouthAndOutOfRangeAndInFrontAndAllAvailableTiles_false() {
+		try {
+			Method setDirection = GameCharacter.class.getDeclaredMethod("setDirection", Directions.class);
+			setDirection.setAccessible(true);
+			setDirection.invoke(gc, Directions.SOUTH);
+		} catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException
+				| InvocationTargetException e) {
+			e.printStackTrace();
+		}
+
+		int rangeX = 1;
+		int rangeY = 1;
+
+		Tile inFront = tile.getSOUTHwardTile();
+		Tile OutOfRangeInFront = inFront.getSOUTHwardTile();
+		Set<Tile> availableTiles = Set.of(tile, inFront, OutOfRangeInFront);
+		assertFalse(gc.inFrontOf(rangeX, rangeY, OutOfRangeInFront, availableTiles));
+	}
+
+	@Test
+	public void inFrontOf_goingWestAndOutOfRangeAndInFrontAndAllAvailableTiles_false() {
+		try {
+			Method setDirection = GameCharacter.class.getDeclaredMethod("setDirection", Directions.class);
+			setDirection.setAccessible(true);
+			setDirection.invoke(gc, Directions.WEST);
+		} catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException
+				| InvocationTargetException e) {
+			e.printStackTrace();
+		}
+
+		int rangeX = 1;
+		int rangeY = 1;
+
+		Tile inFront = tile.getWESTwardTile();
+		Tile OutOfRangeInFront = inFront.getWESTwardTile();
+		Set<Tile> availableTiles = Set.of(tile, inFront, OutOfRangeInFront);
+		assertFalse(gc.inFrontOf(rangeX, rangeY, OutOfRangeInFront, availableTiles));
+	}
+
+	@Test
+	public void inFrontOf_goingNorthAndOutOfRangeAndInFrontAndAllAvailableTiles_false() {
+		try {
+			Method setDirection = GameCharacter.class.getDeclaredMethod("setDirection", Directions.class);
+			setDirection.setAccessible(true);
+			setDirection.invoke(gc, Directions.NORTH);
+		} catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException
+				| InvocationTargetException e) {
+			e.printStackTrace();
+		}
+
+		int rangeX = 1;
+		int rangeY = 1;
+
+		Tile inFront = tile.getNORTHwardTile();
+		Tile OutOfRangeInFront = inFront.getNORTHwardTile();
+		Set<Tile> availableTiles = Set.of(tile, inFront, OutOfRangeInFront);
+		assertFalse(gc.inFrontOf(rangeX, rangeY, OutOfRangeInFront, availableTiles));
+	}
+
+	@Test
+	public void inFrontOf_goingEastAndInRangeAndInFrontAndMissing1AvailableTiles_false() {
+		try {
+			Method setDirection = GameCharacter.class.getDeclaredMethod("setDirection", Directions.class);
+			setDirection.setAccessible(true);
+			setDirection.invoke(gc, Directions.EAST);
+		} catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException
+				| InvocationTargetException e) {
+			e.printStackTrace();
+		}
+
+		int rangeX = 1;
+		int rangeY = 1;
+
+		Tile inFront = tile.getEASTwardTile();
+		Tile twiceInFront = inFront.getEASTwardTile();
+		Set<Tile> availableTiles = Set.of(tile, twiceInFront);
+		assertFalse(gc.inFrontOf(rangeX, rangeY, twiceInFront, availableTiles));
+	}
+
+	@Test
+	public void inFrontOf_goingSouthAndInRangeAndInFrontAndMissing1AvailableTiles_false() {
+		try {
+			Method setDirection = GameCharacter.class.getDeclaredMethod("setDirection", Directions.class);
+			setDirection.setAccessible(true);
+			setDirection.invoke(gc, Directions.SOUTH);
+		} catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException
+				| InvocationTargetException e) {
+			e.printStackTrace();
+		}
+
+		int rangeX = 1;
+		int rangeY = 1;
+
+		Tile inFront = tile.getSOUTHwardTile();
+		Tile twiceInFront = inFront.getSOUTHwardTile();
+		Set<Tile> availableTiles = Set.of(tile, twiceInFront);
+		assertFalse(gc.inFrontOf(rangeX, rangeY, twiceInFront, availableTiles));
+	}
+
+	@Test
+	public void inFrontOf_goingWestAndInRangeAndInFrontAndMissing1AvailableTiles_false() {
+		try {
+			Method setDirection = GameCharacter.class.getDeclaredMethod("setDirection", Directions.class);
+			setDirection.setAccessible(true);
+			setDirection.invoke(gc, Directions.WEST);
+		} catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException
+				| InvocationTargetException e) {
+			e.printStackTrace();
+		}
+
+		int rangeX = 1;
+		int rangeY = 1;
+
+		Tile inFront = tile.getWESTwardTile();
+		Tile twiceInFront = inFront.getWESTwardTile();
+		Set<Tile> availableTiles = Set.of(tile, twiceInFront);
+		assertFalse(gc.inFrontOf(rangeX, rangeY, twiceInFront, availableTiles));
+	}
+
+	@Test
+	public void inFrontOf_goingNorthAndInRangeAndInFrontAndMissing1AvailableTiles_false() {
+		try {
+			Method setDirection = GameCharacter.class.getDeclaredMethod("setDirection", Directions.class);
+			setDirection.setAccessible(true);
+			setDirection.invoke(gc, Directions.NORTH);
+		} catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException
+				| InvocationTargetException e) {
+			e.printStackTrace();
+		}
+
+		int rangeX = 1;
+		int rangeY = 1;
+
+		Tile inFront = tile.getNORTHwardTile();
+		Tile twiceInFront = inFront.getNORTHwardTile();
+		Set<Tile> availableTiles = Set.of(tile, twiceInFront);
+		assertFalse(gc.inFrontOf(rangeX, rangeY, twiceInFront, availableTiles));
+	}
+
+	@Test
+	public void inFrontOf_goingEastAndinRangeAndNotInFrontAndAllAvailableTiles_false() {
+		try {
+			Method setDirection = GameCharacter.class.getDeclaredMethod("setDirection", Directions.class);
+			setDirection.setAccessible(true);
+			setDirection.invoke(gc, Directions.EAST);
+		} catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException
+				| InvocationTargetException e) {
+			e.printStackTrace();
+		}
+
+		int rangeX = 1;
+		int rangeY = 1;
+
+		Tile inFront = tile.getSOUTHwardTile();
+		Set<Tile> availableTiles = Set.of(tile, inFront);
+		assertFalse(gc.inFrontOf(rangeX, rangeY, inFront, availableTiles));
+	}
+
+	@Test
+	public void inFrontOf_goingSouthAndinRangeAndNotInFrontAndAllAvailableTiles_false() {
+		try {
+			Method setDirection = GameCharacter.class.getDeclaredMethod("setDirection", Directions.class);
+			setDirection.setAccessible(true);
+			setDirection.invoke(gc, Directions.SOUTH);
+		} catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException
+				| InvocationTargetException e) {
+			e.printStackTrace();
+		}
+
+		int rangeX = 1;
+		int rangeY = 1;
+
+		Tile inFront = tile.getWESTwardTile();
+		Set<Tile> availableTiles = Set.of(tile, inFront);
+		assertFalse(gc.inFrontOf(rangeX, rangeY, inFront, availableTiles));
+	}
+
+	@Test
+	public void inFrontOf_goingWestAndinRangeAndNotInFrontAndAllAvailableTiles_false() {
+		try {
+			Method setDirection = GameCharacter.class.getDeclaredMethod("setDirection", Directions.class);
+			setDirection.setAccessible(true);
+			setDirection.invoke(gc, Directions.WEST);
+		} catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException
+				| InvocationTargetException e) {
+			e.printStackTrace();
+		}
+
+		int rangeX = 1;
+		int rangeY = 1;
+
+		Tile inFront = tile.getNORTHwardTile();
+		Set<Tile> availableTiles = Set.of(tile, inFront);
+		assertFalse(gc.inFrontOf(rangeX, rangeY, inFront, availableTiles));
+	}
+
+	@Test
+	public void inFrontOf_goingNorthAndinRangeAndNotInFrontAndAllAvailableTiles_false() {
+		try {
+			Method setDirection = GameCharacter.class.getDeclaredMethod("setDirection", Directions.class);
+			setDirection.setAccessible(true);
+			setDirection.invoke(gc, Directions.NORTH);
+		} catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException
+				| InvocationTargetException e) {
+			e.printStackTrace();
+		}
+
+		int rangeX = 1;
+		int rangeY = 1;
+
+		Tile inFront = tile.getEASTwardTile();
+		Set<Tile> availableTiles = Set.of(tile, inFront);
+		assertFalse(gc.inFrontOf(rangeX, rangeY, inFront, availableTiles));
+	}
+
+	@Test
+	public void inFrontOf_goingEastAndinRangeAndInFrontAndNotAllAvailableTiles_false() {
+		try {
+			Method setDirection = GameCharacter.class.getDeclaredMethod("setDirection", Directions.class);
+			setDirection.setAccessible(true);
+			setDirection.invoke(gc, Directions.EAST);
+		} catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException
+				| InvocationTargetException e) {
+			e.printStackTrace();
+		}
+
+		int rangeX = 1;
+		int rangeY = 1;
+
+		Tile inFront = tile.getEASTwardTile();
+		Set<Tile> availableTiles = Set.of(tile);
+		assertFalse(gc.inFrontOf(rangeX, rangeY, inFront, availableTiles));
+	}
+
+	@Test
+	public void inFrontOf_goingSouthAndinRangeAndInFrontAndNotAllAvailableTiles_false() {
+		try {
+			Method setDirection = GameCharacter.class.getDeclaredMethod("setDirection", Directions.class);
+			setDirection.setAccessible(true);
+			setDirection.invoke(gc, Directions.SOUTH);
+		} catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException
+				| InvocationTargetException e) {
+			e.printStackTrace();
+		}
+
+		int rangeX = 1;
+		int rangeY = 1;
+
+		Tile inFront = tile.getSOUTHwardTile();
+		Set<Tile> availableTiles = Set.of(tile);
+		assertFalse(gc.inFrontOf(rangeX, rangeY, inFront, availableTiles));
+	}
+
+	@Test
+	public void inFrontOf_goingWestAndinRangeAndInFrontAndNotAllAvailableTiles_false() {
+		try {
+			Method setDirection = GameCharacter.class.getDeclaredMethod("setDirection", Directions.class);
+			setDirection.setAccessible(true);
+			setDirection.invoke(gc, Directions.WEST);
+		} catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException
+				| InvocationTargetException e) {
+			e.printStackTrace();
+		}
+
+		int rangeX = 1;
+		int rangeY = 1;
+
+		Tile inFront = tile.getWESTwardTile();
+		Set<Tile> availableTiles = Set.of(tile);
+		assertFalse(gc.inFrontOf(rangeX, rangeY, inFront, availableTiles));
+	}
+
+	@Test
+	public void inFrontOf_goingNorthAndinRangeAndInFrontAndNotAllAvailableTiles_false() {
+		try {
+			Method setDirection = GameCharacter.class.getDeclaredMethod("setDirection", Directions.class);
+			setDirection.setAccessible(true);
+			setDirection.invoke(gc, Directions.NORTH);
+		} catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException
+				| InvocationTargetException e) {
+			e.printStackTrace();
+		}
+
+		int rangeX = 1;
+		int rangeY = 1;
+
+		Tile inFront = tile.getNORTHwardTile();
+		Set<Tile> availableTiles = Set.of(tile);
+		assertFalse(gc.inFrontOf(rangeX, rangeY, inFront, availableTiles));
+	}
+
+	@Test
+	public void inFrontOf_goingEastAndinRangeAndBehindAndAllAvailableTiles_false() {
+		try {
+			Method setDirection = GameCharacter.class.getDeclaredMethod("setDirection", Directions.class);
+			setDirection.setAccessible(true);
+			setDirection.invoke(gc, Directions.EAST);
+		} catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException
+				| InvocationTargetException e) {
+			e.printStackTrace();
+		}
+
+		int rangeX = 1;
+		int rangeY = 1;
+
+		Tile inFront = tile.getWESTwardTile();
+		Set<Tile> availableTiles = Set.of(tile, inFront);
+		assertFalse(gc.inFrontOf(rangeX, rangeY, inFront, availableTiles));
+	}
+
+	@Test
+	public void inFrontOf_goingSouthAndinRangeAndBehindAndAllAvailableTiles_false() {
+		try {
+			Method setDirection = GameCharacter.class.getDeclaredMethod("setDirection", Directions.class);
+			setDirection.setAccessible(true);
+			setDirection.invoke(gc, Directions.SOUTH);
+		} catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException
+				| InvocationTargetException e) {
+			e.printStackTrace();
+		}
+
+		int rangeX = 1;
+		int rangeY = 1;
+
+		Tile inFront = tile.getNORTHwardTile();
+		Set<Tile> availableTiles = Set.of(tile, inFront);
+		assertFalse(gc.inFrontOf(rangeX, rangeY, inFront, availableTiles));
+	}
+
+	@Test
+	public void inFrontOf_goingWestAndinRangeAndBehindAndAllAvailableTiles_false() {
+		try {
+			Method setDirection = GameCharacter.class.getDeclaredMethod("setDirection", Directions.class);
+			setDirection.setAccessible(true);
+			setDirection.invoke(gc, Directions.WEST);
+		} catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException
+				| InvocationTargetException e) {
+			e.printStackTrace();
+		}
+
+		int rangeX = 1;
+		int rangeY = 1;
+
+		Tile inFront = tile.getEASTwardTile();
+		Set<Tile> availableTiles = Set.of(tile, inFront);
+		assertFalse(gc.inFrontOf(rangeX, rangeY, inFront, availableTiles));
+	}
+
+	@Test
+	public void inFrontOf_goingNorthAndinRangeAndBehindAndAllAvailableTiles_false() {
+		try {
+			Method setDirection = GameCharacter.class.getDeclaredMethod("setDirection", Directions.class);
+			setDirection.setAccessible(true);
+			setDirection.invoke(gc, Directions.NORTH);
+		} catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException
+				| InvocationTargetException e) {
+			e.printStackTrace();
+		}
+
+		int rangeX = 1;
+		int rangeY = 1;
+
+		Tile inFront = tile.getSOUTHwardTile();
+		Set<Tile> availableTiles = Set.of(tile, inFront);
+		assertFalse(gc.inFrontOf(rangeX, rangeY, inFront, availableTiles));
+	}
 
 	/* ANIMATED TESTS */
 	@Test
 	public void startMoving_fromNonMovingState_moving() {
-		GameCharacter gc = new GameCharacter(Set.of(VALID_TEXTURE), VALID_TEXTURE, tile, "VALID",
-				Set.of((WeaponTextures) weapon.getTexture(), (WeaponTextures) VALID_WEAPON.getTexture()),
-				GAMECHARACTER_HEALTH, weapon, GAMECHARACTER_LEVEL, GAMECHARACTER_ARMOR) {
-		};
 		gc.startMoving();
 		assertTrue(gc.isMoving());
 	}
 
 	@Test
 	public void stopMoving_fromMovingState_notMoving() {
-		GameCharacter gc = new GameCharacter(Set.of(VALID_TEXTURE), VALID_TEXTURE, tile, "VALID",
-				Set.of((WeaponTextures) weapon.getTexture(), (WeaponTextures) VALID_WEAPON.getTexture()),
-				GAMECHARACTER_HEALTH, weapon, GAMECHARACTER_LEVEL, GAMECHARACTER_ARMOR) {
-		};
 		gc.startMoving();
 		assertTrue(gc.isMoving());
 		gc.stopMoving();
@@ -976,31 +1232,19 @@ public class SkeletonTest {
 
 	@Test(expected = AlreadyMovingException.class)
 	public void startMoving_fromMovingState_exception() {
-		GameCharacter gc = new GameCharacter(Set.of(VALID_TEXTURE), VALID_TEXTURE, tile, "VALID",
-				Set.of((WeaponTextures) weapon.getTexture(), (WeaponTextures) VALID_WEAPON.getTexture()),
-				GAMECHARACTER_HEALTH, weapon, GAMECHARACTER_LEVEL, GAMECHARACTER_ARMOR) {
-		};
 		gc.startMoving();
 		gc.startMoving();
 	}
 
 	@Test(expected = AlreadyStoppedException.class)
 	public void stopMoving_fromNonMovingState_exception() {
-		GameCharacter gc = new GameCharacter(Set.of(VALID_TEXTURE), VALID_TEXTURE, tile, "VALID",
-				Set.of((WeaponTextures) weapon.getTexture(), (WeaponTextures) VALID_WEAPON.getTexture()),
-				GAMECHARACTER_HEALTH, weapon, GAMECHARACTER_LEVEL, GAMECHARACTER_ARMOR) {
-		};
 		gc.startMoving();
 		gc.stopMoving();
 		gc.stopMoving();
 	}
-	
+
 	@Test
 	public void setMovementFrame_frameBetween1AndAnimationLength_frameSet() {
-		GameCharacter gc = new GameCharacter(Set.of(VALID_TEXTURE), VALID_TEXTURE, tile, "VALID",
-				Set.of((WeaponTextures) weapon.getTexture()), GAMECHARACTER_HEALTH, weapon, GAMECHARACTER_LEVEL,
-				GAMECHARACTER_ARMOR) {
-		};
 		try {
 			Method setMovementFrame = GameCharacter.class.getDeclaredMethod("setMovementFrame", int.class);
 			setMovementFrame.setAccessible(true);
@@ -1011,13 +1255,9 @@ public class SkeletonTest {
 		}
 		assertEquals(2, gc.getMovementFrame());
 	}
-	
+
 	@Test(expected = IllegalMovementFrameException.class)
 	public void setMovementFrame_lessThan1_exception() throws Throwable {
-		GameCharacter gc = new GameCharacter(Set.of(VALID_TEXTURE), VALID_TEXTURE, tile, "VALID",
-				Set.of((WeaponTextures) weapon.getTexture()), GAMECHARACTER_HEALTH, weapon, GAMECHARACTER_LEVEL,
-				GAMECHARACTER_ARMOR) {
-		};
 		try {
 			Method setMovementFrame = GameCharacter.class.getDeclaredMethod("setMovementFrame", int.class);
 			setMovementFrame.setAccessible(true);
@@ -1030,33 +1270,25 @@ public class SkeletonTest {
 
 	@Test
 	public void setMovementFrame_moreThanAnimationLength_firstFrame() {
-		GameCharacter gc = new GameCharacter(Set.of(VALID_TEXTURE), VALID_TEXTURE, tile, "VALID",
-				Set.of((WeaponTextures) weapon.getTexture()), GAMECHARACTER_HEALTH, weapon, GAMECHARACTER_LEVEL,
-				GAMECHARACTER_ARMOR) {
-		};
 		try {
 			Method setMovementFrame = GameCharacter.class.getDeclaredMethod("setMovementFrame", int.class);
 			setMovementFrame.setAccessible(true);
-			setMovementFrame.invoke(gc, Animated.ANIMATION_LENGTH+1);
+			setMovementFrame.invoke(gc, Animated.ANIMATION_LENGTH + 1);
 		} catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException
 				| InvocationTargetException e) {
 			e.printStackTrace();
 		}
 		assertEquals(1, gc.getMovementFrame());
 	}
-	
+
 	@Test
 	public void resetMovementFrame_nA_firstFrame() {
-		GameCharacter gc = new GameCharacter(Set.of(VALID_TEXTURE), VALID_TEXTURE, tile, "VALID",
-				Set.of((WeaponTextures) weapon.getTexture()), GAMECHARACTER_HEALTH, weapon, GAMECHARACTER_LEVEL,
-				GAMECHARACTER_ARMOR) {
-		};
 		try {
 			Method setMovementFrame = GameCharacter.class.getDeclaredMethod("setMovementFrame", int.class);
 			setMovementFrame.setAccessible(true);
 			setMovementFrame.invoke(gc, 2);
 			assertEquals(2, gc.getMovementFrame());
-			
+
 			Method resetMovementFrame = GameCharacter.class.getDeclaredMethod("resetMovementFrame");
 			resetMovementFrame.setAccessible(true);
 			resetMovementFrame.invoke(gc);
@@ -1066,15 +1298,12 @@ public class SkeletonTest {
 			e.printStackTrace();
 		}
 	}
-	
+
 	@Test
 	public void getAssociatedFrameNumber_validFrameNumber_associatedFrameNumber() {
-		GameCharacter gc = new GameCharacter(Set.of(VALID_TEXTURE), VALID_TEXTURE, tile, "VALID",
-				Set.of((WeaponTextures) weapon.getTexture()), GAMECHARACTER_HEALTH, weapon, GAMECHARACTER_LEVEL,
-				GAMECHARACTER_ARMOR) {
-		};
 		try {
-			Method getAssociatedFrameNumber = GameCharacter.class.getDeclaredMethod("getAssociatedFrameNumber", int.class);
+			Method getAssociatedFrameNumber = GameCharacter.class.getDeclaredMethod("getAssociatedFrameNumber",
+					int.class);
 			getAssociatedFrameNumber.setAccessible(true);
 			assertEquals(1, getAssociatedFrameNumber.invoke(gc, 2));
 		} catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException
@@ -1085,12 +1314,9 @@ public class SkeletonTest {
 
 	@Test(expected = IllegalFrameNumberException.class)
 	public void getAssociatedFrameNumber_0AsFrameNumber_exception() throws Throwable {
-		GameCharacter gc = new GameCharacter(Set.of(VALID_TEXTURE), VALID_TEXTURE, tile, "VALID",
-				Set.of((WeaponTextures) weapon.getTexture()), GAMECHARACTER_HEALTH, weapon, GAMECHARACTER_LEVEL,
-				GAMECHARACTER_ARMOR) {
-		};
 		try {
-			Method getAssociatedFrameNumber = GameCharacter.class.getDeclaredMethod("getAssociatedFrameNumber", int.class);
+			Method getAssociatedFrameNumber = GameCharacter.class.getDeclaredMethod("getAssociatedFrameNumber",
+					int.class);
 			getAssociatedFrameNumber.setAccessible(true);
 			getAssociatedFrameNumber.invoke(gc, 0);
 		} catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException
@@ -1101,33 +1327,26 @@ public class SkeletonTest {
 
 	@Test(expected = IllegalFrameNumberException.class)
 	public void getAssociatedFrameNumber_moreThanAnimationLengthAsFrameNumber_exception() throws Throwable {
-		GameCharacter gc = new GameCharacter(Set.of(VALID_TEXTURE), VALID_TEXTURE, tile, "VALID",
-				Set.of((WeaponTextures) weapon.getTexture()), GAMECHARACTER_HEALTH, weapon, GAMECHARACTER_LEVEL,
-				GAMECHARACTER_ARMOR) {
-		};
 		try {
-			Method getAssociatedFrameNumber = GameCharacter.class.getDeclaredMethod("getAssociatedFrameNumber", int.class);
+			Method getAssociatedFrameNumber = GameCharacter.class.getDeclaredMethod("getAssociatedFrameNumber",
+					int.class);
 			getAssociatedFrameNumber.setAccessible(true);
-			getAssociatedFrameNumber.invoke(gc, Animated.ANIMATION_LENGTH+1);
+			getAssociatedFrameNumber.invoke(gc, Animated.ANIMATION_LENGTH + 1);
 		} catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException
 				| InvocationTargetException e) {
 			throw e.getCause();
 		}
 	}
-	
+
 	@Test
 	public void setNextTexture_onNonMovingTexture_noNextTexture() {
-		Animated animated = new GameCharacter(Set.of(VALID_TEXTURE), VALID_TEXTURE, tile, "VALID",
-				Set.of((WeaponTextures) weapon.getTexture(), (WeaponTextures) VALID_WEAPON.getTexture()),
-				GAMECHARACTER_HEALTH, weapon, GAMECHARACTER_LEVEL, GAMECHARACTER_ARMOR) {
-		};
-		animated.setNextTexture();
-		assertEquals(VALID_TEXTURE, ((Drawable) animated).getTexture());
+		gc.setNextTexture();
+		assertEquals(VALID_TEXTURE, gc.getTexture());
 	}
 
 	@Test
 	public void setNextTexture_onMovingTexture_nextTexture() {
-		GameCharacter gc = new GameCharacter(Set.of(VALID_TEXTURE,NEXT_VALID_TEXTURE), VALID_TEXTURE, tile, "VALID",
+		GameCharacter gc = new GameCharacter(Set.of(VALID_TEXTURE, NEXT_VALID_TEXTURE), VALID_TEXTURE, tile, "VALID",
 				Set.of((WeaponTextures) weapon.getTexture(), (WeaponTextures) VALID_WEAPON.getTexture()),
 				GAMECHARACTER_HEALTH, weapon, GAMECHARACTER_LEVEL, GAMECHARACTER_ARMOR) {
 		};
@@ -1135,7 +1354,7 @@ public class SkeletonTest {
 		gc.setNextTexture();
 		assertEquals(NEXT_VALID_TEXTURE, gc.getTexture());
 	}
-	
+
 	@Test(expected = NoMoveAnimationException.class)
 	public void setNextTexture_onMovingTextureWithoutMoveAnimation_exception() {
 		GameCharacter gc = new GameCharacter(Set.of(INVALID_TEXTURE), INVALID_TEXTURE, tile, "VALID",
@@ -1145,209 +1364,45 @@ public class SkeletonTest {
 		gc.startMoving();
 		gc.setNextTexture();
 	}
-	
-	/* END ANIMATED TESTS */
-	
-	
 
-//	@Test(expected = IllegalArgumentException.class)
-//	public void setName_null_IllegalArgument() {
-//		new Skeleton(DRAWABLE_TEXTURE, tile, null, GAMECHARACTER_HEALTH, weapon, GAMECHARACTER_LEVEL, GAMECHARACTER_ARMOR, ENEMY_DROPPABLES);
-//	}
-//
-//	@Test(expected = IllegalArgumentException.class)
-//	public void setName_invalid_IllegalArgument() {
-//		new Skeleton(DRAWABLE_TEXTURE, tile, " ", GAMECHARACTER_HEALTH, weapon, GAMECHARACTER_LEVEL, GAMECHARACTER_ARMOR, ENEMY_DROPPABLES);
-//	}
-//
-//	@Test
-//	public void getTexture_nA_gameCharacterSkin() {
-//		assertEquals(DRAWABLE_TEXTURE, enemy.getTexture());
-//	}
-//
-//	@Test
-//	public void getName_nA_heroName() {
-//		assertTrue(enemy.getName().equals(GAMECHARACTER_NAME));
-//	}
-//
-//	@Test
-//	public void getHealth_nA_heroHealth() {
-//		assertEquals(GAMECHARACTER_HEALTH, enemy.getHealth(), MARGIN);
-//	}
-//
-//	@Test
-//	public void heal_moreThanHeroLife_maxHealth() {
-//		enemy.heal(enemy.getMaxHealth() + 1);
-//		assertEquals(enemy.getMaxHealth(), enemy.getHealth(), MARGIN);
-//	}
-//
-//	@Test
-//	public void heal_lessThanHeroLife_heroHealth() {
-//		enemy.heal(1);
-//		assertEquals(GAMECHARACTER_HEALTH + 1, enemy.getHealth(), MARGIN);
-//	}
-//
-//	@Test(expected = IllegalArgumentException.class)
-//	public void heal_negativeAmount_Exception() {
-//		enemy.heal(-1);
-//	}
-//
-//	@Test
-//	public void getWeapon_nA_heroWeapon() {
-//		assertEquals(weapon, enemy.getWeapon());
-//	}
-//
-//	@Test
-//	public void changeWeapon_validWeapon_heroWeapon() {
-//		enemy.changeWeapon(new Fist());
-//		assertEquals(new Fist(), enemy.getWeapon());
-//	}
-//
-//	@Test(expected = IllegalWeaponException.class)
-//	public void changeWeapon_invalidWeapon_exception() {
-//		enemy.changeWeapon(Swords.Sword_1.getWeapon());
-//	}
-//
-//	@Test(expected = IllegalWeaponException.class)
-//	public void changeWeapon_nullWeapon_exception() {
-//		enemy.changeWeapon(null);
-//	}
-//
-//	@Test
-//	public void dropWeapon_nA_fist() {
-//		enemy.dropWeapon();
-//		assertEquals(new Fist(), enemy.getWeapon());
-//	}
-//
-//	@Test
-//	public void getLevel_nA_heroLevel() {
-//		assertEquals(GAMECHARACTER_LEVEL, enemy.getLevel());
-//	}
-//
-//	@Test
-//	public void increaseLevel_nA_heroLevelIncreased() {
-//		enemy.increaseLevel();
-//		assertEquals(GAMECHARACTER_LEVEL + 1, enemy.getLevel());
-//	}
-//
-//	@Test(expected = MaxLevelReachedException.class)
-//	public void increaseLevel_moreThanMaxLevel_exception() {
-//		IntStream.range(0, GameCharacter.MAX_LEVEL + 1).forEach(val -> enemy.increaseLevel());
-//	}
-//
-//	@Test
-//	public void decreaseLevel_nA_heroLevelDecreased() {
-//		enemy.decreaseLevel();
-//		assertEquals(GAMECHARACTER_LEVEL - 1, enemy.getLevel());
-//	}
-//
-//	@Test(expected = MinLevelReachedException.class)
-//	public void decreaseLevel_lessThanMinLevel_exception() {
-//		IntStream.range(0, GameCharacter.MAX_LEVEL + 1).forEach(val -> enemy.decreaseLevel());
-//	}
-//
-//	@Test
-//	public void setArmor_moreThanMaxArmor_maxArmor() {
-//		enemy.setArmor(GameCharacter.MAX_ARMOR + 1);
-//		assertEquals(GameCharacter.MAX_ARMOR, enemy.getArmor(), MARGIN);
-//	}
-//
-//	@Test
-//	public void getArmor_nA_heroArmor() {
-//		assertEquals(GAMECHARACTER_ARMOR, enemy.getArmor(), MARGIN);
-//	}
-//
-//	@Test
-//	public void setArmor_lessThanZero_0() {
-//		enemy.setArmor(-1);
-//		assertEquals(0, enemy.getArmor(), MARGIN);
-//	}
-//
-//	@Test
-//	public void setArmor_allIsWell_heroArmorIncreased() {
-//		enemy.setArmor(GAMECHARACTER_ARMOR + 1);
-//		assertEquals(GAMECHARACTER_ARMOR + 1, enemy.getArmor(), MARGIN);
-//	}
-//
-//	@Test
-//	public void attack_enemy_enemyTakesDamage() {
-//		GameCharacter gc = new Skeleton(SkeletonTextures.Skeleton_NORTH_2, tile, "Skeleton", GAMECHARACTER_HEALTH,
-//				Bones.Bone_1.getWeapon(), 1, 0, Set.of(Swords.Sword_1.getWeapon()));
-//		enemy.attack(gc);
-//		assertEquals(GAMECHARACTER_HEALTH - weapon.getDamage(), gc.getHealth(), MARGIN);
-//	}
-//
-////	@Test(expected = IllegalArgumentException.class)
-////	public void setAvailableWeapons_null_IllegalArgument() {
-////		enemy.setAvailableWeapons(null);
-////	}
-////
-////	@Test(expected = IllegalArgumentException.class)
-////	public void setAvailableWeapons_emptySet_IllegalArgument() {
-////		enemy.setAvailableWeapons(new LinkedHashSet<>());
-////	}
-//
-////	@Test
-////	public void move_validMoveEast_GameCharacterMoved() {
-////		Position pos = new Position(enemy.getAbsoluteCenterPosition().getX(), enemy.getAbsoluteCenterPosition().getY());
-////		enemy.move(Directions.EAST, new LinkedHashSet<>());
-////		assertEquals(pos.getX() + GameCharacter.SPEED, enemy.getAbsoluteCenterPosition().getX());
-////		assertEquals(pos.getY(), enemy.getAbsoluteCenterPosition().getY());
-////	}
-////
-////	@Test
-////	public void move_validMoveSouth_GameCharacterMoved() {
-////		Position pos = new Position(enemy.getAbsoluteCenterPosition().getX(), enemy.getAbsoluteCenterPosition().getY());
-////		enemy.move(Directions.SOUTH, new LinkedHashSet<>());
-////		assertEquals(pos.getX(), enemy.getAbsoluteCenterPosition().getX());
-////		assertEquals(pos.getY() +GameCharacter.SPEED, enemy.getAbsoluteCenterPosition().getY());
-////	}
-////
-////	@Test
-////	public void move_validMoveWest_GameCharacterMoved() {
-////		Position pos = new Position(enemy.getAbsoluteCenterPosition().getX(), enemy.getAbsoluteCenterPosition().getY());
-////		enemy.move(Directions.WEST, new LinkedHashSet<>());
-////		assertEquals(pos.getX() - GameCharacter.SPEED, enemy.getAbsoluteCenterPosition().getX());
-////		assertEquals(pos.getY(), enemy.getAbsoluteCenterPosition().getY());
-////	}
-////
-////	@Test
-////	public void move_validMoveNorth_GameCharacterMoved() {
-////		Position pos = new Position(enemy.getAbsoluteCenterPosition().getX(), enemy.getAbsoluteCenterPosition().getY());
-////		enemy.move(Directions.NORTH, new LinkedHashSet<>());
-////		assertEquals(pos.getX(), enemy.getAbsoluteCenterPosition().getX());
-////		assertEquals(pos.getY() - GameCharacter.SPEED, enemy.getAbsoluteCenterPosition().getY());
-////	}
-////
-////	@Test
-////	public void move_cannotMoveNorth_GameCharacterNotMoved() {
-////		int deltaX = ((enemy.getTexture().getSize().getWidth()
-////				- ((HitBoxTexture) enemy.getTexture()).getHitBoxSize().getWidth()) / 2);
-////		int deltaY = ((enemy.getTexture().getSize().getHeight()
-////				- ((HitBoxTexture) enemy.getTexture()).getHitBoxSize().getHeight()) / 2);
-////		Position pos = new Position(enemy.getAbsoluteCenterPosition().getX(), enemy.getAbsoluteCenterPosition().getY());
-////		Position posNorth = Position.sum(pos, new Position(deltaX, deltaY));
-//////		Position posNorth = new Position(position.getX() + deltaX, position.getY() + deltaY - 1);
-////		enemy.move(Directions.NORTH, Set.of(posNorth));
-////		assertEquals(pos.getX(), enemy.getAbsoluteCenterPosition().getX());
-////		assertEquals(pos.getY(), enemy.getAbsoluteCenterPosition().getY());
-////	}
-////
-////	@Test
-////	public void setNextTexture_nA_GameCharacterHasNextTexture() {
-////		enemy.move(Directions.SOUTH, new LinkedHashSet<>());
-////		enemy.setNextTexture();
-////		assertEquals(ENEMY_NEXT_TEXTURE, enemy.getTexture());
-////	}
-//
-//	@Test
-//	public void getDrop_nA_optionalOfSword() {
-//		Optional<Drop> optionalWeapon = Optional.of(Swords.Sword_1.getWeapon());
-//		assertEquals(optionalWeapon, enemy.getDrop());
-//	}
-//
-////	@Test(expected = IllegalArgumentException.class)
-////	public void setDroppables_null_IllegalArgument() {
-////		enemy.setDroppables(null);
-////	}
+	/* END ANIMATED TESTS */
+
+	/* HITBOX TESTS */
+
+	@Test
+	public void getHitBox_0AsRange_hitBoxPositions() {
+		int range = 0;
+
+		Set<Position> positions = new LinkedHashSet<>();
+
+		int textureCenterX = gc.getAbsoluteCenterPosition().getX();
+		int textureCenterY = gc.getAbsoluteCenterPosition().getY();
+		int minHitBoxX = textureCenterX - VALID_TEXTURE.getHitBoxSize().getWidth() / 2 - range;
+		int minHitBoxY = textureCenterY - VALID_TEXTURE.getHitBoxSize().getHeight() / 2 - range;
+		int maxHitBoxX = textureCenterX + VALID_TEXTURE.getHitBoxSize().getWidth() / 2 + range;
+		int maxHitBoxY = textureCenterY + VALID_TEXTURE.getHitBoxSize().getHeight() / 2 + range;
+
+		for (int x = minHitBoxX; x <= maxHitBoxX; x++) {
+			for (int y = minHitBoxY; y <= maxHitBoxY; y++) {
+				if (x == minHitBoxX || y == minHitBoxY || x == maxHitBoxX || y == maxHitBoxY)
+					positions.add(new Position(x, y));
+			}
+		}
+		assertEquals(positions, gc.getHitBox(0));
+	}
+
+	@Test(expected = InvalidTextureException.class)
+	public void getHitBox_0AsRangeNoHitboxTexture_exception() {
+		GameCharacter gc = new GameCharacter(Set.of(INVALID_TEXTURE), INVALID_TEXTURE, tile, "VALID",
+				Set.of((WeaponTextures) weapon.getTexture(), (WeaponTextures) VALID_WEAPON.getTexture()),
+				GAMECHARACTER_HEALTH, weapon, GAMECHARACTER_LEVEL, GAMECHARACTER_ARMOR) {
+		};
+		gc.getHitBox(0);
+	}
+
+	@Test(expected = TooLittleRangeException.class)
+	public void getHitBox_lessThanHAlfHitboxSizeAsRange_exception() {
+		int min = Math.min(VALID_TEXTURE.getHitBoxSize().getWidth() / 2, VALID_TEXTURE.getHitBoxSize().getHeight() / 2);
+		gc.getHitBox(-min);
+	}
 }
