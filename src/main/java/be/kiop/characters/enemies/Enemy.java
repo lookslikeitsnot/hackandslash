@@ -104,13 +104,14 @@ public abstract class Enemy extends GameCharacter implements Dropper {
 			stopMoving();
 		}
 	}
-
+	public int coucou = 0;
 	public void move(Set<Tile> availableTiles) {
 		if(availableTiles == null) {
 			throw new IllegalTileSetException();
 		}
 		IntStream.range(0, SPEED).forEach(i -> {
 			if (isMoving()) {
+				System.out.println("moving : " + coucou++);
 				move();
 			} else {
 				resetMovementFrame();

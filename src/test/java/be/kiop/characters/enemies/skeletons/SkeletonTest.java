@@ -250,7 +250,7 @@ public class SkeletonTest {
 	
 	@Test
 	public void equals_notInstanceOfDrawable_false() {
-		assertNotEquals(drawable, new Fist());
+		assertNotEquals(drawable, new SkeletonTest());
 	}
 	
 	@Test
@@ -1603,6 +1603,16 @@ public class SkeletonTest {
 		availableTiles.add(tile.getEASTwardTile());
 		enemy.move(availableTiles);
 		assertNotEquals(pos, enemy.getAbsolutePosition());
+	}
+	
+	@Test
+	public void move_untilCenterOfAdjacentTileAdjacentTileInTileSet_movedAndStoppedMoving() {
+		Position pos = enemy.getAbsolutePosition();
+		Set<Tile> availableTiles = new HashSet<>();
+		availableTiles.add(tile.getEASTwardTile());
+		IntStream.range(0, tile.getSize().getWidth()/Enemy.SPEED).forEach(i -> enemy.move(availableTiles));
+		assertNotEquals(pos, enemy.getAbsolutePosition());
+		assertFalse(enemy.isMoving());
 	}
 
 	/* END ENEMY TESTS */
