@@ -13,6 +13,9 @@ import be.kiop.UI.Board;
 import be.kiop.characters.GameCharacter;
 import be.kiop.events.LifeEvent;
 import be.kiop.exceptions.CharacterDiedException;
+import be.kiop.exceptions.IllegalDirectionException;
+import be.kiop.exceptions.IllegalPositionException;
+import be.kiop.exceptions.IllegalPositionsSetException;
 import be.kiop.exceptions.InvalidTextureException;
 import be.kiop.exceptions.LessThanCurrentExperienceException;
 import be.kiop.exceptions.LostALifeException;
@@ -151,6 +154,12 @@ public abstract class Hero extends GameCharacter {
 	}
 
 	public void move(Directions direction, Set<Position> unavailablePositions) {
+		if(direction == null) {
+			throw new IllegalDirectionException();
+		}
+		if(unavailablePositions == null) {
+			throw new IllegalPositionsSetException();
+		}
 		if (!isMoving()) {
 			startMoving();
 		}
@@ -174,6 +183,12 @@ public abstract class Hero extends GameCharacter {
 	}
 
 	private boolean canMove(Directions direction, Set<Position> unavailablePositions) {
+		if(direction == null) {
+			throw new IllegalDirectionException();
+		}
+		if(unavailablePositions == null) {
+			throw new IllegalPositionsSetException();
+		}
 		Texture texture = getTexture();
 		if (!(texture instanceof HitBoxTexture)) {
 			throw new InvalidTextureException();

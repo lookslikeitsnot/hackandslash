@@ -34,6 +34,7 @@ import be.kiop.exceptions.IllegalLevelException;
 import be.kiop.exceptions.IllegalMovementFrameException;
 import be.kiop.exceptions.IllegalNameException;
 import be.kiop.exceptions.IllegalPositionException;
+import be.kiop.exceptions.IllegalPositionsSetException;
 import be.kiop.exceptions.IllegalTextureSetException;
 import be.kiop.exceptions.IllegalTileException;
 import be.kiop.exceptions.IllegalWeaponException;
@@ -85,8 +86,8 @@ public class MageTest {
 	private final static float GAMECHARACTER_ARMOR = 50;
 	private final static float HERO_MANA = 10;
 	private final static Weapon VALID_WEAPON = Swords.Sword_1.getWeapon();
-	
-	//Needed to initialize board min and max tiles
+
+	// Needed to initialize board min and max tiles
 	@SuppressWarnings("unused")
 	private final static Board board = new Board(15, 15);
 
@@ -1560,36 +1561,36 @@ public class MageTest {
 		hero.increaseExperience(1);
 		assertEquals(1, hero.getExperience(), MARGIN);
 	}
-	
+
 	@Test
 	public void increaseExperience_byPositiveAmountRequiredForNextLevel_levelIncreased() {
-		hero.increaseExperience(hero.getLevel()*100);
+		hero.increaseExperience(hero.getLevel() * 100);
 		assertEquals(0, hero.getExperience(), MARGIN);
-		assertEquals(GAMECHARACTER_LEVEL+1, hero.getLevel());
+		assertEquals(GAMECHARACTER_LEVEL + 1, hero.getLevel());
 	}
-	
+
 	@Test
 	public void increaseExperience_byPositiveAmountRequiredForNextLevelPlus1_experienceIncreased() {
-		hero.increaseExperience(hero.getLevel()*100+1);
+		hero.increaseExperience(hero.getLevel() * 100 + 1);
 		assertEquals(1, hero.getExperience(), MARGIN);
-		assertEquals(GAMECHARACTER_LEVEL+1, hero.getLevel());
+		assertEquals(GAMECHARACTER_LEVEL + 1, hero.getLevel());
 	}
-	
+
 	@Test
 	public void increaseExperience_byPositiveAmountRequiredForTwoNextLevel_levelIncreased() {
-		hero.increaseExperience(hero.getLevel()*100);
+		hero.increaseExperience(hero.getLevel() * 100);
 		assertEquals(0, hero.getExperience(), MARGIN);
-		assertEquals(GAMECHARACTER_LEVEL+1, hero.getLevel());
-		hero.increaseExperience(hero.getLevel()*100);
+		assertEquals(GAMECHARACTER_LEVEL + 1, hero.getLevel());
+		hero.increaseExperience(hero.getLevel() * 100);
 		assertEquals(0, hero.getExperience(), MARGIN);
-		assertEquals(GAMECHARACTER_LEVEL+2, hero.getLevel());
+		assertEquals(GAMECHARACTER_LEVEL + 2, hero.getLevel());
 	}
-	
+
 	@Test(expected = NegativeExperienceException.class)
 	public void increaseExperience_byNegativeAmount_exception() {
 		hero.increaseExperience(-1);
 	}
-	
+
 	@Test
 	public void setHealth_validAmountBetween1AndMaxHealth_healthSet() {
 		try {
@@ -1602,7 +1603,7 @@ public class MageTest {
 		}
 		assertEquals(1, hero.getHealth(), MARGIN);
 	}
-	
+
 	@Test
 	public void setHealth_0AsHealthAndMoreThan1Life_lostALifeAndRegainedAllHisHealth() throws Throwable {
 		try {
@@ -1614,12 +1615,12 @@ public class MageTest {
 			throw e.getCause();
 		}
 		assertEquals(hero.getMaxHealth(), hero.getHealth(), MARGIN);
-		assertEquals(HERO_LIVES-1, hero.getLives());
+		assertEquals(HERO_LIVES - 1, hero.getLives());
 	}
-	
+
 	@Test(expected = CharacterDiedException.class)
 	public void setHealth_AsHealthAnd1LifeRemaining_exception() throws Throwable {
-		IntStream.range(0, HERO_LIVES-1).forEach(i-> hero.loseALife());
+		IntStream.range(0, HERO_LIVES - 1).forEach(i -> hero.loseALife());
 		try {
 			Method setHealth = Hero.class.getDeclaredMethod("setHealth", float.class);
 			setHealth.setAccessible(true);
@@ -1629,11 +1630,11 @@ public class MageTest {
 			throw e.getCause();
 		}
 	}
-	
+
 	@Test
 	public void addLifeListener_toValidLifeListener_listenerAdded() {
 		LifeListener lL = new LifeListener() {
-			
+
 			@Override
 			public void lifeChanged(LifeEvent event) {
 			}
@@ -1641,11 +1642,11 @@ public class MageTest {
 		hero.addLifeListener(lL);
 		assertTrue(hero.getLifeListeners().contains(lL));
 	}
-	
+
 	@Test
 	public void removeLifeListener_validLifeListener_listenerremoved() {
 		LifeListener lL = new LifeListener() {
-			
+
 			@Override
 			public void lifeChanged(LifeEvent event) {
 			}
@@ -1655,7 +1656,7 @@ public class MageTest {
 		hero.removeLifeListener(lL);
 		assertTrue(hero.getLifeListeners().isEmpty());
 	}
-	
+
 	@Test
 	public void broadcast_validLifeEvent_lifeEventBroadcasted() {
 		LifeEvent lE = new LifeEvent(HERO_LIVES, 1);
@@ -1675,14 +1676,96 @@ public class MageTest {
 			e.printStackTrace();
 		}
 	}
-	
+
 	@Test
 	public void setNextTexture_nA_stoppedMoving() {
 		hero.startMoving();
 		hero.setNextTexture();
 		assertFalse(hero.isMoving());
 	}
-	
+
+	@Test
+	public void move_EASTDirectionAndNoUnavailablePositions_startedMoving() {
+		hero.move(Directions.EAST, Set.of());
+		assertTrue(hero.isMoving());
+	}
+
+	@Test
+	public void move_SOUTHDirectionAndNoUnavailablePositions_startedMoving() {
+		hero.move(Directions.SOUTH, Set.of());
+		assertTrue(hero.isMoving());
+	}
+
+	@Test
+	public void move_WESTDirectionAndNoUnavailablePositions_startedMoving() {
+		hero.move(Directions.WEST, Set.of());
+		assertTrue(hero.isMoving());
+	}
+
+	@Test
+	public void move_NORTHDirectionAndNoUnavailablePositions_startedMoving() {
+		hero.move(Directions.NORTH, Set.of());
+		assertTrue(hero.isMoving());
+	}
+
+	@Test(expected = IllegalDirectionException.class)
+	public void move_nullAsDirectionAndNoUnavailablePositions_exception() {
+		hero.move((Directions) null, Set.of());
+	}
+
+	@Test(expected = IllegalPositionsSetException.class)
+	public void move_validDirectionAndNullAsUnavailablePositions_exception() {
+		hero.move(Directions.SOUTH, null);
+	}
+
+	@Test(expected = InvalidTextureException.class)
+	public void move_validDirectionAndNoUnavailablePositionsAndTextureIsNotHitBoxTexture_exception() {
+		hero = new Hero(Set.of(VALID_TEXTURE, INVALID_TEXTURE), VALID_TEXTURE, tile, GAMECHARACTER_NAME,
+				Set.of((WeaponTextures) weapon.getTexture()), GAMECHARACTER_HEALTH, weapon, GAMECHARACTER_LEVEL,
+				GAMECHARACTER_ARMOR, HERO_LIVES) {
+		};
+		hero.setTexture(INVALID_TEXTURE);
+		hero.move(Directions.SOUTH, Set.of());
+	}
+
+	@Test
+	public void move_EASTDirectionAndNoUnavailablePositionsUntilReachingExteriorWallsPlus1_stopsMovingAtWall() {
+		int textureCenterX = hero.getAbsoluteCenterPosition().getX();
+		IntStream.range(0, textureCenterX).forEach(i -> hero.move(Directions.EAST, Set.of()));
+		int hitBoxWidth = ((MageTextures) hero.getTexture()).getHitBoxSize().getWidth();
+
+		assertEquals(Board.exteriorWallSize.getWidth() + hitBoxWidth / 2, hero.getAbsoluteCenterPosition().getX());
+	}
+
+	@Test
+	public void move_SOUTHDirectionAndNoUnavailablePositionsUntilReachingExteriorWallsPlus1_stopsMovingAtWall() {
+		int textureCenterY = hero.getAbsoluteCenterPosition().getY();
+		IntStream.range(0, textureCenterY).forEach(i -> hero.move(Directions.SOUTH, Set.of()));
+		int hitBoxHeight = ((MageTextures) hero.getTexture()).getHitBoxSize().getHeight();
+
+		assertEquals(Board.exteriorWallSize.getHeight() + hitBoxHeight / 2, hero.getAbsoluteCenterPosition().getY());
+	}
+
+	@Test
+	public void move_WESTDirectionAndNoUnavailablePositionsUntilReachingExteriorWallsPlus1_stopsMovingAtWall() {
+		int textureCenterX = hero.getAbsoluteCenterPosition().getX();
+		IntStream.range(0, textureCenterX).forEach(i -> hero.move(Directions.WEST, Set.of()));
+		int hitBoxWidth = ((MageTextures) hero.getTexture()).getHitBoxSize().getWidth();
+
+		assertEquals(Board.MAX_SIZE.getWidth() - Board.exteriorWallSize.getWidth() - hitBoxWidth / 2,
+				hero.getAbsoluteCenterPosition().getX());
+	}
+
+	@Test
+	public void move_NORTHDirectionAndNoUnavailablePositionsUntilReachingExteriorWallsPlus1_stopsMovingAtWall() {
+		int textureCenterY = hero.getAbsoluteCenterPosition().getY();
+		IntStream.range(0, textureCenterY).forEach(i -> hero.move(Directions.NORTH, Set.of()));
+		int hitBoxHeight = ((MageTextures) hero.getTexture()).getHitBoxSize().getHeight();
+
+		assertEquals(Board.MAX_SIZE.getHeight() - Board.exteriorWallSize.getHeight() - hitBoxHeight / 2,
+				hero.getAbsoluteCenterPosition().getY());
+	}
+
 	/* END HERO TESTS */
 
 	/* END MAGE TESTS */
