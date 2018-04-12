@@ -19,10 +19,10 @@ public enum FloorTextures implements Texture, OrientedTexture {
 	Floor_Stone_Light_Grey_NONE("floors", "Floor_Stone_Light_Grey", new Position(32,64), new Size(32, 32), Orientations.NONE),
 	Floor_Stone_Dark_Putple_NONE("floors", "Floor_Stone_Dark_Putple", new Position(64,64), new Size(32, 32), Orientations.NONE);
 
-	private String name;
-	private Size size;
-	private Orientations orientation;
-	private BufferedImage skin;
+	private final String name;
+	private final Size size;
+	private final Orientations orientation;
+	private final BufferedImage skin;
 
 	FloorTextures(String path, String name, Position position, Size size, Orientations orientation) {
 		this.name= name;

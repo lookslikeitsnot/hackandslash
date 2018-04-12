@@ -7,7 +7,7 @@ public enum Bones {
 	Bone_1(WeaponTextures.Bone, Tile.ORIGIN, "Bone", 10, 10, 1, 1, 2, 5, 6, 10),
 	Bone_5(WeaponTextures.Bone, Tile.ORIGIN, "Bone", 50, 50, 2, 1, 2, 5, 6, 10);
 
-	private Bone bone;
+	private final Bone bone;
 
 	Bones(WeaponTextures weapon, Tile tile, String name, float damage, float maxDamage, int range, int minRange,
 			int maxRange, float attackSpeed, float maxAttackSpeed, float penetration) {

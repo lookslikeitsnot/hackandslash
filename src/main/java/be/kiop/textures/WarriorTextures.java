@@ -6,7 +6,6 @@ import java.nio.file.Paths;
 
 import javax.imageio.ImageIO;
 
-import be.kiop.characters.CharacterGender;
 import be.kiop.exceptions.SkinNotFoundException;
 import be.kiop.valueobjects.Directions;
 import be.kiop.valueobjects.Genders;
@@ -68,13 +67,13 @@ public enum WarriorTextures implements Texture, MoveAnimation, CharacterGender, 
 	Warrior_FEMALE_NORTH_3("warriors", "Warrior", new Position(160, 144), new Size(32, 48), new Size(18, 36), Genders.FEMALE,
 			Directions.NORTH, 3);
 
-	private String name;
-	private Size size;
-	private Size hitBoxSize;
-	private Genders gender;
-	private Directions direction;
-	private int movementFrame;
-	private BufferedImage skin;
+	private final String name;
+	private final Size size;
+	private final Size hitBoxSize;
+	private final Genders gender;
+	private final Directions direction;
+	private final int movementFrame;
+	private final BufferedImage skin;
 
 	WarriorTextures(String path, String name, Position position, Size size, Size hitBoxSize, Genders gender, Directions direction, int frame) {
 		this.name = name;

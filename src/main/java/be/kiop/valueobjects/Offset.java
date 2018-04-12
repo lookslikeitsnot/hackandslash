@@ -3,6 +3,7 @@ package be.kiop.valueobjects;
 public class Offset {
 	int offsetX;
 	int offsetY;
+	
 	public Offset(int offsetX, int offsetY) {
 		this.offsetX = offsetX;
 		this.offsetY = offsetY;

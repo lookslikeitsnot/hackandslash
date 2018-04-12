@@ -3,13 +3,16 @@ package be.kiop.valueobjects;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
+
+import be.kiop.UI.Board;
 
 public class Tile {
 	private final int horizontalPosition;
 	private final int verticalPosition;
-	
+
 	private final Size size;
 
 	public static final Tile ORIGIN = new Tile(0, 0);
@@ -29,23 +32,65 @@ public class Tile {
 	}
 
 	public Tile getEASTwardTile() {
-		return new Tile(horizontalPosition + 1, verticalPosition);
+		if (horizontalPosition < Board.getMaxHorizontalTiles()) {
+			return new Tile(horizontalPosition + 1, verticalPosition);
+		}
+		return null;
 	}
 
 	public Tile getSOUTHwardTile() {
-		return new Tile(horizontalPosition, verticalPosition + 1);
+		if (verticalPosition < Board.getMaxVerticalTiles()) {
+			return new Tile(horizontalPosition, verticalPosition + 1);
+		}
+		return null;
 	}
 
 	public Tile getWESTwardTile() {
-		return new Tile(horizontalPosition - 1, verticalPosition);
+		if (horizontalPosition > 0) {
+			return new Tile(horizontalPosition - 1, verticalPosition);
+		}
+		return null;
 	}
 
 	public Tile getNORTHwardTile() {
-		return new Tile(horizontalPosition, verticalPosition - 1);
+		if (verticalPosition > 0) {
+			return new Tile(horizontalPosition, verticalPosition - 1);
+		}
+		return null;
+	}
+
+	public Tile getSOUTHEASTwardTile() {
+		if (horizontalPosition < Board.getMaxHorizontalTiles() && verticalPosition < Board.getMaxVerticalTiles()) {
+			return new Tile(horizontalPosition + 1, verticalPosition + 1);
+		}
+		return null;
+	}
+
+	public Tile getSOUTHWESTwardTile() {
+		if (horizontalPosition > 0 && verticalPosition < Board.getMaxVerticalTiles()) {
+			return new Tile(horizontalPosition - 1, verticalPosition + 1);
+		}
+		return null;
+	}
+
+	public Tile getNORTHWESTwardTile() {
+		if (horizontalPosition > 0 && verticalPosition > 0) {
+			return new Tile(horizontalPosition - 1, verticalPosition - 1);
+		}
+		return null;
+	}
+
+	public Tile getNORTHEASTwardTile() {
+		if (horizontalPosition < Board.getMaxHorizontalTiles() && verticalPosition > 0) {
+			return new Tile(horizontalPosition + 1, verticalPosition - 1);
+		}
+		return null;
 	}
 
 	public Set<Tile> getAdjacentTiles() {
-		return Set.of(getEASTwardTile(), getSOUTHwardTile(), getWESTwardTile(), getNORTHwardTile());
+		return new LinkedHashSetNoNull<>(getEASTwardTile(), getSOUTHwardTile(), getWESTwardTile(),
+				getNORTHwardTile(), getNORTHEASTwardTile(), getSOUTHEASTwardTile(), getSOUTHWESTwardTile(),
+				getNORTHWESTwardTile());
 	}
 
 	public Map<Directions, Tile> getAvailableAdjacentTiles(Set<Tile> availableTiles) throws NoSuchMethodException,
@@ -56,10 +101,14 @@ public class Tile {
 
 		for (Directions direction : Directions.values()) {
 			getTileMethod = this.getClass().getMethod("get" + direction.name() + "wardTile");
-			tile = (Tile) getTileMethod.invoke(this);
-			if(availableTiles.contains(tile)) {
-				map.put(direction, tile);
+			Object obj = getTileMethod.invoke(this);
+			if (obj != null || obj instanceof Tile) {
+				tile = (Tile) obj;
+				if (availableTiles.contains(tile)) {
+					map.put(direction, tile);
+				}
 			}
+
 		}
 
 		return map;
@@ -97,6 +146,29 @@ public class Tile {
 
 	public Size getSize() {
 		return size;
+	}
+
+	public Set<Position> getTileHitBox(Size maxSize) {
+		Set<Position> tileHitBox = new LinkedHashSet<>();
+		int minX = Board.exteriorWallSize.getWidth() + horizontalPosition * size.getWidth();
+		int minY = Board.exteriorWallSize.getHeight() + verticalPosition * size.getHeight();
+
+		int maxX = minX + size.getWidth() - 1;
+		int maxY = minY + size.getHeight() - 1;
+
+		minX = minX > 0 ? minX : 0;
+		minY = minY > 0 ? minY : 0;
+
+		maxX = maxX > maxSize.getWidth() ? maxSize.getWidth() : maxX;
+		maxY = maxY > maxSize.getHeight() ? maxSize.getHeight() : maxY;
+
+		for (int x = minX; x <= maxX; x++) {
+			for (int y = minY; y <= maxY; y++) {
+				tileHitBox.add(new Position(x, y));
+			}
+		}
+
+		return tileHitBox;
 	}
 
 }

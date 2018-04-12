@@ -20,10 +20,10 @@ public enum WeaponTextures implements Texture {
 	Staff(Staff.class, "staffs", "Staff", new Position(0, 0), new Size(32, 32)),
 	Sword(Sword.class, "swords_resized", "Sword", new Position(0, 0), new Size(32, 32));
 
-	private Class<?> weapon;
-	private String name;
-	private Size size;
-	private BufferedImage skin;
+	private final Class<?> weapon;
+	private final String name;
+	private final Size size;
+	private final BufferedImage skin;
 
 	WeaponTextures(Class<?> weapon, String path, String name, Position position, Size size) {
 		this.weapon = weapon;

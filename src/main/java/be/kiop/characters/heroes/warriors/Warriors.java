@@ -17,7 +17,7 @@ public enum Warriors {
 	Warrior_5_M(WarriorTextures.Warrior_MALE_SOUTH_2, Tile.ORIGIN, "Male Warrior", 500, Swords.Sword_5.getWeapon(), 5,
 			0, 3, 100);
 
-	private Warrior warrior;
+	private final Warrior warrior;
 
 	Warriors(Texture texture, Tile tile, String name, float health, Weapon weapon, int level, float armor, int lives,
 			float shield) {

@@ -17,7 +17,7 @@ public enum Skeletons {
 	Skeleton_Dog_1(SkeletonTextures.Skeleton_Dog_SOUTH_2, Tile.ORIGIN, "Skeleton Dog", 100, Bones.Bone_1.getWeapon(), 1,
 			0, Set.of(Swords.Sword_1.getWeapon()));
 
-	private Skeleton skeleton;
+	private final Skeleton skeleton;
 
 	Skeletons(Texture texture, Tile tile, String name, float health, Weapon weapon, int level, float armor,
 			Set<Drop> droppables) {

@@ -24,6 +24,7 @@ import be.kiop.textures.WallTextures;
 import be.kiop.valueobjects.Directions;
 import be.kiop.valueobjects.Position;
 import be.kiop.valueobjects.Size;
+import be.kiop.valueobjects.Tile;
 
 public class BoardDrawing extends JPanel {
 	private static final long serialVersionUID = 1L;
@@ -43,8 +44,8 @@ public class BoardDrawing extends JPanel {
 	private Size size;
 	private Size tileSize;
 
-	private int horizontalTiles;
-	private int verticalTiles;
+//	private int horizontalTiles;
+//	private int verticalTiles;
 
 	BoardDrawing(Size size, FloorTextures floorTexture, WallTextures exteriorWallsTexture, Hero hero,
 			Set<Wall> walls, Set<Fire> fires, Set<Enemy> enemies, List<Drop> drops, Board board, Size tileSize) {
@@ -55,8 +56,8 @@ public class BoardDrawing extends JPanel {
 		this.drops = drops;
 		this.walls = walls;
 		this.fires = fires;
-		this.horizontalTiles = board.getHorizontalTiles();
-		this.verticalTiles = board.getVerticalTiles();
+//		this.horizontalTiles = board.getHorizontalTiles();
+//		this.verticalTiles = board.getVerticalTiles();
 		this.floorTexture = floorTexture;
 		this.exteriorWallsTexture = exteriorWallsTexture;
 
@@ -97,8 +98,8 @@ public class BoardDrawing extends JPanel {
 	private Set<Position> generateFloorPositions(FloorTextures floorTexture) {
 		int minX = Board.exteriorWallSize.getWidth();
 		int minY = Board.exteriorWallSize.getHeight();
-		int maxX = tileSize.getWidth() * horizontalTiles + Board.exteriorWallSize.getWidth();
-		int maxY = tileSize.getHeight() * verticalTiles + Board.exteriorWallSize.getHeight();
+		int maxX = tileSize.getWidth() * Board.getMaxHorizontalTiles() + Board.exteriorWallSize.getWidth();
+		int maxY = tileSize.getHeight() * Board.getMaxVerticalTiles() + Board.exteriorWallSize.getHeight();
 		int stepX = floorTexture.getSize().getWidth();
 		int stepY = floorTexture.getSize().getHeight();
 

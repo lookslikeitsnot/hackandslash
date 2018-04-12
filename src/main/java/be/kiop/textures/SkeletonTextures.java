@@ -44,12 +44,12 @@ public enum SkeletonTextures implements Texture, MoveAnimation, HitBoxTexture {
 	Skeleton_Dog_NORTH_2("skeleton-dogs", "Skeleton_Dog", new Position(48, 144), new Size(48, 48), new Size(16, 36), Directions.NORTH, 2),
 	Skeleton_Dog_NORTH_3("skeleton-dogs", "Skeleton_Dog", new Position(96, 144), new Size(48, 48), new Size(16, 36), Directions.NORTH, 3);
 	
-	private String name;
-	private Size size;
-	private Size hitBoxSize;
-	private Directions direction;
-	private int movementFrame;
-	private BufferedImage skin;
+	private final String name;
+	private final Size size;
+	private final Size hitBoxSize;
+	private final Directions direction;
+	private final int movementFrame;
+	private final BufferedImage skin;
 
 	SkeletonTextures(String path, String name, Position position, Size size, Size hitBoxSize, Directions direction, int frame) {
 		this.name= name;

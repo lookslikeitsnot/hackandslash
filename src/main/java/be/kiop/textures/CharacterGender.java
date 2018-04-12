@@ -1,4 +1,4 @@
-package be.kiop.characters;
+package be.kiop.textures;
 
 import be.kiop.valueobjects.Genders;
 

@@ -44,10 +44,10 @@ public class Keyboard {
 	private class MoveAction extends AbstractAction {
 		private static final long serialVersionUID = 1L;
 		Directions direction;
-		GameCharacter hero;
+		Hero hero;
 		Board board;
 
-		MoveAction(Directions direction, GameCharacter hero, Board board) {
+		MoveAction(Directions direction, Hero hero, Board board) {
 			this.direction = direction;
 			this.hero = hero;
 			this.board = board;
@@ -55,7 +55,7 @@ public class Keyboard {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			((Hero) hero).move(direction, board.getAllHitBoxes(0, hero.getTile()));
+			hero.move(direction, board.getAllHitBoxes(0, hero.getTile()));
 		}
 	}
 	

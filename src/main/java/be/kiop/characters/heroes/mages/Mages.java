@@ -15,7 +15,7 @@ public enum Mages {
 			100),
 	Mage_5_M(MageTextures.Mage_MALE_SOUTH_2, Tile.ORIGIN, "Male Mage", 500, Staffs.Staff_5.getWeapon(), 5, 0, 3, 100);
 
-	private Mage mage;
+	private final Mage mage;
 
 	Mages(Texture texture, Tile tile, String name, float health, Weapon weapon, int level, float armor, int lives,
 			float mana) {

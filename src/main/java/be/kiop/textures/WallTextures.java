@@ -16,10 +16,10 @@ public enum WallTextures implements Texture, OrientedTexture {
 	Wall_Mettalic_Dark("walls", "Wall_Metallic", new Position(64, 0), new Size(32, 32), Orientations.NONE),
 	Wall_Stone("walls1", "Wall_Stone", new Position(32, 32), new Size(32, 48), Orientations.NONE);
 
-	private String name;
-	private Size size;
-	private Orientations orientation;
-	private BufferedImage skin;
+	private final String name;
+	private final Size size;
+	private final Orientations orientation;
+	private final BufferedImage skin;
 
 	WallTextures(String path, String name, Position position, Size size, Orientations orientation) {
 		this.name = name;

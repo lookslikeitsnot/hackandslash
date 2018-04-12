@@ -17,6 +17,7 @@ import be.kiop.characters.enemies.skeletons.Skeletons;
 import be.kiop.characters.heroes.Hero;
 import be.kiop.characters.heroes.warriors.Warriors;
 import be.kiop.events.TileEvent;
+import be.kiop.exceptions.IllegalMaximumTilesException;
 import be.kiop.items.Drop;
 import be.kiop.listeners.RepaintTimer;
 import be.kiop.listeners.TileListener;
@@ -35,8 +36,9 @@ public class Board extends JFrame implements TileListener{
 	private BoardDrawing boardDrawing;
 	private HUD hud;
 
-	private final int horizontalTiles;
-	private final int verticalTiles;
+	private static int maxHorizontalTiles;
+	private static int maxVerticalTiles;
+
 	private final Set<Tile> allAvailableTiles;
 
 	private Set<Tile> occupiedTiles = new LinkedHashSet<>();
@@ -57,8 +59,10 @@ public class Board extends JFrame implements TileListener{
 	public final static Size MAX_SIZE = new Size(4000, 4000);
 
 	public Board(int horizontalTiles, int verticalTiles){
-		this.horizontalTiles = horizontalTiles;
-		this.verticalTiles = verticalTiles;
+		setMaxHorizontalTiles(horizontalTiles);
+		setMaxVerticalTiles(verticalTiles);
+//		this.horizontalTiles = horizontalTiles;
+//		this.verticalTiles = verticalTiles;
 
 		wallTiles = new Maze(horizontalTiles, verticalTiles).generateMaze();
 		allAvailableTiles = findAllAvailableTiles(horizontalTiles, verticalTiles, wallTiles);
@@ -73,7 +77,7 @@ public class Board extends JFrame implements TileListener{
 //		fires = generateFirePits();
 
 		enemies = generateEnemies(16, (Enemy) Skeletons.Skeleton_1.getGameCharacter());
-		//enemies.addAll(generateEnemies(4, (Enemy) Skeletons.Skeleton_Dog_1.getGameCharacter()));
+		enemies.addAll(generateEnemies(4, (Enemy) Skeletons.Skeleton_Dog_1.getGameCharacter()));
 
 		setLayout(new BorderLayout());
 		boardDrawing = new BoardDrawing(size, FloorTextures.Floor_Stone_Light_Grey_NONE,
@@ -207,35 +211,12 @@ public class Board extends JFrame implements TileListener{
 		Set<Tile> adjacentTiles = tile.getAdjacentTiles();
 		for (Tile adjacentTile : adjacentTiles) {
 			if (!allAvailableTiles.contains(adjacentTile)) {
-				allHitBoxes.addAll(getTileHitBox(adjacentTile));
+				allHitBoxes.addAll(adjacentTile.getTileHitBox(size));
 			}
 		}
 
 //		System.out.println("hitbox size: " + allHitBoxes.size());
 		return allHitBoxes;
-	}
-
-	private Set<Position> getTileHitBox(Tile tile) {
-		Set<Position> tileHitBox = new LinkedHashSet<>();
-		int minX = exteriorWallSize.getWidth() + tile.getHorizontalPosition() * tile.getSize().getWidth();
-		int minY = exteriorWallSize.getHeight() + tile.getVerticalPosition() * tile.getSize().getHeight();
-
-		int maxX = minX + tile.getSize().getWidth();
-		int maxY = minY + tile.getSize().getHeight();
-
-		minX = minX > 0 ? minX : 0;
-		minY = minY > 0 ? minY : 0;
-
-		maxX = maxX > size.getWidth() ? size.getWidth() : maxX;
-		maxY = maxY > size.getHeight() ? size.getHeight() : maxY;
-
-		for (int x = minX; x < maxX; x++) {
-			for (int y = minY; y < maxY; y++) {
-				tileHitBox.add(new Position(x, y));
-			}
-		}
-
-		return tileHitBox;
 	}
 
 	public Enemy getActiveEnemy() {
@@ -260,17 +241,41 @@ public class Board extends JFrame implements TileListener{
 //		}
 	}
 
-	public int getHorizontalTiles() {
-		return horizontalTiles;
-	}
-
-	public int getVerticalTiles() {
-		return verticalTiles;
-	}
+//	public int getHorizontalTiles() {
+//		return horizontalTiles;
+//	}
+//
+//	public int getVerticalTiles() {
+//		return verticalTiles;
+//	}
 
 	@Override
 	public void tileChanged(TileEvent event) {
 		occupiedTiles.add(event.newTile);
 		occupiedTiles.remove(event.oldTile);
 	}
+	
+	public static int getMaxHorizontalTiles() {
+		return maxHorizontalTiles;
+	}
+
+	private static void setMaxHorizontalTiles(int maxHorizontalTiles) {
+		if (maxHorizontalTiles < 0) {
+			throw new IllegalMaximumTilesException();
+		}
+		Board.maxHorizontalTiles = maxHorizontalTiles;
+	}
+
+	public static int getMaxVerticalTiles() {
+
+		return maxVerticalTiles;
+	}
+
+	private static void setMaxVerticalTiles(int maxVerticalTiles) {
+		if (maxHorizontalTiles < 0) {
+			throw new IllegalMaximumTilesException();
+		}
+		Board.maxVerticalTiles = maxVerticalTiles;
+	}
+
 }

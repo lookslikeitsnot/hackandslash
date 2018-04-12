@@ -6,7 +6,6 @@ import java.nio.file.Paths;
 
 import javax.imageio.ImageIO;
 
-import be.kiop.characters.CharacterGender;
 import be.kiop.exceptions.SkinNotFoundException;
 import be.kiop.valueobjects.Directions;
 import be.kiop.valueobjects.Genders;
@@ -46,13 +45,13 @@ public enum MageTextures implements Texture, MoveAnimation, CharacterGender, Hit
 	Mage_MALE_NORTH_2("mages", "Mage", new Position(128, 224), new Size(32, 32), new Size(20, 32), Genders.MALE, Directions.NORTH, 2),
 	Mage_MALE_NORTH_3("mages", "Mage", new Position(160, 224), new Size(32, 32), new Size(20, 32), Genders.MALE, Directions.NORTH, 3);
 
-	private String name;
-	private Size size;
-	private Size hitBoxSize;
-	private Genders gender;
-	private Directions direction;
-	private int movementFrame;
-	private BufferedImage skin;
+	private final String name;
+	private final Size size;
+	private final Size hitBoxSize;
+	private final Genders gender;
+	private final Directions direction;
+	private final int movementFrame;
+	private final BufferedImage skin;
 
 	MageTextures(String path, String name, Position position, Size size, Size hitBoxSize, Genders gender, Directions direction, int frame) {
 		this.name = name;

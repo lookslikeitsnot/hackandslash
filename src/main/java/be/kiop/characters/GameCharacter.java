@@ -28,6 +28,7 @@ import be.kiop.exceptions.NegativePenetrationException;
 import be.kiop.exceptions.NoMoveAnimationException;
 import be.kiop.exceptions.TooLittleRangeException;
 import be.kiop.listeners.HealthListener;
+import be.kiop.textures.CharacterGender;
 import be.kiop.textures.HitBoxTexture;
 import be.kiop.textures.MoveAnimation;
 import be.kiop.textures.Texture;
