@@ -12,6 +12,7 @@ import java.util.Set;
 
 import javax.swing.JFrame;
 
+import be.kiop.Main;
 import be.kiop.characters.enemies.Enemy;
 import be.kiop.characters.enemies.skeletons.Skeletons;
 import be.kiop.characters.heroes.Hero;
@@ -59,15 +60,13 @@ public class Board extends JFrame implements TileListener{
 	public final static Size MAX_SIZE = new Size(4000, 4000);
 
 	public Board(int horizontalTiles, int verticalTiles){
-		setMaxHorizontalTiles(horizontalTiles);
-		setMaxVerticalTiles(verticalTiles);
-//		this.horizontalTiles = horizontalTiles;
-//		this.verticalTiles = verticalTiles;
+		maxHorizontalTiles = horizontalTiles;
+		maxVerticalTiles = verticalTiles;
 
-		wallTiles = new Maze(horizontalTiles, verticalTiles).generateMaze();
-		allAvailableTiles = findAllAvailableTiles(horizontalTiles, verticalTiles, wallTiles);
+		wallTiles = new Maze(maxHorizontalTiles, maxVerticalTiles).generateMaze();
+		allAvailableTiles = findAllAvailableTiles(wallTiles);
 
-		this.size = Size.sum(Size.product(new Size(32, 48), horizontalTiles, verticalTiles),
+		this.size = Size.sum(Size.product(new Size(32, 48), maxHorizontalTiles, maxVerticalTiles),
 				Size.product(exteriorWallSize, 2, 2));
 
 		hero = generateHero((Hero) Warriors.Warrior_1_M.getGameCharacter());
@@ -95,6 +94,14 @@ public class Board extends JFrame implements TileListener{
 		setVisible(true);
 	}
 
+	public static int getMaxHorizontalTiles() {
+		return maxHorizontalTiles;
+	}
+
+	public static int getMaxVerticalTiles() {
+		return maxVerticalTiles;
+	}
+
 	private static Set<Tile> generateAllTiles(int horizontalTiles, int verticalTiles) {
 		Set<Tile> allTiles = new LinkedHashSet<>();
 		for(int x = 0; x < horizontalTiles; x++) {
@@ -105,8 +112,8 @@ public class Board extends JFrame implements TileListener{
 		return allTiles;
 	}
 
-	private static Set<Tile> findAllAvailableTiles(int horizontalTiles, int verticalTiles, Set<Tile> unavailableTiles) {
-		Set<Tile> allAvailableTiles = generateAllTiles(horizontalTiles, verticalTiles);
+	private Set<Tile> findAllAvailableTiles(Set<Tile> unavailableTiles) {
+		Set<Tile> allAvailableTiles = generateAllTiles(maxHorizontalTiles, maxVerticalTiles);
 		allAvailableTiles.removeAll(unavailableTiles);
 		return allAvailableTiles;
 	}
@@ -241,41 +248,9 @@ public class Board extends JFrame implements TileListener{
 //		}
 	}
 
-//	public int getHorizontalTiles() {
-//		return horizontalTiles;
-//	}
-//
-//	public int getVerticalTiles() {
-//		return verticalTiles;
-//	}
-
 	@Override
 	public void tileChanged(TileEvent event) {
 		occupiedTiles.add(event.newTile);
 		occupiedTiles.remove(event.oldTile);
 	}
-	
-	public static int getMaxHorizontalTiles() {
-		return maxHorizontalTiles;
-	}
-
-	private static void setMaxHorizontalTiles(int maxHorizontalTiles) {
-		if (maxHorizontalTiles < 0) {
-			throw new IllegalMaximumTilesException();
-		}
-		Board.maxHorizontalTiles = maxHorizontalTiles;
-	}
-
-	public static int getMaxVerticalTiles() {
-
-		return maxVerticalTiles;
-	}
-
-	private static void setMaxVerticalTiles(int maxVerticalTiles) {
-		if (maxHorizontalTiles < 0) {
-			throw new IllegalMaximumTilesException();
-		}
-		Board.maxVerticalTiles = maxVerticalTiles;
-	}
-
 }

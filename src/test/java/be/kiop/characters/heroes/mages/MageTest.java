@@ -7,7 +7,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.stream.IntStream;
@@ -16,13 +15,13 @@ import org.junit.Before;
 import org.junit.Test;
 
 import be.kiop.UI.Animated;
+import be.kiop.UI.Board;
 import be.kiop.UI.Drawable;
 import be.kiop.characters.GameCharacter;
-import be.kiop.characters.enemies.Enemy;
-import be.kiop.characters.enemies.skeletons.Skeleton;
 import be.kiop.characters.enemies.skeletons.SkeletonTest;
 import be.kiop.characters.heroes.Hero;
 import be.kiop.events.HealthEvent;
+import be.kiop.events.LifeEvent;
 import be.kiop.events.TileEvent;
 import be.kiop.exceptions.AlreadyAttackingException;
 import be.kiop.exceptions.AlreadyMovingException;
@@ -30,7 +29,6 @@ import be.kiop.exceptions.AlreadyPeacefulException;
 import be.kiop.exceptions.AlreadyStoppedException;
 import be.kiop.exceptions.CharacterDiedException;
 import be.kiop.exceptions.IllegalDirectionException;
-import be.kiop.exceptions.IllegalDropSetException;
 import be.kiop.exceptions.IllegalFrameNumberException;
 import be.kiop.exceptions.IllegalLevelException;
 import be.kiop.exceptions.IllegalMovementFrameException;
@@ -38,13 +36,13 @@ import be.kiop.exceptions.IllegalNameException;
 import be.kiop.exceptions.IllegalPositionException;
 import be.kiop.exceptions.IllegalTextureSetException;
 import be.kiop.exceptions.IllegalTileException;
-import be.kiop.exceptions.IllegalTileSetException;
 import be.kiop.exceptions.IllegalWeaponException;
 import be.kiop.exceptions.IllegalWeaponSetException;
 import be.kiop.exceptions.InvalidTextureException;
 import be.kiop.exceptions.MaxLevelReachedException;
 import be.kiop.exceptions.NegativeArmorException;
 import be.kiop.exceptions.NegativeDamageException;
+import be.kiop.exceptions.NegativeExperienceException;
 import be.kiop.exceptions.NegativeHealthException;
 import be.kiop.exceptions.NegativePenetrationException;
 import be.kiop.exceptions.NoMoveAnimationException;
@@ -52,6 +50,7 @@ import be.kiop.exceptions.OutOfLivesException;
 import be.kiop.exceptions.OutOfTileException;
 import be.kiop.exceptions.TooLittleRangeException;
 import be.kiop.listeners.HealthListener;
+import be.kiop.listeners.LifeListener;
 import be.kiop.listeners.TileListener;
 import be.kiop.textures.FloorTextures;
 import be.kiop.textures.MageTextures;
@@ -86,10 +85,14 @@ public class MageTest {
 	private final static float GAMECHARACTER_ARMOR = 50;
 	private final static float HERO_MANA = 10;
 	private final static Weapon VALID_WEAPON = Swords.Sword_1.getWeapon();
+	
+	//Needed to initialize board min and max tiles
+	@SuppressWarnings("unused")
+	private final static Board board = new Board(15, 15);
 
 	@Before
 	public void before() {
-		tile = new Tile(1, 1);
+		tile = new Tile(Board.getMaxHorizontalTiles() / 2, Board.getMaxHorizontalTiles() / 2);
 		weapon = (Staff) Staffs.Staff_1.getWeapon();
 		drawable = new Drawable(Set.of(DRAWABLE_TEXTURE, VALID_TEXTURE), DRAWABLE_TEXTURE, tile) {
 		};
@@ -97,13 +100,13 @@ public class MageTest {
 				Set.of((WeaponTextures) weapon.getTexture()), GAMECHARACTER_HEALTH, weapon, GAMECHARACTER_LEVEL,
 				GAMECHARACTER_ARMOR) {
 		};
-		hero = new Hero(Set.of(VALID_TEXTURE), VALID_TEXTURE, tile, GAMECHARACTER_NAME,
+		hero = new Hero(Set.of(VALID_TEXTURE, NEXT_VALID_TEXTURE), VALID_TEXTURE, tile, GAMECHARACTER_NAME,
 				Set.of((WeaponTextures) weapon.getTexture()), GAMECHARACTER_HEALTH, weapon, GAMECHARACTER_LEVEL,
 				GAMECHARACTER_ARMOR, HERO_LIVES) {
 		};
 		mage = new Mage(DRAWABLE_TEXTURE, tile, GAMECHARACTER_NAME, GAMECHARACTER_HEALTH, weapon, GAMECHARACTER_LEVEL,
 				GAMECHARACTER_ARMOR, HERO_LIVES, HERO_MANA);
-		
+
 	}
 
 	/* START MAGE TESTS */
@@ -1517,39 +1520,170 @@ public class MageTest {
 
 	/* END HITBOX TESTS */
 	/* END GAMECHARACTER TESTS */
-	
+
 	@Test
-	public void decreaseLives_once_livesDecreased() {
-		hero.decreaseLives();
-		assertEquals(HERO_LIVES-1, hero.getLives());
+	public void loseALife_once_livesDecreased() {
+		hero.loseALife();
+		assertEquals(HERO_LIVES - 1, hero.getLives());
 	}
-	
+
 	@Test(expected = OutOfLivesException.class)
-	public void decreaseLives_livesTimes_exception() {
-		IntStream.range(0, HERO_LIVES).forEach(i -> hero.decreaseLives());
+	public void loseALife_livesTimes_exception() {
+		IntStream.range(0, HERO_LIVES).forEach(i -> hero.loseALife());
 	}
-	
+
 	@Test
 	public void increaseLives_by1_livesIncreased() {
 		hero.increaseLives(1);
-		assertEquals(HERO_LIVES+1, hero.getLives());
+		assertEquals(HERO_LIVES + 1, hero.getLives());
 	}
-	
+
 	@Test
 	public void increaseLives_by0_livesUnchanged() {
 		hero.increaseLives(0);
 		assertEquals(HERO_LIVES, hero.getLives());
 	}
-	
+
 	@Test
 	public void increaseLives_byMoreThanMaxLives_maxLives() {
-		hero.increaseLives(Hero.MAX_LIVES+1);
+		hero.increaseLives(Hero.MAX_LIVES + 1);
 		assertEquals(Hero.MAX_LIVES, hero.getLives());
 	}
+
+	@Test
+	public void getExperience_nA_heroStartsWith0Experience() {
+		assertEquals(0, hero.getExperience(), MARGIN);
+	}
+
+	@Test
+	public void increaseExperience_byPositiveAmountSmallerThanRequiredForNextLevel_experienceIncreased() {
+		hero.increaseExperience(1);
+		assertEquals(1, hero.getExperience(), MARGIN);
+	}
 	
-
+	@Test
+	public void increaseExperience_byPositiveAmountRequiredForNextLevel_levelIncreased() {
+		hero.increaseExperience(hero.getLevel()*100);
+		assertEquals(0, hero.getExperience(), MARGIN);
+		assertEquals(GAMECHARACTER_LEVEL+1, hero.getLevel());
+	}
+	
+	@Test
+	public void increaseExperience_byPositiveAmountRequiredForNextLevelPlus1_experienceIncreased() {
+		hero.increaseExperience(hero.getLevel()*100+1);
+		assertEquals(1, hero.getExperience(), MARGIN);
+		assertEquals(GAMECHARACTER_LEVEL+1, hero.getLevel());
+	}
+	
+	@Test
+	public void increaseExperience_byPositiveAmountRequiredForTwoNextLevel_levelIncreased() {
+		hero.increaseExperience(hero.getLevel()*100);
+		assertEquals(0, hero.getExperience(), MARGIN);
+		assertEquals(GAMECHARACTER_LEVEL+1, hero.getLevel());
+		hero.increaseExperience(hero.getLevel()*100);
+		assertEquals(0, hero.getExperience(), MARGIN);
+		assertEquals(GAMECHARACTER_LEVEL+2, hero.getLevel());
+	}
+	
+	@Test(expected = NegativeExperienceException.class)
+	public void increaseExperience_byNegativeAmount_exception() {
+		hero.increaseExperience(-1);
+	}
+	
+	@Test
+	public void setHealth_validAmountBetween1AndMaxHealth_healthSet() {
+		try {
+			Method setHealth = Hero.class.getDeclaredMethod("setHealth", float.class);
+			setHealth.setAccessible(true);
+			setHealth.invoke(hero, 1);
+		} catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException
+				| InvocationTargetException e) {
+			e.printStackTrace();
+		}
+		assertEquals(1, hero.getHealth(), MARGIN);
+	}
+	
+	@Test
+	public void setHealth_0AsHealthAndMoreThan1Life_lostALifeAndRegainedAllHisHealth() throws Throwable {
+		try {
+			Method setHealth = Hero.class.getDeclaredMethod("setHealth", float.class);
+			setHealth.setAccessible(true);
+			setHealth.invoke(hero, 0);
+		} catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException
+				| InvocationTargetException e) {
+			throw e.getCause();
+		}
+		assertEquals(hero.getMaxHealth(), hero.getHealth(), MARGIN);
+		assertEquals(HERO_LIVES-1, hero.getLives());
+	}
+	
+	@Test(expected = CharacterDiedException.class)
+	public void setHealth_AsHealthAnd1LifeRemaining_exception() throws Throwable {
+		IntStream.range(0, HERO_LIVES-1).forEach(i-> hero.loseALife());
+		try {
+			Method setHealth = Hero.class.getDeclaredMethod("setHealth", float.class);
+			setHealth.setAccessible(true);
+			setHealth.invoke(hero, 0);
+		} catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException
+				| InvocationTargetException e) {
+			throw e.getCause();
+		}
+	}
+	
+	@Test
+	public void addLifeListener_toValidLifeListener_listenerAdded() {
+		LifeListener lL = new LifeListener() {
+			
+			@Override
+			public void lifeChanged(LifeEvent event) {
+			}
+		};
+		hero.addLifeListener(lL);
+		assertTrue(hero.getLifeListeners().contains(lL));
+	}
+	
+	@Test
+	public void removeLifeListener_validLifeListener_listenerremoved() {
+		LifeListener lL = new LifeListener() {
+			
+			@Override
+			public void lifeChanged(LifeEvent event) {
+			}
+		};
+		hero.addLifeListener(lL);
+		assertTrue(hero.getLifeListeners().contains(lL));
+		hero.removeLifeListener(lL);
+		assertTrue(hero.getLifeListeners().isEmpty());
+	}
+	
+	@Test
+	public void broadcast_validLifeEvent_lifeEventBroadcasted() {
+		LifeEvent lE = new LifeEvent(HERO_LIVES, 1);
+		LifeListener lL = new LifeListener() {
+			@Override
+			public void lifeChanged(LifeEvent event) {
+				assertEquals(1, event.newLives);
+			}
+		};
+		hero.addLifeListener(lL);
+		try {
+			Method broadcast = Hero.class.getDeclaredMethod("broadcast", LifeEvent.class);
+			broadcast.setAccessible(true);
+			broadcast.invoke(hero, lE);
+		} catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException
+				| InvocationTargetException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	@Test
+	public void setNextTexture_nA_stoppedMoving() {
+		hero.startMoving();
+		hero.setNextTexture();
+		assertFalse(hero.isMoving());
+	}
+	
 	/* END HERO TESTS */
-
 
 	/* END MAGE TESTS */
 }

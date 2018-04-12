@@ -66,7 +66,7 @@ public abstract class Hero extends GameCharacter {
 		}
 	}
 
-	public void decreaseLives() {
+	public void loseALife() {
 		setLives(lives - 1);
 	}
 
@@ -95,6 +95,9 @@ public abstract class Hero extends GameCharacter {
 	}
 
 	public void increaseExperience(float increment) {
+		if (experience < 0) {
+			throw new NegativeExperienceException();
+		}
 		setExperience(this.experience + increment);
 	}
 
@@ -107,14 +110,16 @@ public abstract class Hero extends GameCharacter {
 		super.setHealth(health);
 		if (getHealth() == 0) {
 			if (lives > 1) {
-				decreaseLives();
+				loseALife();
 				setHealth(getMaxHealth());
-				throw new LostALifeException();
 			} else {
 				throw new CharacterDiedException();
-
 			}
 		}
+	}
+
+	public Set<LifeListener> getLifeListeners() {
+		return lifeListeners;
 	}
 
 	public void addLifeListener(LifeListener listener) {

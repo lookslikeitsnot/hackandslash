@@ -16,6 +16,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import be.kiop.UI.Animated;
+import be.kiop.UI.Board;
 import be.kiop.UI.Drawable;
 import be.kiop.characters.GameCharacter;
 import be.kiop.characters.enemies.Enemy;
@@ -82,9 +83,13 @@ public class SkeletonTest {
 	private final static float GAMECHARACTER_ARMOR = 50;
 	private final static Set<Drop> ENEMY_DROPPABLES = Set.of(Swords.Sword_1.getWeapon());
 
+	// Needed to initialize board min and max tiles
+	@SuppressWarnings("unused")
+	private final static Board board = new Board(15, 15);
+
 	@Before
 	public void before() {
-		tile = new Tile(1, 1);
+		tile = new Tile(Board.getMaxHorizontalTiles() / 2, Board.getMaxHorizontalTiles() / 2);
 		weapon = new Bone(WeaponTextures.Bone, tile, "Little Bone", 50, 75, 40, 30, 100, 5, 10, 20);
 		drawable = new Drawable(Set.of(DRAWABLE_TEXTURE, VALID_TEXTURE), DRAWABLE_TEXTURE, tile) {
 		};
@@ -186,7 +191,7 @@ public class SkeletonTest {
 	public void setPositionOfTextureCenterInTile_moreThanTileHeight_exception() {
 		drawable.setPositionOfTextureCenterInTile(new Position(0, tile.getSize().getHeight() + 1));
 	}
-	
+
 	@Test
 	public void addTileListener_validListener_tileListenerAdded() {
 		TileListener tL = new TileListener() {
@@ -215,7 +220,7 @@ public class SkeletonTest {
 	public void broadcast_validTileEvent_tileEventBroadcasted() {
 		TileEvent tE = new TileEvent(tile, Tile.ORIGIN);
 		TileListener tL = new TileListener() {
-			
+
 			@Override
 			public void tileChanged(TileEvent event) {
 				assertEquals(Tile.ORIGIN, event.newTile);
@@ -231,28 +236,28 @@ public class SkeletonTest {
 			e.printStackTrace();
 		}
 	}
-	
+
 	@Test
 	public void equals_sameDrawable_true() {
 		assertEquals(drawable, drawable);
 	}
-	
+
 	@Test
 	public void equals_sameDrawableParameters_true() {
 		assertEquals(drawable, new Drawable(Set.of(DRAWABLE_TEXTURE, VALID_TEXTURE), DRAWABLE_TEXTURE, tile) {
 		});
 	}
-	
+
 	@Test
 	public void equals_nullAsDrawable_false() {
 		assertNotEquals(drawable, null);
 	}
-	
+
 	@Test
 	public void equals_notInstanceOfDrawable_false() {
 		assertNotEquals(drawable, new SkeletonTest());
 	}
-	
+
 	@Test
 	public void equals_differentPositionOfTextureCenterInTile_false() {
 		Drawable drawable2 = new Drawable(Set.of(DRAWABLE_TEXTURE, VALID_TEXTURE), DRAWABLE_TEXTURE, tile) {
@@ -260,7 +265,7 @@ public class SkeletonTest {
 		drawable2.setPositionOfTextureCenterInTile(Position.ORIGIN);
 		assertNotEquals(drawable, drawable2);
 	}
-	
+
 	@Test
 	public void equals_differentTexture_false() {
 		Drawable drawable2 = new Drawable(Set.of(DRAWABLE_TEXTURE, VALID_TEXTURE), DRAWABLE_TEXTURE, tile) {
@@ -268,7 +273,7 @@ public class SkeletonTest {
 		drawable2.setTexture(VALID_TEXTURE);
 		assertNotEquals(drawable, drawable2);
 	}
-	
+
 	@Test
 	public void equals_differentTiles_false() {
 		Drawable drawable2 = new Drawable(Set.of(DRAWABLE_TEXTURE, VALID_TEXTURE), DRAWABLE_TEXTURE, tile) {
@@ -1555,7 +1560,7 @@ public class SkeletonTest {
 
 	@Test
 	public void equals_clone_false() {
-		assertNotEquals(enemy,enemy.clone());
+		assertNotEquals(enemy, enemy.clone());
 	}
 
 	@Test
@@ -1569,7 +1574,7 @@ public class SkeletonTest {
 				return null;
 			}
 		};
-		assertNotEquals(enemy,enemy2);
+		assertNotEquals(enemy, enemy2);
 	}
 
 	@Test
@@ -1588,7 +1593,7 @@ public class SkeletonTest {
 		enemy.move(Set.of());
 		assertEquals(pos, enemy.getAbsolutePosition());
 	}
-	
+
 	@Test
 	public void move_noAdjacentTileInTileSet_noMovement() {
 		Position pos = enemy.getAbsolutePosition();
@@ -1604,13 +1609,13 @@ public class SkeletonTest {
 		enemy.move(availableTiles);
 		assertNotEquals(pos, enemy.getAbsolutePosition());
 	}
-	
+
 	@Test
 	public void move_untilCenterOfAdjacentTileAdjacentTileInTileSet_movedAndStoppedMoving() {
 		Position pos = enemy.getAbsolutePosition();
 		Set<Tile> availableTiles = new HashSet<>();
 		availableTiles.add(tile.getEASTwardTile());
-		IntStream.range(0, tile.getSize().getWidth()/Enemy.SPEED).forEach(i -> enemy.move(availableTiles));
+		IntStream.range(0, tile.getSize().getWidth() / Enemy.SPEED).forEach(i -> enemy.move(availableTiles));
 		assertNotEquals(pos, enemy.getAbsolutePosition());
 		assertFalse(enemy.isMoving());
 	}
