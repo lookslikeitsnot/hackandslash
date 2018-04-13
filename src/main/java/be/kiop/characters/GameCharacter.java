@@ -480,9 +480,11 @@ public abstract class GameCharacter extends Drawable implements Animated, HitBox
 
 			setMovementFrame(movementFrame + 1);
 			int associatedFrame = getAssociatedFrameNumber(movementFrame);
+			
+			Texture texture = TextureBuilder.getTexture(textureClass, textureString, genderString, directionString,
+					Integer.toString(associatedFrame));
 
-			setTexture(TextureBuilder.getTexture(textureClass, textureString, genderString, directionString,
-					Integer.toString(associatedFrame)));
+			setTexture(texture);
 		}
 	}
 

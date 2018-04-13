@@ -46,6 +46,7 @@ import be.kiop.exceptions.NegativeDamageException;
 import be.kiop.exceptions.NegativeExperienceException;
 import be.kiop.exceptions.NegativeHealthException;
 import be.kiop.exceptions.NegativePenetrationException;
+import be.kiop.exceptions.NegativeShieldException;
 import be.kiop.exceptions.NoMoveAnimationException;
 import be.kiop.exceptions.OutOfLivesException;
 import be.kiop.exceptions.OutOfTileException;
@@ -75,7 +76,7 @@ public class WarriorTest {
 	private final static float MARGIN = 0.1F;
 
 	private final static WarriorTextures DRAWABLE_TEXTURE = WarriorTextures.Warrior_FEMALE_SOUTH_2;
-	private final static WarriorTextures NEXT_VALID_TEXTURE = WarriorTextures.Warrior_FEMALE_SOUTH_1;
+	private final static WarriorTextures NEXT_VALID_TEXTURE = WarriorTextures.Warrior_MALE_SOUTH_1;
 	private final static WarriorTextures VALID_TEXTURE = WarriorTextures.Warrior_MALE_SOUTH_2;
 	private final static FloorTextures INVALID_TEXTURE = FloorTextures.Floor_Parquet_HORIZONTAL;
 	private final static String GAMECHARACTER_NAME = "Warrior";
@@ -109,7 +110,7 @@ public class WarriorTest {
 
 	}
 
-	/* START MAGE TESTS */
+	/* START WARRIOR TESTS */
 	/* START HERO TESTS */
 	/* START GAMECHARACTER TESTS */
 	/* START DRAWABLE TESTS */
@@ -1762,4 +1763,60 @@ public class WarriorTest {
 	
 	/* END HERO TESTS */
 	
+	@Test
+	public void increaseShield_byAmountBetween0AndMaxShield_shieldIncreased() {
+		warrior.increaseShield(1);
+		assertEquals(WARRIOR_SHIELD+1, warrior.getShield(), MARGIN);
+	}
+	
+	@Test
+	public void increaseShield_by0_shieldUnchanged() {
+		warrior.increaseShield(0);
+		assertEquals(WARRIOR_SHIELD, warrior.getShield(), MARGIN);
+	}
+	
+	@Test(expected = NegativeShieldException.class)
+	public void increaseShield_byNegativeAmount_exception() {
+		warrior.increaseShield(-1);
+	}
+	
+	@Test
+	public void setShield_moreThanMaxShield_maxShield() {
+		warrior = new Warrior(DRAWABLE_TEXTURE, tile, GAMECHARACTER_NAME, GAMECHARACTER_HEALTH, weapon, GAMECHARACTER_LEVEL,
+				GAMECHARACTER_ARMOR, HERO_LIVES, Warrior.MAX_SHIELD+1);
+		assertEquals(Warrior.MAX_SHIELD, warrior.getShield(), MARGIN);
+	}
+	
+	@Test
+	public void takeDamage_lessThanWarriorShield_warriorShieldDecreasedAndHealthUnchanged() {
+		warrior.takeDamage(WARRIOR_SHIELD-1, 0);
+		assertEquals(1, warrior.getShield(),MARGIN);
+		assertEquals(GAMECHARACTER_HEALTH, warrior.getHealth(), MARGIN);
+	}
+	
+	@Test
+	public void takeDamage_0Damage_warriorShieldAndHealthUnchanged() {
+		warrior.takeDamage(0, 0);
+		assertEquals(WARRIOR_SHIELD, warrior.getShield(),MARGIN);
+		assertEquals(GAMECHARACTER_HEALTH, warrior.getHealth(), MARGIN);
+	}
+	
+	@Test(expected = NegativeDamageException.class)
+	public void takeDamage_negativeDamage_exception() {
+		warrior.takeDamage(-1, 0);
+	}
+	
+	@Test(expected = NegativePenetrationException.class)
+	public void takeDamage_negativePenetration_exception() {
+		warrior.takeDamage(0, -1);
+	}
+	
+	@Test
+	public void takeDamage_moreThanWarriorShield_warriorShieldIsZeroAndHealthDecreased() {
+		warrior.takeDamage(WARRIOR_SHIELD+1, 0);
+		assertEquals(0, warrior.getShield(),MARGIN);
+		assertNotEquals(GAMECHARACTER_HEALTH, warrior.getHealth(), MARGIN);
+	}
+	
+	/* END WARRIOR TESTS */
 }

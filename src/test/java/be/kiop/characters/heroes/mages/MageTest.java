@@ -1771,6 +1771,12 @@ public class MageTest {
 		assertEquals(HERO_MANA-1, mage.getMana(), MARGIN);
 	}
 	
+	@Test
+	public void decreaseMana_by0_manaUnchanged() {
+		mage.decreaseMana(0);
+		assertEquals(HERO_MANA, mage.getMana(), MARGIN);
+	}
+	
 	@Test(expected = NegativeManaException.class)
 	public void decreaseMana_byNegativeAmount_exception() {
 		mage.decreaseMana(-1);
@@ -1785,6 +1791,12 @@ public class MageTest {
 	public void increaseMana_byAmountBetweenCurrenManaAndMaxMana_manaIncreased() {
 		mage.increaseMana(1);
 		assertEquals(HERO_MANA+1, mage.getMana(), MARGIN);
+	}
+	
+	@Test
+	public void increaseMana_by0_manaUnchanged() {
+		mage.increaseMana(0);
+		assertEquals(HERO_MANA, mage.getMana(), MARGIN);
 	}
 
 	@Test(expected = NegativeManaException.class)

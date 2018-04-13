@@ -73,8 +73,8 @@ public class Board extends JFrame implements TileListener{
 		walls = generateAllWalls(wallTiles);
 //		fires = generateFirePits();
 
-		enemies = generateEnemies(16, (Enemy) Skeletons.Skeleton_1.getGameCharacter());
-		enemies.addAll(generateEnemies(4, (Enemy) Skeletons.Skeleton_Dog_1.getGameCharacter()));
+//		enemies = generateEnemies(16, (Enemy) Skeletons.Skeleton_1.getGameCharacter());
+//		enemies.addAll(generateEnemies(4, (Enemy) Skeletons.Skeleton_Dog_1.getGameCharacter()));
 
 		setLayout(new BorderLayout());
 		boardDrawing = new BoardDrawing(SIZE, FloorTextures.Floor_Stone_Light_Grey_NONE,
