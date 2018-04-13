@@ -6,7 +6,7 @@ import java.util.stream.Collectors;
 
 import be.kiop.characters.heroes.Hero;
 import be.kiop.exceptions.NegativeManaException;
-import be.kiop.exceptions.OutOfManaException;
+import be.kiop.exceptions.NotEnoughManaException;
 import be.kiop.textures.MageTextures;
 import be.kiop.textures.Texture;
 import be.kiop.textures.WeaponTextures;
@@ -14,7 +14,7 @@ import be.kiop.valueobjects.Tile;
 import be.kiop.weapons.Weapon;
 
 public class Mage extends Hero {
-	static final float MAX_MANA = 100;
+	public static final float MAX_MANA = 100;
 	private final static Set<Texture> AVAILABLE_TEXTURES = Arrays.stream(MageTextures.values())
 			.collect(Collectors.toSet());
 	private final static Set<WeaponTextures> AVAILABLE_WEAPONS = Set.of(WeaponTextures.Staff);
@@ -34,15 +34,16 @@ public class Mage extends Hero {
 	private void setMana(float mana) {
 		if (mana < 0) {
 			throw new NegativeManaException();
-		} else if (mana == 0) {
-			throw new OutOfManaException();
 		}
-		this.mana = mana>MAX_MANA?MAX_MANA:mana;
+		this.mana = mana > MAX_MANA ? MAX_MANA : mana;
 	}
 
 	public void decreaseMana(float decrement) {
 		if (decrement < 0) {
 			throw new NegativeManaException();
+		}
+		if(decrement > mana) {
+			throw new NotEnoughManaException();
 		}
 		setMana(mana - decrement);
 	}

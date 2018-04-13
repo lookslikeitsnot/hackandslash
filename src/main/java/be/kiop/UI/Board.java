@@ -12,13 +12,11 @@ import java.util.Set;
 
 import javax.swing.JFrame;
 
-import be.kiop.Main;
 import be.kiop.characters.enemies.Enemy;
 import be.kiop.characters.enemies.skeletons.Skeletons;
 import be.kiop.characters.heroes.Hero;
 import be.kiop.characters.heroes.warriors.Warriors;
 import be.kiop.events.TileEvent;
-import be.kiop.exceptions.IllegalMaximumTilesException;
 import be.kiop.items.Drop;
 import be.kiop.listeners.RepaintTimer;
 import be.kiop.listeners.TileListener;
@@ -54,7 +52,7 @@ public class Board extends JFrame implements TileListener{
 
 	public static final Size exteriorWallSize = new Size(32, 32);
 
-	private final Size size;
+	public static Size SIZE;
 
 	//public final static Size TILE_SIZE = new Size(32, 48);
 	public final static Size MAX_SIZE = new Size(4000, 4000);
@@ -66,7 +64,7 @@ public class Board extends JFrame implements TileListener{
 		wallTiles = new Maze(maxHorizontalTiles, maxVerticalTiles).generateMaze();
 		allAvailableTiles = findAllAvailableTiles(wallTiles);
 
-		this.size = Size.sum(Size.product(new Size(32, 48), maxHorizontalTiles, maxVerticalTiles),
+		SIZE = Size.sum(Size.product(new Size(32, 48), maxHorizontalTiles, maxVerticalTiles),
 				Size.product(exteriorWallSize, 2, 2));
 
 		hero = generateHero((Hero) Warriors.Warrior_1_M.getGameCharacter());
@@ -79,7 +77,7 @@ public class Board extends JFrame implements TileListener{
 		enemies.addAll(generateEnemies(4, (Enemy) Skeletons.Skeleton_Dog_1.getGameCharacter()));
 
 		setLayout(new BorderLayout());
-		boardDrawing = new BoardDrawing(size, FloorTextures.Floor_Stone_Light_Grey_NONE,
+		boardDrawing = new BoardDrawing(SIZE, FloorTextures.Floor_Stone_Light_Grey_NONE,
 				WallTextures.Wall_Mettalic_Dark, hero, walls, fires, enemies, drops, this, new Size(32, 48));
 		hud = new HUD(hero, null);
 //		map.setBorder(BorderFactory.createLineBorder(Color.red));
@@ -218,7 +216,7 @@ public class Board extends JFrame implements TileListener{
 		Set<Tile> adjacentTiles = tile.getAdjacentTiles();
 		for (Tile adjacentTile : adjacentTiles) {
 			if (!allAvailableTiles.contains(adjacentTile)) {
-				allHitBoxes.addAll(adjacentTile.getTileHitBox(size));
+				allHitBoxes.addAll(adjacentTile.getTileHitBox(SIZE));
 			}
 		}
 

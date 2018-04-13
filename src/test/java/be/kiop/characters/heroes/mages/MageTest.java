@@ -45,8 +45,10 @@ import be.kiop.exceptions.NegativeArmorException;
 import be.kiop.exceptions.NegativeDamageException;
 import be.kiop.exceptions.NegativeExperienceException;
 import be.kiop.exceptions.NegativeHealthException;
+import be.kiop.exceptions.NegativeManaException;
 import be.kiop.exceptions.NegativePenetrationException;
 import be.kiop.exceptions.NoMoveAnimationException;
+import be.kiop.exceptions.NotEnoughManaException;
 import be.kiop.exceptions.OutOfLivesException;
 import be.kiop.exceptions.OutOfTileException;
 import be.kiop.exceptions.TooLittleRangeException;
@@ -1730,43 +1732,70 @@ public class MageTest {
 
 	@Test
 	public void move_EASTDirectionAndNoUnavailablePositionsUntilReachingExteriorWallsPlus1_stopsMovingAtWall() {
-		int textureCenterX = hero.getAbsoluteCenterPosition().getX();
-		IntStream.range(0, textureCenterX).forEach(i -> hero.move(Directions.EAST, Set.of()));
+		IntStream.range(0, Board.SIZE.getWidth()).forEach(i -> hero.move(Directions.EAST, Set.of()));
 		int hitBoxWidth = ((MageTextures) hero.getTexture()).getHitBoxSize().getWidth();
 
-		assertEquals(Board.exteriorWallSize.getWidth() + hitBoxWidth / 2, hero.getAbsoluteCenterPosition().getX());
-	}
-
-	@Test
-	public void move_SOUTHDirectionAndNoUnavailablePositionsUntilReachingExteriorWallsPlus1_stopsMovingAtWall() {
-		int textureCenterY = hero.getAbsoluteCenterPosition().getY();
-		IntStream.range(0, textureCenterY).forEach(i -> hero.move(Directions.SOUTH, Set.of()));
-		int hitBoxHeight = ((MageTextures) hero.getTexture()).getHitBoxSize().getHeight();
-
-		assertEquals(Board.exteriorWallSize.getHeight() + hitBoxHeight / 2, hero.getAbsoluteCenterPosition().getY());
-	}
-
-	@Test
-	public void move_WESTDirectionAndNoUnavailablePositionsUntilReachingExteriorWallsPlus1_stopsMovingAtWall() {
-		int textureCenterX = hero.getAbsoluteCenterPosition().getX();
-		IntStream.range(0, textureCenterX).forEach(i -> hero.move(Directions.WEST, Set.of()));
-		int hitBoxWidth = ((MageTextures) hero.getTexture()).getHitBoxSize().getWidth();
-
-		assertEquals(Board.MAX_SIZE.getWidth() - Board.exteriorWallSize.getWidth() - hitBoxWidth / 2,
+		assertEquals(Board.SIZE.getWidth() - Board.exteriorWallSize.getWidth() - hitBoxWidth / 2,
 				hero.getAbsoluteCenterPosition().getX());
 	}
 
 	@Test
-	public void move_NORTHDirectionAndNoUnavailablePositionsUntilReachingExteriorWallsPlus1_stopsMovingAtWall() {
-		int textureCenterY = hero.getAbsoluteCenterPosition().getY();
-		IntStream.range(0, textureCenterY).forEach(i -> hero.move(Directions.NORTH, Set.of()));
+	public void move_SOUTHDirectionAndNoUnavailablePositionsUntilReachingExteriorWallsPlus1_stopsMovingAtWall() {
+		IntStream.range(0, Board.SIZE.getHeight() + 1).forEach(i -> hero.move(Directions.SOUTH, Set.of()));
 		int hitBoxHeight = ((MageTextures) hero.getTexture()).getHitBoxSize().getHeight();
 
-		assertEquals(Board.MAX_SIZE.getHeight() - Board.exteriorWallSize.getHeight() - hitBoxHeight / 2,
+		assertEquals(Board.SIZE.getHeight() - Board.exteriorWallSize.getHeight() - hitBoxHeight / 2,
+				hero.getAbsoluteCenterPosition().getY());
+	}
+
+	@Test
+	public void move_WESTDirectionAndNoUnavailablePositionsUntilReachingExteriorWallsPlus1_stopsMovingAtWall() {
+		IntStream.range(0, Board.SIZE.getWidth()).forEach(i -> hero.move(Directions.WEST, Set.of()));
+		int hitBoxWidth = ((MageTextures) hero.getTexture()).getHitBoxSize().getWidth();
+		assertEquals(Board.exteriorWallSize.getWidth() - 1 + hitBoxWidth / 2, hero.getAbsoluteCenterPosition().getX());
+	}
+
+	@Test
+	public void move_NORTHDirectionAndNoUnavailablePositionsUntilReachingExteriorWallsPlus1_stopsMovingAtWall() {
+		IntStream.range(0, Board.SIZE.getHeight() + 1).forEach(i -> hero.move(Directions.NORTH, Set.of()));
+		int hitBoxHeight = ((MageTextures) hero.getTexture()).getHitBoxSize().getHeight();
+		assertEquals(Board.exteriorWallSize.getHeight() - 1 + hitBoxHeight / 2,
 				hero.getAbsoluteCenterPosition().getY());
 	}
 
 	/* END HERO TESTS */
+	
+	@Test
+	public void decreaseMana_byAmountBetween1andCurrenMana_manaDecreased() {
+		mage.decreaseMana(1);
+		assertEquals(HERO_MANA-1, mage.getMana(), MARGIN);
+	}
+	
+	@Test(expected = NegativeManaException.class)
+	public void decreaseMana_byNegativeAmount_exception() {
+		mage.decreaseMana(-1);
+	}
+	
+	@Test(expected = NotEnoughManaException.class)
+	public void decreaseMana_byMoreThanCurrenManaAmount_exception() {
+		mage.decreaseMana(HERO_MANA+1);
+	}
+	
+	@Test
+	public void increaseMana_byAmountBetweenCurrenManaAndMaxMana_manaIncreased() {
+		mage.increaseMana(1);
+		assertEquals(HERO_MANA+1, mage.getMana(), MARGIN);
+	}
 
+	@Test(expected = NegativeManaException.class)
+	public void increaseMana_byNegativeAmount_exception() {
+		mage.increaseMana(-1);
+	}
+	
+	@Test
+	public void increaseMana_byMoreThanMaxMana_maxMana() {
+		mage.increaseMana(Mage.MAX_MANA+1);
+		assertEquals(Mage.MAX_MANA, mage.getMana(), MARGIN);
+	}
 	/* END MAGE TESTS */
 }

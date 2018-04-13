@@ -178,7 +178,7 @@ public abstract class Hero extends GameCharacter {
 						| InvocationTargetException e) {
 					throw new UnsupportedOperationException();
 				}
-			}
+			} 
 		});
 	}
 
@@ -208,7 +208,7 @@ public abstract class Hero extends GameCharacter {
 		Set<Position> toCheck = new LinkedHashSet<>();
 		switch (direction) {
 		case SOUTH:
-			if (maxHitBoxY >= Board.MAX_SIZE.getHeight() - Board.exteriorWallSize.getHeight()) {
+			if (maxHitBoxY >= Board.SIZE.getHeight() - Board.exteriorWallSize.getHeight()) {
 				return false;
 			}
 			toCheck = IntStream.range(minHitBoxX, maxHitBoxX).mapToObj(posX -> new Position(posX, maxHitBoxY + 1))
@@ -222,7 +222,7 @@ public abstract class Hero extends GameCharacter {
 					.collect(Collectors.toSet());
 			break;
 		case EAST:
-			if (maxHitBoxX >= Board.MAX_SIZE.getWidth() - Board.exteriorWallSize.getWidth()) {
+			if (maxHitBoxX >= Board.SIZE.getWidth() - Board.exteriorWallSize.getWidth()) {
 				return false;
 			}
 			toCheck = IntStream.range(minHitBoxY, maxHitBoxY).mapToObj(posY -> new Position(maxHitBoxX + 1, posY))
