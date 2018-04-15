@@ -61,7 +61,7 @@ public class Board extends JFrame implements TileListener{
 		maxHorizontalTiles = horizontalTiles;
 		maxVerticalTiles = verticalTiles;
 
-		wallTiles = new Maze(maxHorizontalTiles, maxVerticalTiles).generateMaze();
+		wallTiles = Maze.generateMaze(horizontalTiles, verticalTiles);
 		allAvailableTiles = findAllAvailableTiles(wallTiles);
 
 		SIZE = Size.sum(Size.product(new Size(32, 48), maxHorizontalTiles, maxVerticalTiles),
@@ -73,8 +73,8 @@ public class Board extends JFrame implements TileListener{
 		walls = generateAllWalls(wallTiles);
 //		fires = generateFirePits();
 
-//		enemies = generateEnemies(16, (Enemy) Skeletons.Skeleton_1.getGameCharacter());
-//		enemies.addAll(generateEnemies(4, (Enemy) Skeletons.Skeleton_Dog_1.getGameCharacter()));
+		enemies = generateEnemies(128, (Enemy) Skeletons.Skeleton_1.getGameCharacter());
+		enemies.addAll(generateEnemies(128, (Enemy) Skeletons.Skeleton_Dog_1.getGameCharacter()));
 
 		setLayout(new BorderLayout());
 		boardDrawing = new BoardDrawing(SIZE, FloorTextures.Floor_Stone_Light_Grey_NONE,
@@ -100,18 +100,8 @@ public class Board extends JFrame implements TileListener{
 		return maxVerticalTiles;
 	}
 
-	private static Set<Tile> generateAllTiles(int horizontalTiles, int verticalTiles) {
-		Set<Tile> allTiles = new LinkedHashSet<>();
-		for(int x = 0; x < horizontalTiles; x++) {
-			for(int y = 0; y < verticalTiles; y++) {
-				allTiles.add(new Tile(x, y));
-			}
-		}
-		return allTiles;
-	}
-
 	private Set<Tile> findAllAvailableTiles(Set<Tile> unavailableTiles) {
-		Set<Tile> allAvailableTiles = generateAllTiles(maxHorizontalTiles, maxVerticalTiles);
+		Set<Tile> allAvailableTiles = Maze.generateAllTiles(maxHorizontalTiles, maxVerticalTiles);
 		allAvailableTiles.removeAll(unavailableTiles);
 		return allAvailableTiles;
 	}
@@ -201,7 +191,6 @@ public class Board extends JFrame implements TileListener{
 					drops.add(drop);
 				}
 				occupiedTiles.remove(enemy.getTile());
-//				occupiedTiles.remove(enemy.getNextTile());
 				iterator.remove();
 			}
 		}

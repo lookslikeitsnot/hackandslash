@@ -24,7 +24,6 @@ import be.kiop.textures.WallTextures;
 import be.kiop.valueobjects.Directions;
 import be.kiop.valueobjects.Position;
 import be.kiop.valueobjects.Size;
-import be.kiop.valueobjects.Tile;
 
 public class BoardDrawing extends JPanel {
 	private static final long serialVersionUID = 1L;

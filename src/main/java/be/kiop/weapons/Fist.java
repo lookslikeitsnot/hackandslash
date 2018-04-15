@@ -4,7 +4,6 @@ import java.util.Arrays;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import be.kiop.UI.Drawable;
 import be.kiop.textures.Texture;
 import be.kiop.textures.WeaponTextures;
 import be.kiop.valueobjects.Tile;

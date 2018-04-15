@@ -1,17 +1,22 @@
 package be.kiop.valueobjects;
 
+import be.kiop.exceptions.NegativeOffsetException;
+
 public class Offset {
-	int offsetX;
-	int offsetY;
-	
+	private final int offsetX;
+	private final int offsetY;
+
 	public Offset(int offsetX, int offsetY) {
+		if (offsetX < 0 || offsetY < 0) {
+			throw new NegativeOffsetException();
+		}
 		this.offsetX = offsetX;
 		this.offsetY = offsetY;
 	}
-	
+
 	public Offset(Size size) {
-		offsetX = size.getWidth()/2;
-		offsetY = size.getHeight()/2;
+		offsetX = size.getWidth() / 2;
+		offsetY = size.getHeight() / 2;
 	}
 
 	public int getOffsetX() {
@@ -46,6 +51,5 @@ public class Offset {
 			return false;
 		return true;
 	}
-	
-	
+
 }

@@ -1,15 +1,18 @@
 package be.kiop.valueobjects;
 
 import be.kiop.UI.Board;
+import be.kiop.exceptions.IllegalOffsetException;
 import be.kiop.exceptions.IllegalPositionException;
-import be.kiop.exceptions.OutOfBoardException;
+import be.kiop.exceptions.IllegalTileException;
+import be.kiop.exceptions.IllegalTileSizeException;
+import be.kiop.exceptions.NegativeIncrementException;
 
 public class Position {
 	private int x;
 	private int y;
 	// private int z;
-	
-	public final static Position ORIGIN = new Position(0,0);
+
+	public final static Position ORIGIN = new Position(0, 0);
 
 	public Position(int x, int y) {
 		setX(x);
@@ -71,7 +74,7 @@ public class Position {
 	public Position east() {
 		try {
 			return new Position(x + 1, y);
-		} catch (OutOfBoardException ex) {
+		} catch (IllegalPositionException ex) {
 			return null;
 		}
 	}
@@ -79,7 +82,7 @@ public class Position {
 	public Position south() {
 		try {
 			return new Position(x, y + 1);
-		} catch (OutOfBoardException ex) {
+		} catch (IllegalPositionException ex) {
 			return null;
 		}
 	}
@@ -87,7 +90,7 @@ public class Position {
 	public Position west() {
 		try {
 			return new Position(x - 1, y);
-		} catch (OutOfBoardException ex) {
+		} catch (IllegalPositionException ex) {
 			return null;
 		}
 	}
@@ -95,51 +98,60 @@ public class Position {
 	public Position north() {
 		try {
 			return new Position(x, y - 1);
-		} catch (OutOfBoardException ex) {
+		} catch (IllegalPositionException ex) {
 			return null;
 		}
 	}
 
 	public void add(Position position) {
-		if(position == null) {
-			throw new IllegalArgumentException();
+		if (position == null) {
+			throw new IllegalPositionException();
 		}
-		this.x += position.getX();
-		this.y += position.getY();
+		setX(x + position.x);
+		setY(y + position.y);
 	}
 
 	public void add(int x, int y) {
-		this.x += x;
-		this.y += y;
+		if (x < 0 || y < 0) {
+			throw new NegativeIncrementException();
+		}
+		setX(this.x + x);
+		setY(this.y + y);
 	}
-	
+
 	public void add(Offset offset) {
-		this.x -= offset.offsetX;
-		this.y -= offset.offsetY;
+		if (offset == null) {
+			throw new IllegalOffsetException();
+		}
+		setX(x-offset.getOffsetX());
+		setY(y-offset.getOffsetY());
 	}
 
 	public static Position sum(Position pos1, Position pos2) {
+		if(pos1 == null || pos2 == null) {
+			throw new IllegalPositionException();
+		}
 		int sumX = pos1.x + pos2.x;
 		int sumY = pos1.y + pos2.y;
 		return new Position(sumX, sumY);
 	}
 
 	public void substract(Position position) {
-		if(position == null) {
-			throw new IllegalArgumentException();
+		if (position == null) {
+			throw new IllegalPositionException();
 		}
-		this.x -= position.getX();
-		this.y -= position.getY();
+		setX(x - position.x);
+		setY(y - position.y);
 	}
 
 	public void substract(int x, int y) {
-		this.x -= x;
-		this.y -= y;
+		setX(this.x - x);
+		setY(this.y - y);
 	}
 
 	public static Position difference(Position pos1, Position pos2) {
-		if(pos1 == null || pos2 == null) {
-			throw new IllegalArgumentException();
+		if (pos1 == null || pos2 == null) {
+			throw new IllegalPositionException();
 		}
 		int difX = pos1.x - pos2.x;
 		int difY = pos1.y - pos2.y;
@@ -147,27 +159,49 @@ public class Position {
 	}
 
 	public static Position getAssociatedPosition(Tile tile, Size tileSize) {
-		if(tile == null || tileSize == null) {
-			throw new IllegalArgumentException();
+		if (tile == null) {
+			throw new IllegalTileException();
+		}
+		if (tileSize == null) {
+			throw new IllegalTileSizeException();
 		}
 		return new Position(tile.getHorizontalPosition() * tileSize.getWidth(),
 				tile.getVerticalPosition() * tileSize.getHeight());
 	}
-	
-	public static Position getAssociatedPosition(Tile tile, Size tileSize, int offsetX, int offsetY) {
-		if(tile == null || tileSize == null) {
-			throw new IllegalArgumentException();
-		}
-		return sum(getAssociatedPosition(tile, tileSize), new Position(offsetX, offsetY));
-	}
-	
+
+//	public static Position getAssociatedPosition(Tile tile, Size tileSize, Offset offset) {
+//		if (tile == null) {
+//			throw new IllegalTileException();
+//		}
+//		if (tileSize == null) {
+//			throw new IllegalTileSizeException();
+//		}
+//		if(offset == null) {
+//			throw new IllegalOffsetException();
+//		}
+//		return sum(getAssociatedPosition(tile, tileSize), new Position(offset.getOffsetX(), offset.getOffsetY()));
+//	}
+
 	public static Position getAbsolutePosition(Position position, Tile tile) {
-		return getAbsolutePosition(position, tile, new Offset(0,0));
+		
+		return getAbsolutePosition(position, tile, new Offset(0, 0));
 	}
+
 	public static Position getAbsolutePosition(Position position, Tile tile, Offset offset) {
-		int posX = tile.getHorizontalPosition()*tile.getSize().getWidth()+position.x+Board.exteriorWallSize.getWidth();
-		int posY = tile.getVerticalPosition()*tile.getSize().getHeight()+position.y+Board.exteriorWallSize.getHeight();
-		Position absolutePosition =  new Position(posX, posY);
+		if (position == null) {
+			throw new IllegalPositionException();
+		}
+		if (tile == null) {
+			throw new IllegalTileException();
+		}
+		if (offset == null) {
+			throw new IllegalOffsetException();
+		}
+		int posX = tile.getHorizontalPosition() * tile.getSize().getWidth() + position.x
+				+ Board.exteriorWallSize.getWidth();
+		int posY = tile.getVerticalPosition() * tile.getSize().getHeight() + position.y
+				+ Board.exteriorWallSize.getHeight();
+		Position absolutePosition = new Position(posX, posY);
 		absolutePosition.add(offset);
 		return absolutePosition;
 	}
