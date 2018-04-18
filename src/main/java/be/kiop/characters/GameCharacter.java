@@ -129,7 +129,7 @@ public abstract class GameCharacter extends Drawable implements Animated, HitBox
 		synchronized (healthListeners) {
 			event = new HealthEvent(this.health, health);
 			this.health = health;
-			if (this.health < 0) {
+			if (this.health <= 0) {
 				this.health = 0;
 				throw new CharacterDiedException();
 			} else if (this.health > getMaxHealth()) {

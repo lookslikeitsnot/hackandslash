@@ -194,6 +194,7 @@ public class BoardDrawing extends JPanel {
 
 		BufferedImage skin;
 		for (Drop drop : drops) {
+			
 			x = drop.getAbsolutePosition().getX();
 			y = drop.getAbsolutePosition().getY();
 

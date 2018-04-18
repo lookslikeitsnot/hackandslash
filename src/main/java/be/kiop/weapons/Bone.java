@@ -17,4 +17,8 @@ public class Bone extends Weapon {
 		super(AVAILABLE_TEXTURES, texture, tile, name, damage, maxDamage, range, minRange, maxRange, attackSpeed, maxAttackSpeed,
 				penetration);
 	}
+	
+	public Bone(Bone bone) {
+		super(bone);
+	}
 }

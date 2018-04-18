@@ -28,6 +28,9 @@ import be.kiop.textures.WallTextures;
 import be.kiop.valueobjects.Position;
 import be.kiop.valueobjects.Size;
 import be.kiop.valueobjects.Tile;
+import be.kiop.weapons.Staff;
+import be.kiop.weapons.Sword;
+import be.kiop.weapons.Weapon;
 
 public class Board extends JFrame implements TileListener{
 	private static final long serialVersionUID = 1L;
@@ -73,8 +76,8 @@ public class Board extends JFrame implements TileListener{
 		walls = generateAllWalls(wallTiles);
 //		fires = generateFirePits();
 
-		enemies = generateEnemies(128, (Enemy) Skeletons.Skeleton_1.getGameCharacter());
-		enemies.addAll(generateEnemies(128, (Enemy) Skeletons.Skeleton_Dog_1.getGameCharacter()));
+		enemies = generateEnemies(8, (Enemy) Skeletons.Skeleton_1.getGameCharacter());
+//		enemies.addAll(generateEnemies(128, (Enemy) Skeletons.Skeleton_Dog_1.getGameCharacter()));
 
 		setLayout(new BorderLayout());
 		boardDrawing = new BoardDrawing(SIZE, FloorTextures.Floor_Stone_Light_Grey_NONE,
@@ -186,14 +189,31 @@ public class Board extends JFrame implements TileListener{
 			Enemy enemy = iterator.next();
 			if (enemy.getHealth() == 0) {
 				Drop drop = enemy.getDrop().get();
-				if (drop != null) {
-					drop.setTile(enemy.getTile());
-					drops.add(drop);
+				
+				if(drop instanceof Sword) {
+					Sword sword = new Sword((Sword) drop);
+					sword.setTile(enemy.getTile());
+					drops.add(sword);
 				}
+				if(drop instanceof Staff) {
+					Staff staff = new Staff((Staff) drop);
+					staff.setTile(enemy.getTile());
+					drops.add(staff);
+				}
+//				System.out.println("drops contains drop: " + drops.contains(drop));
+//				if (drop != null) {
+//					drop.setTile(enemy.getTile());
+//					drops.add(drop);
+//				}
+//				System.out.println("drop length: " + drops.size());
 				occupiedTiles.remove(enemy.getTile());
 				iterator.remove();
 			}
 		}
+	}
+
+	public List<Drop> getDrops() {
+		return drops;
 	}
 
 	public Set<Position> getAllHitBoxes(int range, Tile tile) {

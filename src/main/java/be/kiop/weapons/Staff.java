@@ -25,6 +25,11 @@ public class Staff extends Weapon{
 		}
 		this.manaCost = manaCost;
 	}
+	
+	public Staff(Staff staff) {
+		super(staff);
+		this.manaCost = staff.manaCost;
+	}
 
 	public float getManaCost() {
 		return manaCost;

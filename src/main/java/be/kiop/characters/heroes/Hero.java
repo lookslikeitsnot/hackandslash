@@ -14,16 +14,19 @@ import be.kiop.characters.GameCharacter;
 import be.kiop.events.LifeEvent;
 import be.kiop.exceptions.CharacterDiedException;
 import be.kiop.exceptions.IllegalDirectionException;
+import be.kiop.exceptions.IllegalDropException;
 import be.kiop.exceptions.IllegalPositionsSetException;
 import be.kiop.exceptions.InvalidTextureException;
 import be.kiop.exceptions.LessThanCurrentExperienceException;
 import be.kiop.exceptions.NegativeExperienceException;
 import be.kiop.exceptions.NegativeLifeException;
 import be.kiop.exceptions.OutOfLivesException;
+import be.kiop.items.Drop;
 import be.kiop.listeners.LifeListener;
 import be.kiop.textures.HitBoxTexture;
 import be.kiop.textures.Texture;
 import be.kiop.textures.WeaponTextures;
+import be.kiop.valueobjects.Backpack;
 import be.kiop.valueobjects.Directions;
 import be.kiop.valueobjects.Position;
 import be.kiop.valueobjects.Tile;
@@ -34,6 +37,7 @@ public abstract class Hero extends GameCharacter {
 
 	private int lives;
 	private float experience;
+	private Backpack backpack;
 
 	public static final int MAX_LIVES = 5;
 
@@ -42,6 +46,7 @@ public abstract class Hero extends GameCharacter {
 		super(availableTextures, texture, tile, name, availableWeapons, health, weapon, level, armor);
 		setLives(lives);
 		setExperience(0);
+		backpack = new Backpack(12);
 	}
 
 	public int getLives() {
@@ -108,13 +113,16 @@ public abstract class Hero extends GameCharacter {
 
 	@Override
 	protected void setHealth(float health) {
-		super.setHealth(health);
-		if (getHealth() == 0) {
-			if (lives > 1) {
-				loseALife();
-				setHealth(getMaxHealth());
-			} else {
-				throw new CharacterDiedException();
+		try {
+			super.setHealth(health);
+		} catch (CharacterDiedException e) {
+			if (getHealth() == 0) {
+				if (lives > 1) {
+					loseALife();
+					setHealth(getMaxHealth());
+				} else {
+					throw e;
+				}
 			}
 		}
 	}
@@ -152,10 +160,10 @@ public abstract class Hero extends GameCharacter {
 	}
 
 	public void move(Directions direction, Set<Position> unavailablePositions) {
-		if(direction == null) {
+		if (direction == null) {
 			throw new IllegalDirectionException();
 		}
-		if(unavailablePositions == null) {
+		if (unavailablePositions == null) {
 			throw new IllegalPositionsSetException();
 		}
 		if (!isMoving()) {
@@ -176,15 +184,15 @@ public abstract class Hero extends GameCharacter {
 						| InvocationTargetException e) {
 					throw new UnsupportedOperationException();
 				}
-			} 
+			}
 		});
 	}
 
 	private boolean canMove(Directions direction, Set<Position> unavailablePositions) {
-		if(direction == null) {
+		if (direction == null) {
 			throw new IllegalDirectionException();
 		}
-		if(unavailablePositions == null) {
+		if (unavailablePositions == null) {
 			throw new IllegalPositionsSetException();
 		}
 		Texture texture = getTexture();
@@ -235,5 +243,27 @@ public abstract class Hero extends GameCharacter {
 			break;
 		}
 		return (Collections.disjoint(unavailablePositions, toCheck));
+	}
+
+	@Override
+	public void attack(GameCharacter gc) {
+		try {
+			super.attack(gc);
+		} catch (CharacterDiedException ex) {
+			increaseExperience(gc.getLevel() * 100);
+//			System.out.println("xp: " + experience);
+//			System.out.println("level: " + getLevel());
+		}
+	}
+
+	public void pickUpDrop(Drop drop) {
+		if(drop == null) {
+			throw new IllegalDropException();
+		}
+		backpack.add(drop);
+	}
+	
+	public Backpack getBackpack() {
+		return backpack;
 	}
 }

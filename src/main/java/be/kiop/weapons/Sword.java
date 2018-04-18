@@ -28,6 +28,12 @@ public class Sword extends Weapon {
 		this.maxCritChance = maxCritChance;
 		setCritChance(critChance);
 	}
+	
+	public Sword(Sword sword) {
+		super(sword);
+		this.critChance = sword.critChance;
+		this.maxCritChance = sword.maxCritChance;
+	}
 
 	public float getCritChance() {
 		return critChance;

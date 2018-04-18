@@ -9,5 +9,7 @@ public interface Drop {
 	
 	public Position getAbsolutePosition();
 	public void setTile(Tile tile);
+	public Tile getTile();
 	public Position getTextureCenter();
+
 }

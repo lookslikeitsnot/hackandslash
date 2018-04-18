@@ -29,8 +29,24 @@ public abstract class Weapon extends Drawable implements Drop {
 
 	private float penetration;
 	public static final float MAX_PENETRATION = 100.0F;
+	
+	public Weapon(Weapon otherWeapon) {
+		super(otherWeapon.getAvailableTextures(), otherWeapon.getTexture(), otherWeapon.getTile());
+		this.name = otherWeapon.name;
+		this.damage = otherWeapon.damage;
+		this.maxDamage = otherWeapon.maxDamage;
 
-	public Weapon(Set<Texture> availableTextures, Texture texture, Tile tile, String name, float damage,
+		this.range = otherWeapon.range;
+		this.minRange = otherWeapon.minRange;
+		this.maxRange = otherWeapon.maxRange;
+
+		this.attackSpeed = otherWeapon.attackSpeed;
+		this.maxAttackSpeed = otherWeapon.maxAttackSpeed;
+
+		this.penetration = otherWeapon.penetration;
+	}
+
+	protected Weapon(Set<Texture> availableTextures, Texture texture, Tile tile, String name, float damage,
 			float maxDamage, int range, int minRange, int maxRange, float attackSpeed, float maxAttackSpeed,
 			float penetration) {
 		super(availableTextures, texture, tile);

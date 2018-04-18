@@ -41,6 +41,10 @@ public abstract class Drawable implements Cloneable {
 
 	}
 
+	public Set<Texture> getAvailableTextures() {
+		return availableTextures;
+	}
+
 	public Texture getTexture() {
 		return texture;
 	}
