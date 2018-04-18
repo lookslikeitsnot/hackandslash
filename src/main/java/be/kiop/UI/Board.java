@@ -17,6 +17,7 @@ import be.kiop.characters.enemies.skeletons.Skeletons;
 import be.kiop.characters.heroes.Hero;
 import be.kiop.characters.heroes.warriors.Warriors;
 import be.kiop.events.TileEvent;
+import be.kiop.exceptions.IllegalDropException;
 import be.kiop.items.Drop;
 import be.kiop.listeners.RepaintTimer;
 import be.kiop.listeners.TileListener;
@@ -214,6 +215,16 @@ public class Board extends JFrame implements TileListener{
 
 	public List<Drop> getDrops() {
 		return drops;
+	}
+	
+	public void removeDrop(Drop drop) {
+		if(drop == null) {
+			throw new IllegalDropException();
+		}
+		if(!drops.contains(drop)) {
+			throw new IllegalDropException();
+		}
+		drops.remove(drop);
 	}
 
 	public Set<Position> getAllHitBoxes(int range, Tile tile) {

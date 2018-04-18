@@ -1,16 +1,18 @@
 package be.kiop.valueobjects;
 
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 import be.kiop.exceptions.BackpackFullException;
 import be.kiop.exceptions.IllegalDropException;
 import be.kiop.items.Drop;
 
 public class Backpack {
-	Set<Drop> items;
+	List<Drop> items;
 	private int size;
 	
 	public Backpack(int size){
+		items = new ArrayList<>();
 		this.size = size;
 	}
 	
@@ -24,7 +26,7 @@ public class Backpack {
 		items.add(drop);
 	}
 	
-	public Set<Drop> getItems(){
+	public List<Drop> getItems(){
 		return items;
 	}
 }

@@ -1,8 +1,10 @@
 package be.kiop.controllers;
 
 import java.awt.event.ActionEvent;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.swing.AbstractAction;
 import javax.swing.ActionMap;
@@ -14,6 +16,7 @@ import be.kiop.UI.BoardDrawing;
 import be.kiop.characters.GameCharacter;
 import be.kiop.characters.enemies.Enemy;
 import be.kiop.characters.heroes.Hero;
+import be.kiop.items.Drop;
 import be.kiop.valueobjects.Directions;
 
 public class Keyboard {
@@ -88,18 +91,20 @@ public class Keyboard {
 	private class PickUpAction extends AbstractAction {
 		private static final long serialVersionUID = 1L;
 		
-		GameCharacter hero;
+		Hero hero;
 		Board board;
 		
-		public PickUpAction(GameCharacter hero, Board board) {
+		public PickUpAction(Hero hero, Board board) {
 			this.hero = hero;
 			this.board = board;
 		}
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			if(false) {
-				
+			List<Drop> availableDrops = board.getDrops().stream().filter(drop -> drop.getTile().equals(hero.getTile())).collect(Collectors.toList());
+			for(Drop drop: availableDrops) {
+				hero.getBackpack().add(drop);
+				board.removeDrop(drop);
 			}
 		}
 

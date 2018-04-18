@@ -4,8 +4,8 @@ import be.kiop.textures.WeaponTextures;
 import be.kiop.valueobjects.Tile;
 
 public enum Swords {
-	Sword_1(WeaponTextures.Sword, Tile.ORIGIN, "Staff", 10, 20, 2, 1, 3, 1, 2, 0, 0, 0),
-	Sword_5(WeaponTextures.Sword, Tile.ORIGIN, "Staff", 50, 100, 3, 1, 3, 1, 2, 0, 0, 0);
+	Sword_1(WeaponTextures.Sword, Tile.ORIGIN, "Sword", 10, 20, 2, 1, 3, 1, 2, 0, 0, 0),
+	Sword_5(WeaponTextures.Sword, Tile.ORIGIN, "Big Sword", 50, 100, 3, 1, 3, 1, 2, 0, 0, 0);
 
 	private final Sword sword;
 
