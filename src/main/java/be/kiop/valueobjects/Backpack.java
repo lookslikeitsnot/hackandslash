@@ -21,6 +21,43 @@ public class Backpack {
 		items = new ArrayList<>();
 		this.size = size;
 	}
+	
+	public void remove(int index) {
+		BackpackEvent event;
+		synchronized (backpackListeners) {
+			if (items.size() < 1) {
+				throw new BackpackFullException();
+			}
+			List<Drop> itemsCopy = new ArrayList<>(items);
+			items.remove(index);
+			event = new BackpackEvent(itemsCopy, items);
+		}
+		if (event.oldContent != event.newContent) {
+			broadcast(event);
+		}
+	}
+	
+	public void remove(Drop drop) {
+		BackpackEvent event;
+		synchronized (backpackListeners) {
+			if (drop == null) {
+				throw new IllegalDropException();
+			}
+			if (items.size() < 1) {
+				throw new BackpackFullException();
+			}
+			List<Drop> itemsCopy = new ArrayList<>(items);
+			items.remove(drop);
+			event = new BackpackEvent(itemsCopy, items);
+		}
+		if (event.oldContent != event.newContent) {
+			broadcast(event);
+		}
+	}
+	
+	public Drop get(int index) {
+		return items.get(index);
+	}
 
 	public void add(Drop drop) {
 		BackpackEvent event;
@@ -33,6 +70,24 @@ public class Backpack {
 			}
 			List<Drop> itemsCopy = new ArrayList<>(items);
 			items.add(drop);
+			event = new BackpackEvent(itemsCopy, items);
+		}
+		if (event.oldContent != event.newContent) {
+			broadcast(event);
+		}
+	}
+	
+	public void add(Drop drop, int index) {
+		BackpackEvent event;
+		synchronized (backpackListeners) {
+			if (drop == null) {
+				throw new IllegalDropException();
+			}
+			if (items.size() >= size) {
+				throw new BackpackFullException();
+			}
+			List<Drop> itemsCopy = new ArrayList<>(items);
+			items.add(index, drop);
 			event = new BackpackEvent(itemsCopy, items);
 		}
 		if (event.oldContent != event.newContent) {

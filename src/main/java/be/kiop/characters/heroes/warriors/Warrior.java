@@ -12,13 +12,14 @@ import be.kiop.textures.Texture;
 import be.kiop.textures.WarriorTextures;
 import be.kiop.textures.WeaponTextures;
 import be.kiop.valueobjects.Tile;
+import be.kiop.weapons.Swords;
 import be.kiop.weapons.Weapon;
 
 public class Warrior extends Hero {
 	public static final float MAX_SHIELD = 100;
 	private final static Set<Texture> AVAILABLE_TEXTURES = Arrays.stream(WarriorTextures.values())
 			.collect(Collectors.toSet());
-	private static Set<WeaponTextures> AVAILABLE_WEAPONS = Set.of(WeaponTextures.Sword);
+	private static Set<WeaponTextures> AVAILABLE_WEAPONS = Set.of(WeaponTextures.Sword, WeaponTextures.Lava_Sword);
 
 	private float shield;
 

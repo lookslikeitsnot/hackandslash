@@ -18,8 +18,9 @@ public enum WeaponTextures implements Texture {
 	Bone(Bone.class, "bones", "Bone", new Position(0, 64), new Size(32, 32)),
 	Fist(Fist.class, "fist", "Fist", new Position(0, 0), new Size(32, 32)),
 	Staff(Staff.class, "staffs", "Staff", new Position(0, 0), new Size(32, 32)),
-	Sword(Sword.class, "swords_resized", "Sword", new Position(0, 0), new Size(32, 32));
-
+	Sword(Sword.class, "swords_resized", "Sword", new Position(0, 0), new Size(32, 32)),
+	Lava_Sword(Sword.class, "swords_resized", "Lava_Sword", new Position(96, 32), new Size(32, 32));
+	
 	private final Class<?> weapon;
 	private final String name;
 	private final Size size;

@@ -19,6 +19,7 @@ import be.kiop.events.BackpackEvent;
 import be.kiop.exceptions.SkinNotFoundException;
 import be.kiop.items.Drop;
 import be.kiop.listeners.BackpackListener;
+import be.kiop.listeners.ItemButtonListener;
 
 public class BackpackPanel extends JPanel implements BackpackListener {
 	private static final long serialVersionUID = 1L;
@@ -26,11 +27,11 @@ public class BackpackPanel extends JPanel implements BackpackListener {
 	private BufferedImage backgroundImage;
 	private List<JButton> buttons;
 
-//	private Hero hero;
+	private Hero hero;
 
 	public BackpackPanel(Hero hero) {
 		setLayout(new GridLayout(2, 6));
-//		this.hero = hero;
+		this.hero = hero;
 		buttons = new ArrayList<>();
 		
 		initializeButtons();               
@@ -52,6 +53,8 @@ public class BackpackPanel extends JPanel implements BackpackListener {
 				button.setPreferredSize(new Dimension(36, 36));
 				button.setOpaque(false);
 				button.setContentAreaFilled(false);
+				button.addActionListener(new ItemButtonListener(hero));
+				button.setName(Integer.toString(i*(1+j)));
 				buttons.add(button);
 			}
 		}
@@ -69,8 +72,7 @@ public class BackpackPanel extends JPanel implements BackpackListener {
 		for(Drop drop : backpackItems) {
 			ImageIcon itemImage = new ImageIcon(drop.getTexture().getSkin());
 			buttons.get(i).setIcon(itemImage);
-			//buttons.add(button);
-			System.out.println("backpack changed");
+			buttons.get(i).putClientProperty("item", drop);
 			i++;
 		}
 
