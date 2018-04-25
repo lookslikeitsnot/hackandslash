@@ -38,6 +38,7 @@ public class Board extends JFrame implements TileListener{
 
 	private BoardDrawing boardDrawing;
 	private HUD hud;
+	private BackpackPanel backpackPanel;
 
 	private static int maxHorizontalTiles;
 	private static int maxVerticalTiles;
@@ -84,9 +85,12 @@ public class Board extends JFrame implements TileListener{
 		boardDrawing = new BoardDrawing(SIZE, FloorTextures.Floor_Stone_Light_Grey_NONE,
 				WallTextures.Wall_Mettalic_Dark, hero, walls, fires, enemies, drops, this, new Size(32, 48));
 		hud = new HUD(hero, null);
+		backpackPanel = new BackpackPanel(hero);
+		
 //		map.setBorder(BorderFactory.createLineBorder(Color.red));
 		add(hud, BorderLayout.NORTH);
 		add(boardDrawing, BorderLayout.CENTER);
+		add(backpackPanel, BorderLayout.SOUTH);
 
 		new RepaintTimer(this);
 
