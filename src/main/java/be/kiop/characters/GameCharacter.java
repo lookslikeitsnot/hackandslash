@@ -17,6 +17,7 @@ import be.kiop.exceptions.IllegalFrameNumberException;
 import be.kiop.exceptions.IllegalLevelException;
 import be.kiop.exceptions.IllegalMovementFrameException;
 import be.kiop.exceptions.IllegalNameException;
+import be.kiop.exceptions.IllegalTargetException;
 import be.kiop.exceptions.IllegalWeaponException;
 import be.kiop.exceptions.IllegalWeaponSetException;
 import be.kiop.exceptions.InvalidTextureException;
@@ -63,6 +64,8 @@ public abstract class GameCharacter extends Drawable implements Animated, HitBox
 
 	private boolean moving;
 	private int movementFrame;
+
+	private Set<GameCharacter> attackedCharacters;
 
 	public GameCharacter(Set<Texture> availableTextures, Texture texture, Tile tile, String name,
 			Set<WeaponTextures> availableWeapons, float health, Weapon weapon, int level, float armor) {
@@ -189,12 +192,19 @@ public abstract class GameCharacter extends Drawable implements Animated, HitBox
 	}
 
 	public void attack(GameCharacter gc) {
-		if(!attacking) {
-			startAttacking();
-			if (gc != null) {
-				gc.takeDamage(this.weapon.getDamage(), this.weapon.getPenetration());
-			}
+		if (gc == null) {
+			throw new IllegalTargetException();
 		}
+		if (!attacking || !attackedCharacters.contains(gc)) {
+			startAttacking();
+
+			attackedCharacters.add(gc);
+			gc.takeDamage(this.weapon.getDamage(), this.weapon.getPenetration());
+
+		}
+//		if (gc != null) {
+//			gc.takeDamage(this.weapon.getDamage(), this.weapon.getPenetration());
+//		}
 	}
 
 	public Weapon getWeapon() {
@@ -274,6 +284,7 @@ public abstract class GameCharacter extends Drawable implements Animated, HitBox
 
 	public void reset() {
 		try {
+			attackedCharacters.clear();
 			stopAttacking();
 		} catch (AlreadyPeacefulException e) {
 //			System.out.println("peaceful");
@@ -296,7 +307,7 @@ public abstract class GameCharacter extends Drawable implements Animated, HitBox
 			healthListeners.remove(listener);
 		}
 	}
-	
+
 	private void broadcast(HealthEvent healthEvent) {
 		Set<HealthListener> snapshot;
 		synchronized (healthListeners) {
@@ -338,8 +349,6 @@ public abstract class GameCharacter extends Drawable implements Animated, HitBox
 		}
 		setPositionOfTextureCenterInTile(getPositionOfTextureCenterInTile().north());
 	}
-
-	
 
 	public boolean inFrontOf(int rangeX, int rangeY, Tile potentiallyInFront, Set<Tile> availableTiles) {
 		int potX = potentiallyInFront.getHorizontalPosition();
@@ -480,7 +489,7 @@ public abstract class GameCharacter extends Drawable implements Animated, HitBox
 
 			setMovementFrame(movementFrame + 1);
 			int associatedFrame = getAssociatedFrameNumber(movementFrame);
-			
+
 			Texture texture = TextureBuilder.getTexture(textureClass, textureString, genderString, directionString,
 					Integer.toString(associatedFrame));
 
@@ -491,20 +500,20 @@ public abstract class GameCharacter extends Drawable implements Animated, HitBox
 	@Override
 	public Set<Position> getHitBox(int range) {
 		Texture texture = getTexture();
-		if(!(texture instanceof HitBoxTexture)) {
+		if (!(texture instanceof HitBoxTexture)) {
 			throw new InvalidTextureException();
 		}
 		HitBoxTexture hitBoxTexture = (HitBoxTexture) texture;
-		
+
 		int hitBoxWidth = hitBoxTexture.getHitBoxSize().getWidth();
 		int hitBoxHeight = hitBoxTexture.getHitBoxSize().getHeight();
-		
-		if(range <= -hitBoxWidth/2 || range <= -hitBoxHeight/2) {
+
+		if (range <= -hitBoxWidth / 2 || range <= -hitBoxHeight / 2) {
 			throw new TooLittleRangeException();
 		}
-		
+
 		Set<Position> positions = new LinkedHashSet<>();
-		
+
 		int textureCenterX = getAbsoluteCenterPosition().getX();
 		int textureCenterY = getAbsoluteCenterPosition().getY();
 		int minHitBoxX = textureCenterX - hitBoxWidth / 2 - range;

@@ -82,8 +82,10 @@ public class Keyboard {
 			if (optEnemies.isPresent()) {
 				Set<Enemy> enemies = optEnemies.get();
 				for (Enemy enemy : enemies) {
+					System.out.println("attacking");
 					hero.attack(enemy);
 				}
+				System.out.println("amount of attacked enemies: " + enemies.size());
 			}
 		}
 	}

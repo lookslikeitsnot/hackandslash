@@ -46,8 +46,8 @@ public class BoardDrawing extends JPanel {
 //	private int horizontalTiles;
 //	private int verticalTiles;
 
-	BoardDrawing(Size size, FloorTextures floorTexture, WallTextures exteriorWallsTexture, Hero hero,
-			Set<Wall> walls, Set<Fire> fires, Set<Enemy> enemies, List<Drop> drops, Board board, Size tileSize) {
+	BoardDrawing(Size size, FloorTextures floorTexture, WallTextures exteriorWallsTexture, Hero hero, Set<Wall> walls,
+			Set<Fire> fires, Set<Enemy> enemies, List<Drop> drops, Board board, Size tileSize) {
 		this.size = size;
 		this.tileSize = tileSize;
 		this.enemies = enemies;
@@ -195,7 +195,7 @@ public class BoardDrawing extends JPanel {
 
 		BufferedImage skin;
 		for (Drop drop : drops) {
-			
+
 			x = drop.getAbsolutePosition().getX();
 			y = drop.getAbsolutePosition().getY();
 
@@ -243,7 +243,7 @@ public class BoardDrawing extends JPanel {
 	}
 
 	private void drawHero(Graphics g) {
-		if(hero.isMoving()) {
+		if (hero.isMoving()) {
 			hero.setNextTexture();
 		}
 		int x = hero.getAbsolutePosition().getX();
@@ -257,7 +257,8 @@ public class BoardDrawing extends JPanel {
 			weaponSkin = colorFilter(weaponSkin, Color.red);
 		}
 
-		if (hero.getDirection() == Directions.WEST) {
+		if (hero.getDirection() == Directions.EAST && hero.isAttacking()
+				|| hero.getDirection() == Directions.WEST && !hero.isAttacking()) {
 			g.drawImage(skin, x, y, null);
 
 			Graphics2D g2d = (Graphics2D) g;
@@ -282,6 +283,7 @@ public class BoardDrawing extends JPanel {
 			at.rotate(Math.PI / 2);
 			if (gc.isAttacking()) {
 				at.rotate(Math.PI * 5 / 4);
+				at.translate(0, 5);
 			}
 			break;
 		case NORTH:
@@ -289,6 +291,7 @@ public class BoardDrawing extends JPanel {
 			at.rotate(Math.PI / 4);
 			if (gc.isAttacking()) {
 				at.rotate(Math.PI);
+				at.translate(-20, 15);
 			} else {
 				at.scale(0.8, 0.8);
 			}
@@ -298,6 +301,7 @@ public class BoardDrawing extends JPanel {
 			at.rotate(Math.PI * 5 / 4);
 			if (gc.isAttacking()) {
 				at.rotate(Math.PI);
+				at.translate(-12, 25);
 			} else {
 				at.scale(0.8, 0.8);
 			}
@@ -307,6 +311,7 @@ public class BoardDrawing extends JPanel {
 			at.translate(-2, 5);
 			if (gc.isAttacking()) {
 				at.rotate(Math.PI * 3 / 4);
+				at.translate(0, 5);
 			}
 			break;
 		default:
