@@ -173,6 +173,7 @@ public class Board extends JFrame implements TileListener{
 	@Override
 	public void paint(Graphics g) {
 		hud.repaint();
+		backpackPanel.repaint();
 
 		handleTheDeads();
 		findActiveEnemy();

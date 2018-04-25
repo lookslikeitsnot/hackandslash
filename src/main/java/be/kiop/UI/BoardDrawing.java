@@ -123,6 +123,7 @@ public class BoardDrawing extends JPanel {
 		drawEnemies(g);
 		drawHero(g);
 		drawExteriorWalls(g);
+		requestFocus();
 	}
 
 	private void drawFloors(Graphics g) {
