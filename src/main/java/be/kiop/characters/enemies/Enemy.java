@@ -28,7 +28,7 @@ public abstract class Enemy extends GameCharacter implements Dropper {
 	private final Set<Drop> droppables;
 	private final Random random = new Random();
 
-//	private boolean active;
+	private boolean active;
 //	private Tile nextTile;
 
 	private static int counter = 0;
@@ -53,9 +53,14 @@ public abstract class Enemy extends GameCharacter implements Dropper {
 //		return active;
 //	}
 //
-//	public void setActive(boolean active) {
-//		this.active = active;
-//	}
+	private void setActive(boolean active) {
+		this.active = active;
+		System.out.println("enemy activated");
+	}
+	
+	public void activate() {
+		setActive(true);
+	}
 
 	protected Set<Drop> getDroppables() {
 		return droppables;

@@ -31,9 +31,8 @@ import be.kiop.valueobjects.Size;
 import be.kiop.valueobjects.Tile;
 import be.kiop.weapons.Staff;
 import be.kiop.weapons.Sword;
-import be.kiop.weapons.Weapon;
 
-public class Board extends JFrame implements TileListener{
+public class Board extends JFrame implements TileListener {
 	private static final long serialVersionUID = 1L;
 
 	private BoardDrawing boardDrawing;
@@ -58,11 +57,12 @@ public class Board extends JFrame implements TileListener{
 	public static final Size exteriorWallSize = new Size(32, 32);
 
 	public static Size SIZE;
-
-	//public final static Size TILE_SIZE = new Size(32, 48);
+	
+	// public final static Size TILE_SIZE = new Size(32, 48);
 	public final static Size MAX_SIZE = new Size(4000, 4000);
+	public final static int ACTIVATION_DISTANCE = 5;
 
-	public Board(int horizontalTiles, int verticalTiles){
+	public Board(int horizontalTiles, int verticalTiles) {
 		maxHorizontalTiles = horizontalTiles;
 		maxVerticalTiles = verticalTiles;
 
@@ -86,7 +86,7 @@ public class Board extends JFrame implements TileListener{
 				WallTextures.Wall_Mettalic_Dark, hero, walls, fires, enemies, drops, this, new Size(32, 48));
 		hud = new HUD(hero, null);
 		backpackPanel = new BackpackPanel(hero);
-		
+
 //		map.setBorder(BorderFactory.createLineBorder(Color.red));
 		add(hud, BorderLayout.NORTH);
 		add(boardDrawing, BorderLayout.CENTER);
@@ -176,7 +176,7 @@ public class Board extends JFrame implements TileListener{
 		backpackPanel.repaint();
 
 		handleTheDeads();
-		findActiveEnemy();
+//		findActiveEnemy();
 		moveEnemies();
 
 		boardDrawing.repaint();
@@ -187,7 +187,20 @@ public class Board extends JFrame implements TileListener{
 		availableTiles.removeAll(occupiedTiles);
 		for (Enemy enemy : enemies) {
 			enemy.move(availableTiles);
+			if (tileDistance(enemy, hero) <= ACTIVATION_DISTANCE) {
+				enemy.activate();
+			}
 		}
+	}
+
+	public static int tileDistance(Drawable d1, Drawable d2) {
+		int d1X = d1.getTile().getHorizontalPosition();
+		int d2X = d2.getTile().getHorizontalPosition();
+
+		int d1Y = d1.getTile().getVerticalPosition();
+		int d2Y = d2.getTile().getVerticalPosition();
+
+		return Math.abs(d1X - d2X) + Math.abs(d1Y - d2Y);
 	}
 
 	private void handleTheDeads() {
@@ -195,13 +208,13 @@ public class Board extends JFrame implements TileListener{
 			Enemy enemy = iterator.next();
 			if (enemy.getHealth() == 0) {
 				Drop drop = enemy.getDrop().get();
-				
-				if(drop instanceof Sword) {
+
+				if (drop instanceof Sword) {
 					Sword sword = new Sword((Sword) drop);
 					sword.setTile(enemy.getTile());
 					drops.add(sword);
 				}
-				if(drop instanceof Staff) {
+				if (drop instanceof Staff) {
 					Staff staff = new Staff((Staff) drop);
 					staff.setTile(enemy.getTile());
 					drops.add(staff);
@@ -221,12 +234,12 @@ public class Board extends JFrame implements TileListener{
 	public List<Drop> getDrops() {
 		return drops;
 	}
-	
+
 	public void removeDrop(Drop drop) {
-		if(drop == null) {
+		if (drop == null) {
 			throw new IllegalDropException();
 		}
-		if(!drops.contains(drop)) {
+		if (!drops.contains(drop)) {
 			throw new IllegalDropException();
 		}
 		drops.remove(drop);
@@ -256,20 +269,21 @@ public class Board extends JFrame implements TileListener{
 	public Optional<Set<Enemy>> enemiesInRange() {
 		Set<Enemy> enemiesInRange = new LinkedHashSet<>();
 		for (Enemy enemy : enemies) {
-			if (hero.inFrontOf(hero.getWeapon().getRange(), hero.getWeapon().getRange(), enemy.getTile(), allAvailableTiles)) {
+			if (hero.inFrontOf(hero.getWeapon().getRange(), hero.getWeapon().getRange(), enemy.getTile(),
+					allAvailableTiles)) {
 				enemiesInRange.add(enemy);
 			}
 		}
 		return Optional.ofNullable(enemiesInRange);
 	}
 
-	private void findActiveEnemy() {
+//	private void findActiveEnemy() {
 //		for (Enemy enemy : enemies) {
 //			if (enemy.inFrontOf(2, 2, hero.getTile(), availableTiles)) {
 //				enemy.setActive(true);
 //			}
 //		}
-	}
+//	}
 
 	@Override
 	public void tileChanged(TileEvent event) {

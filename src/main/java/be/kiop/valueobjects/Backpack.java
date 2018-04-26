@@ -14,7 +14,7 @@ import be.kiop.listeners.BackpackListener;
 public class Backpack {
 	private final Set<BackpackListener> backpackListeners = new HashSet<>();
 
-	List<Drop> items;
+	private List<Drop> items;
 	private int maxSize;
 
 	public Backpack(int maxSize) {
