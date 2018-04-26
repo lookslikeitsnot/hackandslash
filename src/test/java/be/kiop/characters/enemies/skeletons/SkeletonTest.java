@@ -1584,20 +1584,20 @@ public class SkeletonTest {
 
 	@Test(expected = IllegalTileSetException.class)
 	public void move_nullAsTileSet_exception() {
-		enemy.move(null);
+		enemy.move(null, null);
 	}
 
 	@Test
 	public void move_emptyTileSet_noMovement() {
 		Position pos = enemy.getAbsolutePosition();
-		enemy.move(Set.of());
+		enemy.move(Set.of(), Tile.ORIGIN);
 		assertEquals(pos, enemy.getAbsolutePosition());
 	}
 
 	@Test
 	public void move_noAdjacentTileInTileSet_noMovement() {
 		Position pos = enemy.getAbsolutePosition();
-		enemy.move(Set.of(tile.getEASTwardTile().getEASTwardTile()));
+		enemy.move(Set.of(tile.getEASTwardTile().getEASTwardTile()), Tile.ORIGIN);
 		assertEquals(pos, enemy.getAbsolutePosition());
 	}
 
@@ -1606,7 +1606,7 @@ public class SkeletonTest {
 		Position pos = enemy.getAbsolutePosition();
 		Set<Tile> availableTiles = new HashSet<>();
 		availableTiles.add(tile.getEASTwardTile());
-		enemy.move(availableTiles);
+		enemy.move(availableTiles, Tile.ORIGIN);
 		assertNotEquals(pos, enemy.getAbsolutePosition());
 	}
 
@@ -1615,7 +1615,7 @@ public class SkeletonTest {
 		Position pos = enemy.getAbsolutePosition();
 		Set<Tile> availableTiles = new HashSet<>();
 		availableTiles.add(tile.getEASTwardTile());
-		IntStream.range(0, tile.getSize().getWidth() / Enemy.SPEED).forEach(i -> enemy.move(availableTiles));
+		IntStream.range(0, tile.getSize().getWidth() / Enemy.SPEED).forEach(i -> enemy.move(availableTiles, Tile.ORIGIN));
 		assertNotEquals(pos, enemy.getAbsolutePosition());
 		assertFalse(enemy.isMoving());
 	}

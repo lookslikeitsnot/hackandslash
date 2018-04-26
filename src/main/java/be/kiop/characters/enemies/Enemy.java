@@ -15,6 +15,7 @@ import be.kiop.exceptions.IllegalDropSetException;
 import be.kiop.exceptions.IllegalTileSetException;
 import be.kiop.items.Drop;
 import be.kiop.items.Dropper;
+import be.kiop.maze.AStar;
 import be.kiop.textures.Texture;
 import be.kiop.textures.WeaponTextures;
 import be.kiop.utils.MapUtils;
@@ -110,12 +111,19 @@ public abstract class Enemy extends GameCharacter implements Dropper {
 		}
 	}
 
-	public void move(Set<Tile> availableTiles) {
+	public void move(Set<Tile> availableTiles, Tile objective) {
 		if (availableTiles == null) {
 			throw new IllegalTileSetException();
 		}
-		if (active) {
-			
+		if (active && !isMoving()) {
+			startMoving();
+			try {
+				setDirection(AStar.mazeSolvingDirections(getTile(), objective, availableTiles));
+			} catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException
+					| InvocationTargetException e) {
+				System.out.println(e.getMessage());
+				System.out.println("not finding any path");
+			}
 		} else {
 			IntStream.range(0, SPEED).forEach(i -> {
 				if (isMoving()) {

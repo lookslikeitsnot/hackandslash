@@ -79,7 +79,7 @@ public class Board extends JFrame implements TileListener {
 		walls = generateAllWalls(wallTiles);
 //		fires = generateFirePits();
 
-		enemies = generateEnemies(96, (Enemy) Skeletons.Skeleton_1.getGameCharacter());
+		enemies = generateEnemies(1, (Enemy) Skeletons.Skeleton_1.getGameCharacter());
 //		enemies.addAll(generateEnemies(128, (Enemy) Skeletons.Skeleton_Dog_1.getGameCharacter()));
 
 		setLayout(new BorderLayout());
@@ -190,7 +190,7 @@ public class Board extends JFrame implements TileListener {
 			if (AStar.tileManhattanDistance(enemy.getTile(), hero.getTile()) <= ACTIVATION_DISTANCE  && !enemy.isActive()) {
 				enemy.activate();
 			}
-			enemy.move(availableTiles);
+			enemy.move(availableTiles, hero.getTile());
 		}
 	}
 
