@@ -201,19 +201,19 @@ public abstract class Weapon extends Drawable implements Drop {
 		return result;
 	}
 
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (!(obj instanceof Weapon))
-			return false;
-		Weapon other = (Weapon) obj;
-		if (!name.equals(other.name))
-			return false;
-		return true;
-	}
+//	@Override
+//	public boolean equals(Object obj) {
+//		if (this == obj)
+//			return true;
+//		if (obj == null)
+//			return false;
+//		if (!(obj instanceof Weapon))
+//			return false;
+//		Weapon other = (Weapon) obj;
+//		if (!name.equals(other.name))
+//			return false;
+//		return true;
+//	}
 
 	@Override
 	public Position getTextureCenter() {

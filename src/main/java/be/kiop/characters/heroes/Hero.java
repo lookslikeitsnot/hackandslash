@@ -47,6 +47,7 @@ public abstract class Hero extends GameCharacter {
 		setLives(lives);
 		setExperience(0);
 		backpack = new Backpack(12);
+		backpack.add(weapon);
 	}
 
 	public int getLives() {

@@ -44,6 +44,7 @@ public class BackpackPanel extends JPanel implements BackpackListener {
 		}
 		hero.getBackpack().addBackpackListener(this);
 		buttons.stream().forEach(button -> this.add(button));
+		populateButtons(hero.getBackpack().getItems());
 	}
 	
 	private void initializeButtons() {
@@ -53,7 +54,7 @@ public class BackpackPanel extends JPanel implements BackpackListener {
 				button.setPreferredSize(new Dimension(36, 36));
 				button.setOpaque(false);
 				button.setContentAreaFilled(false);
-				button.addActionListener(new ItemButtonListener(hero));
+				button.addMouseListener(new ItemButtonListener(hero));
 				button.setName(Integer.toString(i*(1+j)));
 				buttons.add(button);
 			}
@@ -63,19 +64,45 @@ public class BackpackPanel extends JPanel implements BackpackListener {
 	@Override
 	protected void paintComponent(Graphics g) {
 		g.drawImage(backgroundImage, 0,0, null); //, this.getWidth(), this.getHeight()
+		resetButtons();
+		populateButtons(hero.getBackpack().getItems());
 	}
 
 	@Override
 	public void backpackChanged(BackpackEvent event) {
-		List<Drop> backpackItems = event.newContent;
-		int i = 0;
-		for(Drop drop : backpackItems) {
-			ImageIcon itemImage = new ImageIcon(drop.getTexture().getSkin());
-			buttons.get(i).setIcon(itemImage);
-			buttons.get(i).putClientProperty("item", drop);
-			i++;
-		}
+//		List<Drop> backpackItems = event.newContent;
+//		resetButtons();
+//		populateButtons(backpackItems);
+//		int i = 0;
+//		for(Drop drop : backpackItems) {
+//			ImageIcon itemImage = new ImageIcon(drop.getTexture().getSkin());
+//			buttons.get(i).setIcon(itemImage);
+//			buttons.get(i).putClientProperty("item", drop);
+//			i++;
+//		}
 
 		repaint();
+	}
+	
+	private void populateButtons(List<Drop> backpackItems) {
+		for(int i = 0; i < hero.getBackpack().getItems().size(); i++) {
+			ImageIcon itemImage = new ImageIcon(backpackItems.get(i).getTexture().getSkin());
+			buttons.get(i).setIcon(itemImage);
+			buttons.get(i).putClientProperty("item", backpackItems.get(i));
+			if(backpackItems.get(i) == hero.getWeapon()) {
+				buttons.get(i).setOpaque(true);
+			} else {
+				buttons.get(i).setOpaque(false);
+			}
+		}
+		
+	}
+	
+	private void resetButtons() {
+		for(JButton button: buttons) {
+			button.putClientProperty("item", null);
+			button.setIcon(null);
+			button.setOpaque(false);
+		}
 	}
 }

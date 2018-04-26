@@ -15,13 +15,13 @@ public class Backpack {
 	private final Set<BackpackListener> backpackListeners = new HashSet<>();
 
 	List<Drop> items;
-	private int size;
+	private int maxSize;
 
-	public Backpack(int size) {
+	public Backpack(int maxSize) {
 		items = new ArrayList<>();
-		this.size = size;
+		this.maxSize = maxSize;
 	}
-	
+
 	public void remove(int index) {
 		BackpackEvent event;
 		synchronized (backpackListeners) {
@@ -36,7 +36,7 @@ public class Backpack {
 			broadcast(event);
 		}
 	}
-	
+
 	public void remove(Drop drop) {
 		BackpackEvent event;
 		synchronized (backpackListeners) {
@@ -54,7 +54,7 @@ public class Backpack {
 			broadcast(event);
 		}
 	}
-	
+
 	public Drop get(int index) {
 		return items.get(index);
 	}
@@ -65,7 +65,7 @@ public class Backpack {
 			if (drop == null) {
 				throw new IllegalDropException();
 			}
-			if (items.size() >= size) {
+			if (items.size() >= maxSize) {
 				throw new BackpackFullException();
 			}
 			List<Drop> itemsCopy = new ArrayList<>(items);
@@ -76,14 +76,14 @@ public class Backpack {
 			broadcast(event);
 		}
 	}
-	
+
 	public void add(Drop drop, int index) {
 		BackpackEvent event;
 		synchronized (backpackListeners) {
 			if (drop == null) {
 				throw new IllegalDropException();
 			}
-			if (items.size() >= size) {
+			if (items.size() >= maxSize) {
 				throw new BackpackFullException();
 			}
 			List<Drop> itemsCopy = new ArrayList<>(items);
@@ -104,7 +104,7 @@ public class Backpack {
 			backpackListener.backpackChanged(backpackEvent);
 		}
 	}
-	
+
 	public void addBackpackListener(BackpackListener backpackListener) {
 		synchronized (backpackListeners) {
 			backpackListeners.add(backpackListener);
@@ -115,5 +115,9 @@ public class Backpack {
 		synchronized (backpackListeners) {
 			return items;
 		}
+	}
+
+	public boolean isFull() {
+		return items.size() >= maxSize;
 	}
 }

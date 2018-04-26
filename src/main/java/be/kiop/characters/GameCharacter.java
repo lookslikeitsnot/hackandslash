@@ -70,6 +70,7 @@ public abstract class GameCharacter extends Drawable implements Animated, HitBox
 	public GameCharacter(Set<Texture> availableTextures, Texture texture, Tile tile, String name,
 			Set<WeaponTextures> availableWeapons, float health, Weapon weapon, int level, float armor) {
 		super(availableTextures, texture, tile);
+
 		if (!StringUtils.isValidString(name)) {
 			throw new IllegalNameException();
 		}
@@ -88,6 +89,8 @@ public abstract class GameCharacter extends Drawable implements Animated, HitBox
 
 		setMoving(false);
 		setMovementFrame(1);
+
+		attackedCharacters = new LinkedHashSet<>();
 	}
 
 	public String getName() {
@@ -195,9 +198,10 @@ public abstract class GameCharacter extends Drawable implements Animated, HitBox
 		if (gc == null) {
 			throw new IllegalTargetException();
 		}
-		if (!attacking || !attackedCharacters.contains(gc)) {
-			startAttacking();
-
+		if (!attackedCharacters.contains(gc)) {
+			if (!attacking) {
+				startAttacking();
+			}
 			attackedCharacters.add(gc);
 			gc.takeDamage(this.weapon.getDamage(), this.weapon.getPenetration());
 
