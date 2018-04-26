@@ -49,17 +49,17 @@ public abstract class Enemy extends GameCharacter implements Dropper {
 		return id;
 	}
 
-//	public boolean isActive() {
-//		return active;
-//	}
-//
+	public boolean isActive() {
+		return active;
+	}
+
 	private void setActive(boolean active) {
 		this.active = active;
-		System.out.println("enemy activated");
 	}
-	
+
 	public void activate() {
 		setActive(true);
+		System.out.println("enemy activated");
 	}
 
 	protected Set<Drop> getDroppables() {
@@ -109,33 +109,38 @@ public abstract class Enemy extends GameCharacter implements Dropper {
 			stopMoving();
 		}
 	}
-	
+
 	public void move(Set<Tile> availableTiles) {
-		if(availableTiles == null) {
+		if (availableTiles == null) {
 			throw new IllegalTileSetException();
 		}
-		IntStream.range(0, SPEED).forEach(i -> {
-			if (isMoving()) {
-				move();
-			} else {
-				resetMovementFrame();
-				Map<Directions, Tile> possibleTiles = null;
-				try {
-					possibleTiles = getTile().getAvailableAdjacentTiles(availableTiles);
-				} catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException
-						| InvocationTargetException e) {
-				}
-				if (MapUtils.isValidMap(possibleTiles)) {
-					List<Directions> keys = new ArrayList<>(possibleTiles.keySet());
-					Directions direction = keys.get(random.nextInt(keys.size()));
-					startMoving();
-					setDirection(direction);
-					availableTiles.add(getTile());
+		if (active) {
+			
+		} else {
+			IntStream.range(0, SPEED).forEach(i -> {
+				if (isMoving()) {
 					move();
+				} else {
+					resetMovementFrame();
+					Map<Directions, Tile> possibleTiles = null;
+					try {
+						possibleTiles = getTile().getAvailableAdjacentTiles(availableTiles);
+					} catch (NoSuchMethodException | SecurityException | IllegalAccessException
+							| IllegalArgumentException | InvocationTargetException e) {
+					}
+					if (MapUtils.isValidMap(possibleTiles)) {
+						List<Directions> keys = new ArrayList<>(possibleTiles.keySet());
+						Directions direction = keys.get(random.nextInt(keys.size()));
+						startMoving();
+						setDirection(direction);
+						availableTiles.add(getTile());
+						move();
+					}
 				}
-			}
-		});
+			});
+		}
 	}
+
 	@Override
 	public abstract Enemy clone();
 }

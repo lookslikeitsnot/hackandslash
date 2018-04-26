@@ -21,6 +21,7 @@ import be.kiop.exceptions.IllegalDropException;
 import be.kiop.items.Drop;
 import be.kiop.listeners.RepaintTimer;
 import be.kiop.listeners.TileListener;
+import be.kiop.maze.AStar;
 import be.kiop.maze.Maze;
 import be.kiop.obstacles.fires.Fire;
 import be.kiop.obstacles.walls.Wall;
@@ -186,21 +187,11 @@ public class Board extends JFrame implements TileListener {
 		Set<Tile> availableTiles = new LinkedHashSet<>(allAvailableTiles);
 		availableTiles.removeAll(occupiedTiles);
 		for (Enemy enemy : enemies) {
-			enemy.move(availableTiles);
-			if (tileDistance(enemy, hero) <= ACTIVATION_DISTANCE) {
+			if (AStar.tileManhattanDistance(enemy.getTile(), hero.getTile()) <= ACTIVATION_DISTANCE  && !enemy.isActive()) {
 				enemy.activate();
 			}
+			enemy.move(availableTiles);
 		}
-	}
-
-	public static int tileDistance(Drawable d1, Drawable d2) {
-		int d1X = d1.getTile().getHorizontalPosition();
-		int d2X = d2.getTile().getHorizontalPosition();
-
-		int d1Y = d1.getTile().getVerticalPosition();
-		int d2Y = d2.getTile().getVerticalPosition();
-
-		return Math.abs(d1X - d2X) + Math.abs(d1Y - d2Y);
 	}
 
 	private void handleTheDeads() {
